@@ -22,11 +22,11 @@ local FEATURES = {
 
     { name = "UI Framework",      path = "Ui/Framework.lua",           critical = true },
     { name = "UI Interactions",   path = "Ui/Interactions.lua",        critical = true },
-    { name = "Tab System",        path = "Ui/Tabs.lua",                critical = true },
+    { name = "Tab Handler",       path = "Ui/TabHandler.lua",          critical = true },
 
     { name = "Anti-AFK",          path = "Features/Anti-AFK.lua",      critical = true },
     { name = "Auto Rejoin",       path = "Features/Auto-Rejoin.lua",   critical = true },
-    { name = "Key Spam",          path = "Features/Kye-Spam.lua",      critical = true },
+    { name = "Key Spam",          path = "Features/Key-Spam.lua",      critical = true },
     { name = "Performance Boost", path = "Features/Performance.lua",   critical = true },
     { name = "Script Loader",     path = "Features/Script-Loader.lua", critical = true },
 
@@ -88,6 +88,7 @@ local function validateInitialization()
         { _G.UniversalUtility.UI and _G.UniversalUtility.UI.ScreenGui, "ScreenGui" },
         { _G.UniversalUtility.UI and _G.UniversalUtility.UI.MainFrame, "MainFrame" },
         { _G.UniversalUtility.Config, "Configuration" },
+        { _G.UniversalUtility.TabHandler, "Tab Handler" },
     }
 
     local valid = true
@@ -107,19 +108,23 @@ print("============================================")
 
 local startTime = tick()
 local loadedCount = 0
+local hasErrors = false
 
 for _, feature in ipairs(FEATURES) do
     local success = loadFeature(feature)
 
     if success then
         loadedCount += 1
-    elseif feature.critical then
-        warn("CRITICAL FAILURE: " .. feature.name)
-        break
+    else
+        hasErrors = true
+        if feature.critical then
+            warn("CRITICAL FAILURE: " .. feature.name)
+        end
     end
 end
 
 local loadTime = math.floor((tick() - startTime) * 1000)
+local errorCount = #FEATURES - loadedCount
 
 print("============================================")
 
@@ -139,9 +144,11 @@ if loadedCount == #FEATURES then
         end
     else
         warn("✗ Validation Failed")
+        _G.UniversalUtility.LoadLock = nil
     end
 else
-    warn(("✗ INCOMPLETE LOAD: %d/%d"):format(loadedCount, #FEATURES))
+    warn(("✗ Loading finished with %d/%d errors"):format(errorCount, #FEATURES))
+    warn("⚠ Please rejoin and execute again. If this continues, report the error.")
 
     if next(failedModules) then
         warn("Failed Modules:")
@@ -149,6 +156,9 @@ else
             warn("  - " .. name .. ": " .. err)
         end
     end
+
+    _G.UniversalUtility.LoadLock = nil
+    _G.UniversalUtility.LoadFailed = true
 end
 
 print("============================================")
