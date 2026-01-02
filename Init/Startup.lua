@@ -16,6 +16,7 @@ local KeyCodeNames = _G.UniversalUtility.KeyCodeNames
 
 _G.UniversalUtility.Startup = {}
 
+local HomeElements = Handlers.HomeElements
 local AntiAFKElements = Handlers.AntiAFKElements
 local KeySpamElements = Handlers.KeySpamElements
 local PerformanceElements = Handlers.PerformanceElements
@@ -23,119 +24,163 @@ local RejoinElements = Handlers.RejoinElements
 local LoaderElements = Handlers.LoaderElements
 local SettingsElements = Handlers.SettingsElements
 
-Performance.StartMonitoring({
-    FPSLabel = Tabs.UIElements.FPSLabel,
-    PingLabel = Tabs.UIElements.PingLabel,
-    FPSStats = PerformanceElements.FPSStats,
-    PingStats = PerformanceElements.PingStats
-})
+if HomeElements and HomeElements.FPSLabel and HomeElements.PingLabel and PerformanceElements and PerformanceElements.FPSStats and PerformanceElements.PingStats then
+    Performance.StartMonitoring({
+        FPSLabel = HomeElements.FPSLabel,
+        PingLabel = HomeElements.PingLabel,
+        FPSStats = PerformanceElements.FPSStats,
+        PingStats = PerformanceElements.PingStats
+    })
+end
 
 UI.LoadPlayerInfo()
 
-Helpers.UpdateLineNumbers(LoaderElements.LoadStringBox, LoaderElements.LineNumbers, LoaderElements.LoadStringScrollFrame, LoaderElements.LineNumbersScrollFrame)
+if LoaderElements and LoaderElements.LoadStringBox and LoaderElements.LineNumbers and LoaderElements.LoadStringScrollFrame and LoaderElements.LineNumbersScrollFrame then
+    Helpers.UpdateLineNumbers(LoaderElements.LoadStringBox, LoaderElements.LineNumbers, LoaderElements.LoadStringScrollFrame, LoaderElements.LineNumbersScrollFrame)
+end
 
 local configLoaded = _G.UniversalUtility.LoadConfig()
 
 if configLoaded then
-    local keyName = KeyCodeNames[Config.Keybind] or Config.Keybind.Name
-    SettingsElements.KeybindButton.Text = "Toggle Keybind: " .. keyName
-    KeySpamElements.SpamInput.Text = Config.SpamKey
-    LoaderElements.LoadStringBox.Text = Config.SavedCode
-    
-    Handlers.UpdateJumpSlider((Config.JumpDelay - 5) / 25)
-    Handlers.UpdateClickSlider((Config.ClickDelay - 1) / 9)
-    Handlers.UpdateSpamSlider((Config.SpamDelay - 0.05) / 4.95)
-    Handlers.UpdateFPSSlider((Config.TargetFPS - 15) / 345)
-    Handlers.UpdateClickTypeButtons()
-    
-    if Config.AutoLoadEnabled then
-        LoaderElements.AutoLoadButton.BackgroundColor3 = Color3.fromRGB(50, 220, 100)
-        LoaderElements.AutoLoadButton.Text = "Auto Load: ON"
-    else
-        LoaderElements.AutoLoadButton.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
-        LoaderElements.AutoLoadButton.Text = "Auto Load: OFF"
+    if SettingsElements and SettingsElements.KeybindButton then
+        local keyName = KeyCodeNames[Config.Keybind] or Config.Keybind.Name
+        SettingsElements.KeybindButton.Text = "Current Key: " .. keyName
     end
     
-    if Config.AutoRejoinEnabled then
-        RejoinElements.AutoRejoinToggle.BackgroundColor3 = Color3.fromRGB(50, 220, 100)
-        RejoinElements.AutoRejoinToggle.Text = "Auto Rejoin: ON"
-        RejoinElements.Status.Text = "Status: Enabled\n\nAutomatically rejoins the game when you get disconnected.\nUseful for preventing AFK kicks."
-        RejoinElements.Status.TextColor3 = Color3.fromRGB(50, 220, 100)
-        AutoRejoin.Setup()
+    if KeySpamElements and KeySpamElements.SpamInput then
+        KeySpamElements.SpamInput.Text = Config.SpamKey
     end
     
-    if Config.FPSUnlockEnabled and Performance.FPS_SUPPORTED then
-        PerformanceElements.FPSUnlockToggle.BackgroundColor3 = Color3.fromRGB(50, 220, 100)
-        PerformanceElements.FPSUnlockToggle.Text = "FPS Unlock: ON"
-        PerformanceElements.FPSUnlockStatus.TextColor3 = Color3.fromRGB(50, 220, 100)
-        PerformanceElements.FPSUnlockStatus.Text = "Your target: " .. Config.TargetFPS .. " FPS"
-        Performance.SetTargetFPS(Config.TargetFPS)
+    if LoaderElements and LoaderElements.LoadStringBox then
+        LoaderElements.LoadStringBox.Text = Config.SavedCode
     end
     
-    if Config.JumpEnabled then
-        AntiAFKElements.JumpToggle.BackgroundColor3 = Color3.fromRGB(50, 220, 100)
-        AntiAFKElements.JumpToggle.Text = "Auto Jump: ON"
-        task.wait(0.1)
-        AntiAFK.StartJumpThread()
-    else
-        AntiAFKElements.JumpToggle.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
-        AntiAFKElements.JumpToggle.Text = "Auto Jump: OFF"
+    if Handlers.UpdateJumpSlider then
+        Handlers.UpdateJumpSlider((Config.JumpDelay - 5) / 25)
+    end
+    if Handlers.UpdateClickSlider then
+        Handlers.UpdateClickSlider((Config.ClickDelay - 1) / 9)
+    end
+    if Handlers.UpdateSpamSlider then
+        Handlers.UpdateSpamSlider((Config.SpamDelay - 0.05) / 4.95)
+    end
+    if Handlers.UpdateFPSSlider then
+        Handlers.UpdateFPSSlider((Config.TargetFPS - 15) / 345)
+    end
+    if Handlers.UpdateClickTypeButtons then
+        Handlers.UpdateClickTypeButtons()
     end
     
-    if Config.ClickEnabled then
-        AntiAFKElements.ClickToggle.BackgroundColor3 = Color3.fromRGB(50, 220, 100)
-        AntiAFKElements.ClickToggle.Text = "Auto Click: ON"
-        task.wait(0.1)
-        AntiAFK.StartClickThread()
-    else
-        AntiAFKElements.ClickToggle.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
-        AntiAFKElements.ClickToggle.Text = "Auto Click: OFF"
-    end
-    
-    if Config.AutoSpamEnabled then
-        local keyCode = KeyCodeMap[Config.SpamKey]
-        if keyCode then
-            KeySpamElements.AutoSpamToggle.BackgroundColor3 = Color3.fromRGB(50, 220, 100)
-            KeySpamElements.AutoSpamToggle.Text = "ON"
-            KeySpamElements.Status.Text = "Status: Spamming " .. Config.SpamKey
-            KeySpamElements.Status.TextColor3 = Color3.fromRGB(50, 220, 100)
-            task.wait(0.1)
-            KeySpam.StartSpamThread()
+    if LoaderElements and LoaderElements.AutoLoadButton then
+        if Config.AutoLoadEnabled then
+            LoaderElements.AutoLoadButton.BackgroundColor3 = Color3.fromRGB(50, 220, 100)
+            LoaderElements.AutoLoadButton.Text = "Auto Load: ON"
         else
-            Config.AutoSpamEnabled = false
+            LoaderElements.AutoLoadButton.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
+            LoaderElements.AutoLoadButton.Text = "Auto Load: OFF"
+        end
+    end
+    
+    if RejoinElements and RejoinElements.AutoRejoinToggle and RejoinElements.Status then
+        if Config.AutoRejoinEnabled then
+            RejoinElements.AutoRejoinToggle.BackgroundColor3 = Color3.fromRGB(50, 220, 100)
+            RejoinElements.AutoRejoinToggle.Text = "Auto Rejoin: ON"
+            RejoinElements.Status.Text = "System Status: Enabled\n\nWhen enabled, this feature will automatically rejoin the current server when you get disconnected due to errors or AFK timeout.\n\nThis helps maintain your session and prevents losing progress."
+            RejoinElements.Status.TextColor3 = Color3.fromRGB(50, 220, 100)
+            if AutoRejoin and AutoRejoin.Setup then
+                AutoRejoin.Setup()
+            end
+        end
+    end
+    
+    if PerformanceElements and PerformanceElements.FPSUnlockToggle and PerformanceElements.FPSUnlockStatus then
+        if Config.FPSUnlockEnabled and Performance.FPS_SUPPORTED then
+            PerformanceElements.FPSUnlockToggle.BackgroundColor3 = Color3.fromRGB(50, 220, 100)
+            PerformanceElements.FPSUnlockToggle.Text = "FPS Unlock: ON"
+            PerformanceElements.FPSUnlockStatus.TextColor3 = Color3.fromRGB(50, 220, 100)
+            PerformanceElements.FPSUnlockStatus.Text = "Current Limit: " .. Config.TargetFPS .. " FPS (Custom)"
+            if Performance and Performance.SetTargetFPS then
+                Performance.SetTargetFPS(Config.TargetFPS)
+            end
+        end
+    end
+    
+    if AntiAFKElements and AntiAFKElements.JumpToggle then
+        if Config.JumpEnabled then
+            AntiAFKElements.JumpToggle.BackgroundColor3 = Color3.fromRGB(50, 220, 100)
+            AntiAFKElements.JumpToggle.Text = "Auto Jump: ON"
+            task.wait(0.1)
+            if AntiAFK and AntiAFK.StartJumpThread then
+                AntiAFK.StartJumpThread()
+            end
+        else
+            AntiAFKElements.JumpToggle.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
+            AntiAFKElements.JumpToggle.Text = "Auto Jump: OFF"
+        end
+    end
+    
+    if AntiAFKElements and AntiAFKElements.ClickToggle then
+        if Config.ClickEnabled then
+            AntiAFKElements.ClickToggle.BackgroundColor3 = Color3.fromRGB(50, 220, 100)
+            AntiAFKElements.ClickToggle.Text = "Auto Click: ON"
+            task.wait(0.1)
+            if AntiAFK and AntiAFK.StartClickThread then
+                AntiAFK.StartClickThread()
+            end
+        else
+            AntiAFKElements.ClickToggle.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
+            AntiAFKElements.ClickToggle.Text = "Auto Click: OFF"
+        end
+    end
+    
+    if KeySpamElements and KeySpamElements.AutoSpamToggle and KeySpamElements.Status then
+        if Config.AutoSpamEnabled then
+            local keyCode = KeyCodeMap[Config.SpamKey]
+            if keyCode and KeySpam and KeySpam.StartSpamThread then
+                KeySpamElements.AutoSpamToggle.BackgroundColor3 = Color3.fromRGB(50, 220, 100)
+                KeySpamElements.AutoSpamToggle.Text = "ON"
+                KeySpamElements.Status.Text = "System Status: Spamming " .. Config.SpamKey
+                KeySpamElements.Status.TextColor3 = Color3.fromRGB(50, 220, 100)
+                task.wait(0.1)
+                KeySpam.StartSpamThread()
+            else
+                Config.AutoSpamEnabled = false
+                KeySpamElements.AutoSpamToggle.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
+                KeySpamElements.AutoSpamToggle.Text = "OFF"
+                KeySpamElements.Status.Text = "System Status: Inactive"
+                KeySpamElements.Status.TextColor3 = Color3.fromRGB(180, 180, 180)
+            end
+        else
             KeySpamElements.AutoSpamToggle.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
             KeySpamElements.AutoSpamToggle.Text = "OFF"
-            KeySpamElements.Status.Text = "Status: Inactive"
+            KeySpamElements.Status.Text = "System Status: Inactive"
             KeySpamElements.Status.TextColor3 = Color3.fromRGB(180, 180, 180)
         end
-    else
-        KeySpamElements.AutoSpamToggle.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
-        KeySpamElements.AutoSpamToggle.Text = "OFF"
-        KeySpamElements.Status.Text = "Status: Inactive"
-        KeySpamElements.Status.TextColor3 = Color3.fromRGB(180, 180, 180)
     end
     
-    Handlers.UpdateAntiAFKStatus()
+    if Handlers.UpdateAntiAFKStatus then
+        Handlers.UpdateAntiAFKStatus()
+    end
     
-    if Config.AutoLoadEnabled then
-        local autoLoadCode = ScriptLoader.GetAutoLoadCode()
-        if autoLoadCode and autoLoadCode ~= "" then
+    if LoaderElements and LoaderElements.Status and Config.AutoLoadEnabled then
+        local autoLoadCode = ScriptLoader and ScriptLoader.GetAutoLoadCode and ScriptLoader.GetAutoLoadCode()
+        if autoLoadCode and autoLoadCode ~= "" and ScriptLoader and ScriptLoader.Execute then
             task.spawn(function()
                 task.wait(0.5)
                 local success, message = ScriptLoader.Execute(autoLoadCode)
                 if success then
-                    LoaderElements.Status.Text = "Status: Auto-loaded successfully"
+                    LoaderElements.Status.Text = "System Status: Auto-load executed successfully"
                     UI.PlayTween(LoaderElements.Status, UI.TweenPresets.Fast, {
                         TextColor3 = Color3.fromRGB(50, 220, 100)
                     })
                 else
-                    LoaderElements.Status.Text = "Status: Auto-load failed - " .. message
+                    LoaderElements.Status.Text = "System Status: Auto-load failed - " .. message
                     UI.PlayTween(LoaderElements.Status, UI.TweenPresets.Fast, {
                         TextColor3 = Color3.fromRGB(220, 50, 50)
                     })
                 end
                 task.wait(3)
-                LoaderElements.Status.Text = "Status: Ready"
+                LoaderElements.Status.Text = "System Status: Ready to execute"
                 UI.PlayTween(LoaderElements.Status, UI.TweenPresets.Fast, {
                     TextColor3 = Color3.fromRGB(180, 180, 180)
                 })
@@ -143,27 +188,63 @@ if configLoaded then
         end
     end
 else
-    Handlers.UpdateJumpSlider(0.2)
-    Handlers.UpdateClickSlider(0.22)
-    Handlers.UpdateSpamSlider(0.01)
-    Handlers.UpdateFPSSlider(0.13)
-    Handlers.UpdateClickTypeButtons()
+    if Handlers.UpdateJumpSlider then
+        Handlers.UpdateJumpSlider(0.2)
+    end
+    if Handlers.UpdateClickSlider then
+        Handlers.UpdateClickSlider(0.22)
+    end
+    if Handlers.UpdateSpamSlider then
+        Handlers.UpdateSpamSlider(0.01)
+    end
+    if Handlers.UpdateFPSSlider then
+        Handlers.UpdateFPSSlider(0.13)
+    end
+    if Handlers.UpdateClickTypeButtons then
+        Handlers.UpdateClickTypeButtons()
+    end
     
-    AntiAFKElements.JumpToggle.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
-    AntiAFKElements.JumpToggle.Text = "Auto Jump: OFF"
-    AntiAFKElements.ClickToggle.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
-    AntiAFKElements.ClickToggle.Text = "Auto Click: OFF"
-    KeySpamElements.AutoSpamToggle.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
-    KeySpamElements.AutoSpamToggle.Text = "OFF"
-    KeySpamElements.Status.Text = "Status: Inactive"
-    KeySpamElements.Status.TextColor3 = Color3.fromRGB(180, 180, 180)
-    PerformanceElements.FPSUnlockToggle.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
-    PerformanceElements.FPSUnlockToggle.Text = "FPS Unlock: OFF"
-    PerformanceElements.FPSUnlockStatus.Text = "Default FPS"
-    PerformanceElements.FPSUnlockStatus.TextColor3 = Color3.fromRGB(180, 180, 180)
-    LoaderElements.AutoLoadButton.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
-    LoaderElements.AutoLoadButton.Text = "Auto Load: OFF"
-    Handlers.UpdateAntiAFKStatus()
+    if AntiAFKElements then
+        if AntiAFKElements.JumpToggle then
+            AntiAFKElements.JumpToggle.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
+            AntiAFKElements.JumpToggle.Text = "Auto Jump: OFF"
+        end
+        if AntiAFKElements.ClickToggle then
+            AntiAFKElements.ClickToggle.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
+            AntiAFKElements.ClickToggle.Text = "Auto Click: OFF"
+        end
+    end
+    
+    if KeySpamElements then
+        if KeySpamElements.AutoSpamToggle then
+            KeySpamElements.AutoSpamToggle.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
+            KeySpamElements.AutoSpamToggle.Text = "OFF"
+        end
+        if KeySpamElements.Status then
+            KeySpamElements.Status.Text = "System Status: Inactive"
+            KeySpamElements.Status.TextColor3 = Color3.fromRGB(180, 180, 180)
+        end
+    end
+    
+    if PerformanceElements then
+        if PerformanceElements.FPSUnlockToggle then
+            PerformanceElements.FPSUnlockToggle.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
+            PerformanceElements.FPSUnlockToggle.Text = "FPS Unlock: OFF"
+        end
+        if PerformanceElements.FPSUnlockStatus then
+            PerformanceElements.FPSUnlockStatus.Text = "Current Limit: 60 FPS (Default)"
+            PerformanceElements.FPSUnlockStatus.TextColor3 = Color3.fromRGB(180, 180, 180)
+        end
+    end
+    
+    if LoaderElements and LoaderElements.AutoLoadButton then
+        LoaderElements.AutoLoadButton.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
+        LoaderElements.AutoLoadButton.Text = "Auto Load: OFF"
+    end
+    
+    if Handlers.UpdateAntiAFKStatus then
+        Handlers.UpdateAntiAFKStatus()
+    end
 end
 
 for name, content in pairs(UI.TabContents) do
