@@ -1,8 +1,9 @@
 local Config = _G.UniversalUtility.Config
 
-_G.UniversalUtility.ScriptLoader = {}
+local ScriptLoader = {}
+_G.UniversalUtility.ScriptLoader = ScriptLoader
 
-function _G.UniversalUtility.ScriptLoader.Execute(code)
+function ScriptLoader.Execute(code)
     if code == "" or code == nil then
         return false, "Empty script"
     end
@@ -22,12 +23,12 @@ function _G.UniversalUtility.ScriptLoader.Execute(code)
     end
 end
 
-function _G.UniversalUtility.ScriptLoader.SaveCode(code)
+function ScriptLoader.SaveCode(code)
     Config.SavedCode = code
     _G.UniversalUtility.SaveConfig()
 end
 
-function _G.UniversalUtility.ScriptLoader.SetAutoLoad(enabled)
+function ScriptLoader.SetAutoLoad(enabled)
     Config.AutoLoadEnabled = enabled
     _G.UniversalUtility.SaveConfig()
     
@@ -43,11 +44,11 @@ function _G.UniversalUtility.ScriptLoader.SetAutoLoad(enabled)
     return true, "Auto-load disabled"
 end
 
-function _G.UniversalUtility.ScriptLoader.GetAutoLoadCode()
+function ScriptLoader.GetAutoLoadCode()
     if Config.AutoLoadEnabled and Config.SavedCode and Config.SavedCode ~= "" then
         return Config.SavedCode
     end
     return nil
 end
 
-return _G.UniversalUtility.ScriptLoader
+return ScriptLoader
