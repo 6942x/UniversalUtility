@@ -4,7 +4,8 @@ local Config = _G.UniversalUtility.Config
 local ActiveThreads = _G.UniversalUtility.ActiveThreads
 local KeyCodeMap = _G.UniversalUtility.KeyCodeMap
 
-_G.UniversalUtility.KeySpam = {}
+local KeySpam = {}
+_G.UniversalUtility.KeySpam = KeySpam
 
 local function StopThread(threadType)
     if ActiveThreads[threadType] then
@@ -16,12 +17,12 @@ local function StopThread(threadType)
     end
 end
 
-function _G.UniversalUtility.KeySpam.StopSpamThread()
+function KeySpam.StopSpamThread()
     StopThread("Spam")
 end
 
-function _G.UniversalUtility.KeySpam.StartSpamThread()
-    _G.UniversalUtility.KeySpam.StopSpamThread()
+function KeySpam.StartSpamThread()
+    KeySpam.StopSpamThread()
     local keyText = Config.SpamKey:upper()
     local keyCode = KeyCodeMap[keyText]
     if not keyCode then return end
@@ -39,4 +40,4 @@ function _G.UniversalUtility.KeySpam.StartSpamThread()
     end)
 end
 
-return _G.UniversalUtility.KeySpam
+return KeySpam
