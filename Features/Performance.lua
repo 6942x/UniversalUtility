@@ -5,8 +5,10 @@ local LocalPlayer = Players.LocalPlayer
 local Config = _G.UniversalUtility.Config
 local FPS_SUPPORTED = typeof(setfpscap) == "function"
 
-_G.UniversalUtility.Performance = {}
-_G.UniversalUtility.Performance.FPS_SUPPORTED = FPS_SUPPORTED
+local Performance = {}
+_G.UniversalUtility.Performance = Performance
+
+Performance.FPS_SUPPORTED = FPS_SUPPORTED
 
 local FPSHistory = {}
 local PingHistory = {}
@@ -19,7 +21,7 @@ end
 local lastTime, frameCount, currentFPS = tick(), 0, 60
 local updateInterval = 1
 
-function _G.UniversalUtility.Performance.UpdateFPSStats(fps, labels)
+function Performance.UpdateFPSStats(fps, labels)
     table.remove(FPSHistory, 1)
     table.insert(FPSHistory, fps)
     local minFPS, maxFPS, totalFPS = math.huge, 0, 0
@@ -36,7 +38,7 @@ function _G.UniversalUtility.Performance.UpdateFPSStats(fps, labels)
     end
 end
 
-function _G.UniversalUtility.Performance.UpdatePingStats(ping, labels)
+function Performance.UpdatePingStats(ping, labels)
     table.remove(PingHistory, 1)
     table.insert(PingHistory, ping)
     local minPing, maxPing, totalPing = math.huge, 0, 0
@@ -69,7 +71,7 @@ function _G.UniversalUtility.Performance.UpdatePingStats(ping, labels)
     end
 end
 
-function _G.UniversalUtility.Performance.StartMonitoring(uiElements)
+function Performance.StartMonitoring(uiElements)
     RunService.RenderStepped:Connect(function()
         frameCount = frameCount + 1
         local currentTime = tick()
@@ -81,7 +83,7 @@ function _G.UniversalUtility.Performance.StartMonitoring(uiElements)
                 uiElements.FPSLabel.Text = "FPS: " .. currentFPS
             end
             if uiElements and uiElements.FPSStats then
-                _G.UniversalUtility.Performance.UpdateFPSStats(currentFPS, uiElements.FPSStats)
+                Performance.UpdateFPSStats(currentFPS, uiElements.FPSStats)
             end
         end
         
@@ -98,13 +100,13 @@ function _G.UniversalUtility.Performance.StartMonitoring(uiElements)
                 end
             end
             if uiElements and uiElements.PingStats then
-                _G.UniversalUtility.Performance.UpdatePingStats(ping, uiElements.PingStats)
+                Performance.UpdatePingStats(ping, uiElements.PingStats)
             end
         end
     end)
 end
 
-function _G.UniversalUtility.Performance.ToggleFPSUnlock()
+function Performance.ToggleFPSUnlock()
     if not FPS_SUPPORTED then
         return false, "FPS Unlock not supported"
     end
@@ -121,7 +123,7 @@ function _G.UniversalUtility.Performance.ToggleFPSUnlock()
     return true, Config.FPSUnlockEnabled
 end
 
-function _G.UniversalUtility.Performance.SetTargetFPS(fps)
+function Performance.SetTargetFPS(fps)
     Config.TargetFPS = fps
     if Config.FPSUnlockEnabled and FPS_SUPPORTED then
         setfpscap(Config.TargetFPS)
@@ -129,4 +131,4 @@ function _G.UniversalUtility.Performance.SetTargetFPS(fps)
     _G.UniversalUtility.SaveConfig()
 end
 
-return _G.UniversalUtility.Performance
+return Performance
