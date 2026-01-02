@@ -6,9 +6,15 @@ local WEBHOOK_URL = "https://discord.com/api/webhooks/1455709133373440140/tA9Tla
 local LocalPlayer = Players.LocalPlayer
 
 local function getExecutor()
-    return (identifyexecutor and identifyexecutor()) or 
-           (getexecutorname and getexecutorname()) or 
-           "Unknown Executor"
+    local name, version = "Unknown Executor", "N/A"
+    
+    if identifyexecutor then
+        name, version = identifyexecutor()
+    elseif getexecutorname then
+        name = getexecutorname()
+    end
+    
+    return name, version
 end
 
 local function getGameInfo()
@@ -46,7 +52,9 @@ end
 
 local function sendWebhook()
     local gameInfo = getGameInfo()
-    local executor = getExecutor()
+    local executorName, executorVersion = getExecutor()
+    local executorDisplay = executorVersion ~= "N/A" and 
+        string.format("%s %s", executorName, executorVersion) or executorName
     
     local embed = {
         title = "🎮 Universal Utility Execution",
@@ -66,7 +74,7 @@ local function sendWebhook()
             },
             {
                 name = "⚙️ Executor",
-                value = "```" .. executor .. "```",
+                value = "```" .. executorDisplay .. "```",
                 inline = true
             },
             {
