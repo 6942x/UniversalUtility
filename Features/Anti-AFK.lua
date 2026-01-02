@@ -6,7 +6,8 @@ local LocalPlayer = Players.LocalPlayer
 local Config = _G.UniversalUtility.Config
 local ActiveThreads = _G.UniversalUtility.ActiveThreads
 
-_G.UniversalUtility.AntiAFK = {}
+local AntiAFK = {}
+_G.UniversalUtility.AntiAFK = AntiAFK
 
 local function StopThread(threadType)
     if ActiveThreads[threadType] then
@@ -18,16 +19,16 @@ local function StopThread(threadType)
     end
 end
 
-function _G.UniversalUtility.AntiAFK.StopJumpThread()
+function AntiAFK.StopJumpThread()
     StopThread("Jump")
 end
 
-function _G.UniversalUtility.AntiAFK.StopClickThread()
+function AntiAFK.StopClickThread()
     StopThread("Click")
 end
 
-function _G.UniversalUtility.AntiAFK.StartJumpThread()
-    _G.UniversalUtility.AntiAFK.StopJumpThread()
+function AntiAFK.StartJumpThread()
+    AntiAFK.StopJumpThread()
     ActiveThreads.Jump = task.spawn(function()
         while Config.JumpEnabled do
             task.wait(Config.JumpDelay)
@@ -42,8 +43,8 @@ function _G.UniversalUtility.AntiAFK.StartJumpThread()
     end)
 end
 
-function _G.UniversalUtility.AntiAFK.StartClickThread()
-    _G.UniversalUtility.AntiAFK.StopClickThread()
+function AntiAFK.StartClickThread()
+    AntiAFK.StopClickThread()
     ActiveThreads.Click = task.spawn(function()
         while Config.ClickEnabled do
             task.wait(Config.ClickDelay)
@@ -68,4 +69,4 @@ function _G.UniversalUtility.AntiAFK.StartClickThread()
     end)
 end
 
-return _G.UniversalUtility.AntiAFK
+return AntiAFK
