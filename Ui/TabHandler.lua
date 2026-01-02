@@ -3,7 +3,7 @@ local Helpers = _G.UniversalUtility.Helpers
 
 _G.UniversalUtility.TabHandler = {}
 
-local REPO_URL = "https://raw.githubusercontent.com/PeuEU/Uu/main/"
+local REPO_URL = "https://raw.githubusercontent.com/6942x/UniversalUtility/main/"
 
 local TAB_CONFIGS = {
     {name = "Home", icon = "🏠", order = 1, path = "Ui/Tabs/Home_Tab.lua"},
