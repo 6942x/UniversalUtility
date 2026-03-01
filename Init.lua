@@ -105,6 +105,8 @@ local v20 = {
     CurrentTab = "Home",
     UIPosition = { X = 0.5, Y = 0.5 },
     ReopenPosition = { X = 0.5, Y = 30 },
+    SavedUIPosition = nil,
+    SavedReopenPosition = nil,
 }
 _G.UU.CFG = v20
 
@@ -156,14 +158,14 @@ local function v33()
     local v34 = _G.UU.UI and _G.UU.UI.MainFrame
     local v35 = _G.UU.UI and _G.UU.UI.ReopenButton
     if v34 then
-        v20.UIPosition = {
-            X = v34.Position.X.Scale + (v34.Position.X.Offset / v34.Parent.AbsoluteSize.X),
-            Y = v34.Position.Y.Scale + (v34.Position.Y.Offset / v34.Parent.AbsoluteSize.Y),
+        v20.SavedUIPosition = {
+            X = v34.Position.X.Offset,
+            Y = v34.Position.Y.Offset,
         }
     end
     if v35 then
-        v20.ReopenPosition = {
-            X = v35.Position.X.Scale + (v35.Position.X.Offset / v35.Parent.AbsoluteSize.X),
+        v20.SavedReopenPosition = {
+            X = v35.Position.X.Offset,
             Y = v35.Position.Y.Offset,
         }
     end
@@ -187,6 +189,8 @@ local function v33()
         CurrentTab = v20.CurrentTab,
         UIPosition = v20.UIPosition,
         ReopenPosition = v20.ReopenPosition,
+        SavedUIPosition = v20.SavedUIPosition,
+        SavedReopenPosition = v20.SavedReopenPosition,
     }))
 end
 _G.UU.SaveCFG = v33
@@ -212,6 +216,8 @@ local function v36()
     v20.CurrentTab = v38.CurrentTab or "Home"
     v20.UIPosition = v38.UIPosition or { X = 0.5, Y = 0.5 }
     v20.ReopenPosition = v38.ReopenPosition or { X = 0.5, Y = 30 }
+    v20.SavedUIPosition = v38.SavedUIPosition or nil
+    v20.SavedReopenPosition = v38.SavedReopenPosition or nil
     return true
 end
 
@@ -1823,30 +1829,27 @@ local function v346(v345)
     v344()
 end
 
-local function v347(v129, v59, v60)
-    if not v129 then return end
+local function v347(v59, v60)
     local v348 = v55.Width * v60
     local v349 = v55.Height * v60
     local v350 = math.max(0, (v59.X - v348) / 2)
     local v351 = math.max(0, (v59.Y - v349) / 2)
-    v129.Position = UDim2.new(0, v350, 0, v351)
+    return v350, v351
 end
 
-local function v352(v136, v59, v60)
-    if not v136 then return end
+local function v352(v59, v60)
     local v353 = math.floor(60 * v60)
     local v350 = math.max(0, (v59.X - v353) / 2)
     local v351 = math.max(0, math.min(30, v59.Y - v353))
-    v136.Size = UDim2.new(0, v353, 0, v353)
-    v136.Position = UDim2.new(0, v350, 0, v351)
+    return v353, v350, v351
 end
 
 local function v354(v355)
     if not v56 then return end
     v43(v56, v39.Smooth, { Scale = v355 })
     v57 = v355
-    if v136.Visible then
-        v352(v136, v54(), v355)
+    if v136.Visible and v20.SavedReopenPosition then
+        v136.Position = UDim2.new(0, v20.SavedReopenPosition.X, 0, v20.SavedReopenPosition.Y)
     end
     v137.TextSize = math.floor(24 * v355)
 end
@@ -1858,6 +1861,10 @@ local function v358()
     if not v48("UI", 0.6) then return end
     v346(function()
         if v129.Visible then
+            local currentUIPosX = v129.Position.X.Offset
+            local currentUIPosY = v129.Position.Y.Offset
+            v20.SavedUIPosition = { X = currentUIPosX, Y = currentUIPosY }
+            
             v129.Size = UDim2.new(0, v55.Width, 0, v55.Height)
             local v359 = v43(v56, v357, { Scale = 0 })
             v359.Completed:Wait()
@@ -1867,10 +1874,18 @@ local function v358()
 
             local v180 = v54()
             local v353 = math.floor(60 * v57)
-            local v350 = math.max(0, (v180.X - v353) / 2)
-            local v351 = math.max(0, math.min(30, v180.Y - v353))
+            local savedReopenX, savedReopenY
+            if v20.SavedReopenPosition then
+                savedReopenX = v20.SavedReopenPosition.X
+                savedReopenY = v20.SavedReopenPosition.Y
+            else
+                local _, defX, defY = v352(v180, v57)
+                savedReopenX = defX
+                savedReopenY = defY
+            end
+            
             v136.Size = UDim2.new(0, 0, 0, 0)
-            v136.Position = UDim2.new(0, v350 + v353 / 2, 0, v351 + v353 / 2)
+            v136.Position = UDim2.new(0, savedReopenX, 0, savedReopenY)
             v136.ImageTransparency = 1
             v137.TextTransparency = 1
             v136.Rotation = -180
@@ -1878,7 +1893,7 @@ local function v358()
 
             local v360 = v2:Create(v136, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
                 Size = UDim2.new(0, v353, 0, v353),
-                Position = UDim2.new(0, v350, 0, v351),
+                Position = UDim2.new(0, savedReopenX, 0, savedReopenY),
                 ImageTransparency = 0,
                 Rotation = 0,
             })
@@ -1891,12 +1906,16 @@ local function v358()
         else
             if v143 then v143:Disconnect(); v143 = nil end
 
+            local currentReopenX = v136.Position.X.Offset
+            local currentReopenY = v136.Position.Y.Offset
+            v20.SavedReopenPosition = { X = currentReopenX, Y = currentReopenY }
+            
             local v362 = v136.Size.X.Offset
             local v363 = v136.Position
 
             local v364 = v2:Create(v136, TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
                 Size = UDim2.new(0, 0, 0, 0),
-                Position = UDim2.new(v363.X.Scale, v363.X.Offset + v362 / 2, v363.Y.Scale, v363.Y.Offset + v362 / 2),
+                Position = UDim2.new(0, currentReopenX, 0, currentReopenY),
                 ImageTransparency = 1,
                 Rotation = 90,
             })
@@ -1916,7 +1935,16 @@ local function v358()
             v129.Visible = true
             v129.Size = UDim2.new(0, v55.Width, 0, v55.Height)
             v56.Scale = 0
-            v347(v129, v54(), v57)
+            local savedUIX, savedUIY
+            if v20.SavedUIPosition then
+                savedUIX = v20.SavedUIPosition.X
+                savedUIY = v20.SavedUIPosition.Y
+            else
+                local defX, defY = v347(v54(), v57)
+                savedUIX = defX
+                savedUIY = defY
+            end
+            v129.Position = UDim2.new(0, savedUIX, 0, savedUIY)
             local v366 = v43(v56, v356, { Scale = v57 })
             v366.Completed:Wait()
         end
@@ -1986,12 +2014,18 @@ local function v370()
         if _G.UU.UI.ResolutionLabel then _G.UU.UI.ResolutionLabel.Text = string.format("Resolution: %dx%d", v371.X, v371.Y) end
         if _G.UU.UI.DeviceLabel then _G.UU.UI.DeviceLabel.Text = "Device: " .. v18() end
         v354(v372)
-        if v129.Visible then
-            v347(v129, v371, v372)
-        end
-        if v136.Visible then
-            v352(v136, v371, v57)
-        end
+        v20.SavedUIPosition = nil
+        v20.SavedReopenPosition = nil
+        
+        local v350, v351 = v347(v371, v372)
+        v129.Position = UDim2.new(0, v350, 0, v351)
+        
+        local v353 = math.floor(60 * v57)
+        v350 = math.max(0, (v371.X - v353) / 2)
+        v351 = math.max(0, math.min(30, v371.Y - v353))
+        v136.Size = UDim2.new(0, v353, 0, v353)
+        v136.Position = UDim2.new(0, v350, 0, v351)
+        
         v33()
     end)
 end
@@ -2181,15 +2215,23 @@ v56.Scale = 0
 
 local v393 = v392.X
 local v394 = v392.Y
-local v348 = v55.Width * v57
-local v349 = v55.Height * v57
-local v350 = math.max(0, (v393 - v348) / 2)
-local v351 = math.max(0, (v394 - v349) / 2)
+local v350, v351
+if v20.SavedUIPosition then
+    v350 = v20.SavedUIPosition.X
+    v351 = v20.SavedUIPosition.Y
+else
+    v350, v351 = v347(v392, v57)
+end
 v129.Position = UDim2.new(0, v350, 0, v351)
 
-local v353 = math.floor(60 * v57)
-local v350 = math.max(0, (v393 - v353) / 2)
-local v351 = math.max(0, math.min(30, v394 - v353))
+local v353
+if v20.SavedReopenPosition then
+    v350 = v20.SavedReopenPosition.X
+    v351 = v20.SavedReopenPosition.Y
+    v353 = math.floor(60 * v57)
+else
+    v353, v350, v351 = v352(v392, v57)
+end
 v136.Size = UDim2.new(0, v353, 0, v353)
 v136.Position = UDim2.new(0, v350, 0, v351)
 v136.Visible = false
