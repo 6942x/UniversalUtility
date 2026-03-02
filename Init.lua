@@ -1,53 +1,54 @@
-local v = game:GetService("HttpService")
-local v1 = game:GetService("Players")
-local v2 = game:GetService("TweenService")
-local v3 = game:GetService("UserInputService")
-local v4 = game:GetService("VirtualInputManager")
-local v5 = game:GetService("RunService")
-local v6 = game:GetService("CoreGui")
-local v7 = game:GetService("TeleportService")
-local v8 = game:GetService("MarketplaceService")
-local v9 = game:GetService("TextService")
+local b = game:GetService("HttpService")
+local b1 = game:GetService("Players")
+local b2 = game:GetService("TweenService")
+local b3 = game:GetService("UserInputService")
+local b4 = game:GetService("VirtualInputManager")
+local b5 = game:GetService("RunService")
+local b6 = game:GetService("CoreGui")
+local b7 = game:GetService("TeleportService")
+local b8 = game:GetService("MarketplaceService")
+local b9 = game:GetService("TextService")
+local b10 = game:GetService("Stats")
 
-local v10 = v1.LocalPlayer
-if not v10 then
+local b11 = b1.LocalPlayer
+if not b11 then
     repeat
-        v10 = v1.LocalPlayer
+        b11 = b1.LocalPlayer
         task.wait()
-    until v10
+    until b11
 end
 
-local v11 = v10.Name
-local v12 = v10.UserId
-if not v11 or v11 == "" then
+local b12 = b11.Name
+local b13 = b11.UserId
+if not b12 or b12 == "" then
     repeat
-        v11 = v10.Name
+        b12 = b11.Name
         task.wait()
-    until v11 and v11 ~= ""
+    until b12 and b12 ~= ""
 end
 
 _G.UU = _G.UU or {}
 
 if _G.UU.Loaded then
     if _G.UU.Threads then
-        for v13, v14 in pairs(_G.UU.Threads) do
-            if v14 and typeof(v14) == "thread" and coroutine.status(v14) ~= "dead" then
-                pcall(task.cancel, v14)
+        for b14, b15 in pairs(_G.UU.Threads) do
+            if b15 and typeof(b15) == "thread" and coroutine.status(b15) ~= "dead" then
+                pcall(task.cancel, b15)
             end
-            _G.UU.Threads[v13] = nil
+            _G.UU.Threads[b14] = nil
         end
     end
     if _G.UU.Connections then
-        for v15, v16 in pairs(_G.UU.Connections) do
-            pcall(function() v16:Disconnect() end)
+        for b16, b17 in pairs(_G.UU.Connections) do
+            pcall(function() b17:Disconnect() end)
         end
         _G.UU.Connections = {}
     end
     if _G.UU.TeleportQueued then
         _G.UU.TeleportQueued = false
     end
-    local v17 = v6:FindFirstChild("UniversalUtility") or (gethui and gethui():FindFirstChild("UniversalUtility"))
-    if v17 then v17:Destroy() end
+    local b18 = b6:FindFirstChild("UniversalUtility") or (gethui and gethui():FindFirstChild("UniversalUtility"))
+    if b18 then b18:Destroy() end
     _G.UU.Loaded = false
     _G.UU.LoadLock = false
     _G.UU.CFG = nil
@@ -69,24 +70,24 @@ _G.UU.Debounces = {}
 _G.UU.ButtonStates = {}
 _G.UU.TeleportQueued = false
 
-local function v18()
-    if v3.TouchEnabled and not v3.KeyboardEnabled and not v3.MouseEnabled then
+local function b19()
+    if b3.TouchEnabled and not b3.KeyboardEnabled and not b3.MouseEnabled then
         return "Mobile"
-    elseif v3.GamepadEnabled and not v3.KeyboardEnabled then
+    elseif b3.GamepadEnabled and not b3.KeyboardEnabled then
         return "Console"
-    elseif v3.KeyboardEnabled and v3.MouseEnabled then
+    elseif b3.KeyboardEnabled and b3.MouseEnabled then
         return "PC"
     end
-    local v19 = v3:GetLastInputType()
-    if v19 == Enum.UserInputType.Touch then
+    local b20 = b3:GetLastInputType()
+    if b20 == Enum.UserInputType.Touch then
         return "Mobile"
-    elseif v19 == Enum.UserInputType.Gamepad1 or v19 == Enum.UserInputType.Gamepad2 then
+    elseif b20 == Enum.UserInputType.Gamepad1 or b20 == Enum.UserInputType.Gamepad2 then
         return "Console"
     end
     return "PC"
 end
 
-local v20 = {
+local b21 = {
     Keybind = Enum.KeyCode.G,
     ClickType = "Current",
     JumpEnabled = false,
@@ -96,6 +97,7 @@ local v20 = {
     IsChangingKeybind = false,
     FPSUnlockEnabled = false,
     AutoRejoinEnabled = false,
+    AutoHideEnabled = false,
     TargetFPS = 60,
     JumpDelay = 10.0,
     ClickDelay = 3.0,
@@ -108,30 +110,30 @@ local v20 = {
     SavedUIPosition = nil,
     SavedReopenPosition = nil,
 }
-_G.UU.CFG = v20
+_G.UU.CFG = b21
 
-local v21 = {}
-local v22 = {}
+local b22 = {}
+local b23 = {}
 
-for v23 = 65, 90 do
-    local v24 = string.char(v23)
-    v21[Enum.KeyCode[v24]] = v24
-    v22[v24] = Enum.KeyCode[v24]
+for b24 = 65, 90 do
+    local b25 = string.char(b24)
+    b22[Enum.KeyCode[b25]] = b25
+    b23[b25] = Enum.KeyCode[b25]
 end
 
-local v25 = { "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine" }
-for v26 = 0, 9 do
-    local v27 = v26 == 0 and "Zero" or v25[v26]
-    v21[Enum.KeyCode[v27]] = tostring(v26)
-    v22[tostring(v26)] = Enum.KeyCode[v27]
+local b26 = { "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine" }
+for b27 = 0, 9 do
+    local b28 = b27 == 0 and "Zero" or b26[b27]
+    b22[Enum.KeyCode[b28]] = tostring(b27)
+    b23[tostring(b27)] = Enum.KeyCode[b28]
 end
 
-for v28 = 1, 12 do
-    v21[Enum.KeyCode["F" .. v28]] = "F" .. v28
-    v22["F" .. v28] = Enum.KeyCode["F" .. v28]
+for b29 = 1, 12 do
+    b22[Enum.KeyCode["F" .. b29]] = "F" .. b29
+    b23["F" .. b29] = Enum.KeyCode["F" .. b29]
 end
 
-local v29 = {
+local b30 = {
     LeftControl = "Left Ctrl", RightControl = "Right Ctrl",
     LeftShift = "Left Shift", RightShift = "Right Shift",
     LeftAlt = "Left Alt", RightAlt = "Right Alt",
@@ -142,86 +144,88 @@ local v29 = {
     End = "End", PageUp = "Page Up",
     PageDown = "Page Down",
 }
-for v30, v31 in pairs(v29) do
-    v21[Enum.KeyCode[v30]] = v31
+for b31, b32 in pairs(b30) do
+    b22[Enum.KeyCode[b31]] = b32
 end
 
-_G.UU.KCN = v21
-_G.UU.KCM = v22
+_G.UU.KCN = b22
+_G.UU.KCM = b23
 
-local function v32()
-    return "UniversalUtilityConfig-" .. v12 .. ".json"
+local function b33()
+    return "UniversalUtilityConfig-" .. b13 .. ".json"
 end
 
-local function v33()
+local function b34()
     if not writefile then return end
-    local v34 = _G.UU.UI and _G.UU.UI.MainFrame
-    local v35 = _G.UU.UI and _G.UU.UI.ReopenButton
-    if v34 then
-        v20.SavedUIPosition = {
-            X = v34.Position.X.Offset,
-            Y = v34.Position.Y.Offset,
+    local b35 = _G.UU.UI and _G.UU.UI.MainFrame
+    local b36 = _G.UU.UI and _G.UU.UI.ReopenButton
+    if b35 then
+        b21.SavedUIPosition = {
+            X = b35.Position.X.Offset,
+            Y = b35.Position.Y.Offset,
         }
     end
-    if v35 then
-        v20.SavedReopenPosition = {
-            X = v35.Position.X.Offset,
-            Y = v35.Position.Y.Offset,
+    if b36 then
+        b21.SavedReopenPosition = {
+            X = b36.Position.X.Offset,
+            Y = b36.Position.Y.Offset,
         }
     end
-    writefile(v32(), v:JSONEncode({
-        UserId = v12,
-        Username = v11,
-        Keybind = v20.Keybind.Name,
-        ClickType = v20.ClickType,
-        JumpEnabled = v20.JumpEnabled,
-        ClickEnabled = v20.ClickEnabled,
-        AutoRejoinEnabled = v20.AutoRejoinEnabled,
-        FPSUnlockEnabled = v20.FPSUnlockEnabled,
-        AutoSpamEnabled = v20.AutoSpamEnabled,
-        AutoLoadEnabled = v20.AutoLoadEnabled,
-        TargetFPS = v20.TargetFPS,
-        JumpDelay = v20.JumpDelay,
-        ClickDelay = v20.ClickDelay,
-        SpamDelay = v20.SpamDelay,
-        SpamKey = v20.SpamKey,
-        SavedCode = v20.SavedCode,
-        CurrentTab = v20.CurrentTab,
-        UIPosition = v20.UIPosition,
-        ReopenPosition = v20.ReopenPosition,
-        SavedUIPosition = v20.SavedUIPosition,
-        SavedReopenPosition = v20.SavedReopenPosition,
+    writefile(b33(), b:JSONEncode({
+        UserId = b13,
+        Username = b12,
+        Keybind = b21.Keybind.Name,
+        ClickType = b21.ClickType,
+        JumpEnabled = b21.JumpEnabled,
+        ClickEnabled = b21.ClickEnabled,
+        AutoRejoinEnabled = b21.AutoRejoinEnabled,
+        FPSUnlockEnabled = b21.FPSUnlockEnabled,
+        AutoSpamEnabled = b21.AutoSpamEnabled,
+        AutoLoadEnabled = b21.AutoLoadEnabled,
+        AutoHideEnabled = b21.AutoHideEnabled,
+        TargetFPS = b21.TargetFPS,
+        JumpDelay = b21.JumpDelay,
+        ClickDelay = b21.ClickDelay,
+        SpamDelay = b21.SpamDelay,
+        SpamKey = b21.SpamKey,
+        SavedCode = b21.SavedCode,
+        CurrentTab = b21.CurrentTab,
+        UIPosition = b21.UIPosition,
+        ReopenPosition = b21.ReopenPosition,
+        SavedUIPosition = b21.SavedUIPosition,
+        SavedReopenPosition = b21.SavedReopenPosition,
     }))
 end
-_G.UU.SaveCFG = v33
+_G.UU.SaveCFG = b34
 
-local function v36()
-    if not (readfile and isfile and isfile(v32())) then return false end
-    local v37, v38 = pcall(function() return v:JSONDecode(readfile(v32())) end)
-    if not v37 or not v38 or v38.UserId ~= v12 then return false end
-    v20.Keybind = Enum.KeyCode[v38.Keybind] or Enum.KeyCode.G
-    v20.ClickType = v38.ClickType or "Current"
-    v20.JumpEnabled = v38.JumpEnabled or false
-    v20.ClickEnabled = v38.ClickEnabled or false
-    v20.AutoRejoinEnabled = v38.AutoRejoinEnabled or false
-    v20.FPSUnlockEnabled = v38.FPSUnlockEnabled or false
-    v20.AutoSpamEnabled = v38.AutoSpamEnabled or false
-    v20.AutoLoadEnabled = v38.AutoLoadEnabled or false
-    v20.TargetFPS = v38.TargetFPS or 60
-    v20.JumpDelay = v38.JumpDelay or 10.0
-    v20.ClickDelay = v38.ClickDelay or 3.0
-    v20.SpamDelay = v38.SpamDelay or 0.1
-    v20.SpamKey = v38.SpamKey or "Q"
-    v20.SavedCode = v38.SavedCode or ""
-    v20.CurrentTab = v38.CurrentTab or "Home"
-    v20.UIPosition = v38.UIPosition or { X = 0.5, Y = 0.5 }
-    v20.ReopenPosition = v38.ReopenPosition or { X = 0.5, Y = 30 }
-    v20.SavedUIPosition = v38.SavedUIPosition or nil
-    v20.SavedReopenPosition = v38.SavedReopenPosition or nil
+local function b37()
+    if not (readfile and isfile and isfile(b33())) then return false end
+    local b38, b39 = pcall(function() return b:JSONDecode(readfile(b33())) end)
+    if not b38 or not b39 or b39.UserId ~= b13 then return false end
+    b21.Keybind = Enum.KeyCode[b39.Keybind] or Enum.KeyCode.G
+    b21.ClickType = b39.ClickType or "Current"
+    b21.JumpEnabled = b39.JumpEnabled or false
+    b21.ClickEnabled = b39.ClickEnabled or false
+    b21.AutoRejoinEnabled = b39.AutoRejoinEnabled or false
+    b21.FPSUnlockEnabled = b39.FPSUnlockEnabled or false
+    b21.AutoSpamEnabled = b39.AutoSpamEnabled or false
+    b21.AutoLoadEnabled = b39.AutoLoadEnabled or false
+    b21.AutoHideEnabled = b39.AutoHideEnabled or false
+    b21.TargetFPS = b39.TargetFPS or 60
+    b21.JumpDelay = b39.JumpDelay or 10.0
+    b21.ClickDelay = b39.ClickDelay or 3.0
+    b21.SpamDelay = b39.SpamDelay or 0.1
+    b21.SpamKey = b39.SpamKey or "Q"
+    b21.SavedCode = b39.SavedCode or ""
+    b21.CurrentTab = b39.CurrentTab or "Home"
+    b21.UIPosition = b39.UIPosition or { X = 0.5, Y = 0.5 }
+    b21.ReopenPosition = b39.ReopenPosition or { X = 0.5, Y = 30 }
+    b21.SavedUIPosition = b39.SavedUIPosition or nil
+    b21.SavedReopenPosition = b39.SavedReopenPosition or nil
     return true
 end
 
-local v39 = {
+local b40 = {
     Fast = TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
     Medium = TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
     Slow = TweenInfo.new(0.35, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
@@ -231,507 +235,511 @@ local v39 = {
     Smooth = TweenInfo.new(0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut),
 }
 
-local v40 = {}
+local b41 = {}
 
-local function v41(v42)
-    if v40[v42] then
-        v40[v42]:Cancel()
-        v40[v42] = nil
+local function b42(b43)
+    if b41[b43] then
+        b41[b43]:Cancel()
+        b41[b43] = nil
     end
 end
 
-local function v43(v42, v44, v45)
-    v41(v42)
-    local v46 = v2:Create(v42, v44, v45)
-    v40[v42] = v46
-    v46:Play()
-    v46.Completed:Connect(function(v47)
-        if v47 == Enum.TweenStatus.Completed then
-            v40[v42] = nil
+local function b44(b43, b45, b46)
+    b42(b43)
+    local b47 = b2:Create(b43, b45, b46)
+    b41[b43] = b47
+    b47:Play()
+    b47.Completed:Connect(function(b48)
+        if b48 == Enum.TweenStatus.Completed then
+            b41[b43] = nil
         end
     end)
-    return v46
+    return b47
 end
 
-local function v48(v49, v50)
-    if _G.UU.Debounces[v49] then return false end
-    _G.UU.Debounces[v49] = true
-    task.delay(v50 or 0.3, function() _G.UU.Debounces[v49] = false end)
+local function b49(b50, b51)
+    if _G.UU.Debounces[b50] then return false end
+    _G.UU.Debounces[b50] = true
+    task.delay(b51 or 0.3, function() _G.UU.Debounces[b50] = false end)
     return true
 end
 
-local function v51(v52)
-    if _G.UU.Threads[v52] then
-        local v53 = _G.UU.Threads[v52]
-        _G.UU.Threads[v52] = nil
-        if typeof(v53) == "thread" and coroutine.status(v53) ~= "dead" then
-            pcall(task.cancel, v53)
+local function b52(b53)
+    if _G.UU.Threads[b53] then
+        local b54 = _G.UU.Threads[b53]
+        _G.UU.Threads[b53] = nil
+        if typeof(b54) == "thread" and coroutine.status(b54) ~= "dead" then
+            pcall(task.cancel, b54)
         end
     end
 end
 
-local function v54()
+local function b55()
     return workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(1920, 1080)
 end
 
-local v55 = {
+local b56 = {
     Width = 650, Height = 500,
     SideNavWidth = 180, TopBarHeight = 40,
     FontTitle = 24, FontTab = 13, FontIcon = 24,
     TabButtonHeight = 55, TabButtonGap = 60,
 }
 
-local v56 = nil
-local v57 = 1
+local b57 = nil
+local b58 = 1
 
-local function v58(v59)
-    local v60 = math.min(v59.X / 1920, v59.Y / 1080)
-    v60 = math.clamp(v60, 0.75, 1.4)
-    return v60
+local function b59(b60)
+    local b61 = math.min(b60.X / 1920, b60.Y / 1080)
+    b61 = math.clamp(b61, 0.75, 1.4)
+    return b61
 end
 
-local function v61(v62, v63)
-    local v64 = Instance.new("UICorner", v62)
-    v64.CornerRadius = UDim.new(0, v63 or 8)
-    return v64
+local function b62(b63, b64)
+    local b65 = Instance.new("UICorner", b63)
+    b65.CornerRadius = UDim.new(0, b64 or 8)
+    return b65
 end
 
-local function v65(v62, v66, v67, v68)
-    local v69 = Instance.new("UIGradient", v62)
-    v69.Color = ColorSequence.new{
-        ColorSequenceKeypoint.new(0, v66),
-        ColorSequenceKeypoint.new(1, v67),
+local function b66(b63, b67, b68, b69)
+    local b70 = Instance.new("UIGradient", b63)
+    b70.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, b67),
+        ColorSequenceKeypoint.new(1, b68),
     }
-    v69.Rotation = v68 or 90
-    return v69
+    b70.Rotation = b69 or 90
+    return b70
 end
 
-local function v70(v62, v71, v72)
-    local v73 = Instance.new("TextButton", v62)
-    v73.Size = v71
-    v73.AnchorPoint = Vector2.new(0.5, 0)
-    v73.Position = UDim2.new(0.5, 0, 0, 0)
-    v73.BackgroundColor3 = Color3.fromRGB(45, 45, 52)
-    v73.Text = v72
-    v73.Font = Enum.Font.GothamBold
-    v73.TextSize = 13
-    v73.TextColor3 = Color3.fromRGB(255, 255, 255)
-    v73.BorderSizePixel = 0
-    v73.AutoButtonColor = false
-    v61(v73, 8)
-    _G.UU.ButtonStates[v73] = { OriginalSize = v71, IsHovering = false, BaseColor = Color3.fromRGB(45, 45, 52) }
-    v73.MouseEnter:Connect(function()
-        _G.UU.ButtonStates[v73].IsHovering = true
-        v2:Create(v73, v39.Fast, { Size = UDim2.new(v71.X.Scale, v71.X.Offset + 6, v71.Y.Scale, v71.Y.Offset + 4) }):Play()
+local function b71(b63, b72, b73)
+    local b74 = Instance.new("TextButton", b63)
+    b74.Size = b72
+    b74.AnchorPoint = Vector2.new(0.5, 0)
+    b74.Position = UDim2.new(0.5, 0, 0, 0)
+    b74.BackgroundColor3 = Color3.fromRGB(45, 45, 52)
+    b74.Text = b73
+    b74.Font = Enum.Font.GothamBold
+    b74.TextSize = 13
+    b74.TextColor3 = Color3.fromRGB(255, 255, 255)
+    b74.BorderSizePixel = 0
+    b74.AutoButtonColor = false
+    b62(b74, 8)
+    _G.UU.ButtonStates[b74] = { OriginalSize = b72, IsHovering = false, BaseColor = Color3.fromRGB(45, 45, 52) }
+    b74.MouseEnter:Connect(function()
+        _G.UU.ButtonStates[b74].IsHovering = true
+        b2:Create(b74, b40.Fast, { Size = UDim2.new(b72.X.Scale, b72.X.Offset + 6, b72.Y.Scale, b72.Y.Offset + 4) }):Play()
     end)
-    v73.MouseLeave:Connect(function()
-        _G.UU.ButtonStates[v73].IsHovering = false
-        v2:Create(v73, v39.Fast, { Size = v71, BackgroundColor3 = _G.UU.ButtonStates[v73].BaseColor }):Play()
+    b74.MouseLeave:Connect(function()
+        _G.UU.ButtonStates[b74].IsHovering = false
+        b2:Create(b74, b40.Fast, { Size = b72, BackgroundColor3 = _G.UU.ButtonStates[b74].BaseColor }):Play()
     end)
-    v73.MouseButton1Down:Connect(function()
-        if _G.UU.ButtonStates[v73].IsHovering then
-            v2:Create(v73, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-                Size = UDim2.new(v71.X.Scale, v71.X.Offset - 4, v71.Y.Scale, v71.Y.Offset - 3)
+    b74.MouseButton1Down:Connect(function()
+        if _G.UU.ButtonStates[b74].IsHovering then
+            b2:Create(b74, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                Size = UDim2.new(b72.X.Scale, b72.X.Offset - 4, b72.Y.Scale, b72.Y.Offset - 3)
             }):Play()
         end
     end)
-    v73.MouseButton1Up:Connect(function()
-        if _G.UU.ButtonStates[v73].IsHovering then
-            v2:Create(v73, v39.Fast, { Size = UDim2.new(v71.X.Scale, v71.X.Offset + 6, v71.Y.Scale, v71.Y.Offset + 4) }):Play()
+    b74.MouseButton1Up:Connect(function()
+        if _G.UU.ButtonStates[b74].IsHovering then
+            b2:Create(b74, b40.Fast, { Size = UDim2.new(b72.X.Scale, b72.X.Offset + 6, b72.Y.Scale, b72.Y.Offset + 4) }):Play()
         else
-            v2:Create(v73, v39.Fast, { Size = v71 }):Play()
+            b2:Create(b74, b40.Fast, { Size = b72 }):Play()
         end
     end)
-    return v73
+    return b74
 end
 
-local function v74(v62, v71, v75, v76, v77, v78)
-    local v79 = Instance.new("Frame", v62)
-    v79.Size = v71
-    v79.BackgroundTransparency = 1
+local function b75(b63, b72, b76, b77, b78, b79)
+    local b80 = Instance.new("Frame", b63)
+    b80.Size = b72
+    b80.BackgroundTransparency = 1
 
-    local v80 = Instance.new("TextLabel", v79)
-    v80.Size = UDim2.new(1, 0, 0, 18)
-    v80.BackgroundTransparency = 1
-    v80.Text = v78
-    v80.Font = Enum.Font.Gotham
-    v80.TextSize = 12
-    v80.TextColor3 = Color3.fromRGB(180, 180, 180)
-    v80.TextXAlignment = Enum.TextXAlignment.Left
+    local b81 = Instance.new("TextLabel", b80)
+    b81.Size = UDim2.new(1, 0, 0, 18)
+    b81.BackgroundTransparency = 1
+    b81.Text = b79
+    b81.Font = Enum.Font.Gotham
+    b81.TextSize = 12
+    b81.TextColor3 = Color3.fromRGB(180, 180, 180)
+    b81.TextXAlignment = Enum.TextXAlignment.Left
 
-    local v81 = Instance.new("Frame", v79)
-    v81.Size = UDim2.new(1, -60, 0, 6)
-    v81.Position = UDim2.new(0, 0, 0, 22)
-    v81.BackgroundColor3 = Color3.fromRGB(45, 45, 52)
-    v81.BorderSizePixel = 0
-    v61(v81, 3)
+    local b82 = Instance.new("Frame", b80)
+    b82.Size = UDim2.new(1, -60, 0, 6)
+    b82.Position = UDim2.new(0, 0, 0, 22)
+    b82.BackgroundColor3 = Color3.fromRGB(45, 45, 52)
+    b82.BorderSizePixel = 0
+    b62(b82, 3)
 
-    local v82 = Instance.new("Frame", v81)
-    v82.Size = UDim2.new((v77 - v75) / (v76 - v75), 0, 1, 0)
-    v82.BackgroundColor3 = Color3.fromRGB(100, 150, 255)
-    v82.BorderSizePixel = 0
-    v61(v82, 3)
+    local b83 = Instance.new("Frame", b82)
+    b83.Size = UDim2.new((b78 - b76) / (b77 - b76), 0, 1, 0)
+    b83.BackgroundColor3 = Color3.fromRGB(100, 150, 255)
+    b83.BorderSizePixel = 0
+    b62(b83, 3)
 
-    local v83 = Instance.new("TextButton", v81)
-    v83.Size = UDim2.new(1, 0, 1, 0)
-    v83.BackgroundTransparency = 1
-    v83.Text = ""
+    local b84 = Instance.new("TextButton", b82)
+    b84.Size = UDim2.new(1, 0, 1, 0)
+    b84.BackgroundTransparency = 1
+    b84.Text = ""
 
-    local v84 = Instance.new("TextBox", v79)
-    v84.Size = UDim2.new(0, 50, 0, 24)
-    v84.Position = UDim2.new(1, -50, 0, 16)
-    v84.BackgroundColor3 = Color3.fromRGB(45, 45, 52)
-    v84.Text = tostring(v77)
-    v84.Font = Enum.Font.Gotham
-    v84.TextScaled = true
-    v84.TextColor3 = Color3.fromRGB(255, 255, 255)
-    v84.ClearTextOnFocus = false
-    v84.BorderSizePixel = 0
-    v61(v84, 5)
+    local b85 = Instance.new("TextBox", b80)
+    b85.Size = UDim2.new(0, 50, 0, 24)
+    b85.Position = UDim2.new(1, -50, 0, 16)
+    b85.BackgroundColor3 = Color3.fromRGB(45, 45, 52)
+    b85.Text = tostring(b78)
+    b85.Font = Enum.Font.Gotham
+    b85.TextScaled = true
+    b85.TextColor3 = Color3.fromRGB(255, 255, 255)
+    b85.ClearTextOnFocus = false
+    b85.BorderSizePixel = 0
+    b62(b85, 5)
 
-    return v79, v81, v82, v83, v84
+    return b80, b82, b83, b84, b85
 end
 
-local function v85(v82, v84, v86, v75, v76, v87)
-    local v88 = (v86 - v75) / (v76 - v75)
-    v2:Create(v82, v39.Fast, { Size = UDim2.new(v88, 0, 1, 0) }):Play()
-    v84.Text = string.format(v87, v86)
+local function b86(b83, b85, b87, b76, b77, b88)
+    local b89 = (b87 - b76) / (b77 - b76)
+    b2:Create(b83, b40.Fast, { Size = UDim2.new(b89, 0, 1, 0) }):Play()
+    b85.Text = string.format(b88, b87)
 end
 
-local function v89(v73, v90)
-    v90 = v90 or 0.95
-    local v91 = v73.Size
-    v43(v73, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-        Size = UDim2.new(v91.X.Scale * v90, v91.X.Offset * v90, v91.Y.Scale * v90, v91.Y.Offset * v90)
+local function b90(b74, b91)
+    b91 = b91 or 0.95
+    local b92 = b74.Size
+    b44(b74, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+        Size = UDim2.new(b92.X.Scale * b91, b92.X.Offset * b91, b92.Y.Scale * b91, b92.Y.Offset * b91)
     })
     task.wait(0.1)
-    v43(v73, v39.Back, { Size = v91 })
+    b44(b74, b40.Back, { Size = b92 })
 end
 
-local function v92(v93, v94, v95, v96)
-    local v97 = v93.Text
-    local v98 = 1
-    for v99 in v97:gmatch("\n") do v98 = v98 + 1 end
-    local v100 = ""
-    for v101 = 1, v98 do v100 = v100 .. v101 .. "\n" end
-    v94.Text = v100
-    local v102 = v9:GetTextSize(v93.Text, v93.TextSize, v93.Font, Vector2.new(v93.AbsoluteSize.X - 10, math.huge))
-    local v103 = math.max(200, v102.Y + 20)
-    v93.Size = UDim2.new(1, -10, 0, v103)
-    v95.CanvasSize = UDim2.new(0, 0, 0, v103)
-    v96.CanvasSize = UDim2.new(0, 0, 0, v103)
-    v94.Size = UDim2.new(1, -5, 0, v103)
+local function b93(b94, b95, b96, b97)
+    local b98 = b94.Text
+    local b99 = 1
+    for b100 in b98:gmatch("\n") do b99 = b99 + 1 end
+    local b101 = ""
+    for b102 = 1, b99 do b101 = b101 .. b102 .. "\n" end
+    b95.Text = b101
+    local b103 = b9:GetTextSize(b94.Text, b94.TextSize, b94.Font, Vector2.new(b94.AbsoluteSize.X - 10, math.huge))
+    local b104 = math.max(200, b103.Y + 20)
+    b94.Size = UDim2.new(1, -10, 0, b104)
+    b96.CanvasSize = UDim2.new(0, 0, 0, b104)
+    b97.CanvasSize = UDim2.new(0, 0, 0, b104)
+    b95.Size = UDim2.new(1, -5, 0, b104)
 end
 
-local function v104(v62, v105)
-    local v106, v107, v108, v109 = false, nil, nil, nil
-    v62.InputBegan:Connect(function(v110)
-        if v110.UserInputType == Enum.UserInputType.MouseButton1 or v110.UserInputType == Enum.UserInputType.Touch then
-            v106 = true
-            v107 = v110.Position
-            v108 = v62.Position
-            if v109 then v109:Disconnect() end
-            v109 = v3.InputChanged:Connect(function(v111)
-                if (v111.UserInputType == Enum.UserInputType.MouseMovement or v111.UserInputType == Enum.UserInputType.Touch) and v106 then
-                    local v112 = v111.Position - v107
-                    v62.Position = UDim2.new(v108.X.Scale, v108.X.Offset + v112.X, v108.Y.Scale, v108.Y.Offset + v112.Y)
+local function b105(b63, b106)
+    local b107, b108, b109, b110 = false, nil, nil, nil
+    b63.InputBegan:Connect(function(b111)
+        if b111.UserInputType == Enum.UserInputType.MouseButton1 or b111.UserInputType == Enum.UserInputType.Touch then
+            b107 = true
+            b108 = b111.Position
+            b109 = b63.Position
+            if b110 then b110:Disconnect() end
+            b110 = b3.InputChanged:Connect(function(b112)
+                if (b112.UserInputType == Enum.UserInputType.MouseMovement or b112.UserInputType == Enum.UserInputType.Touch) and b107 then
+                    local b113 = b112.Position - b108
+                    b63.Position = UDim2.new(b109.X.Scale, b109.X.Offset + b113.X, b109.Y.Scale, b109.Y.Offset + b113.Y)
                 end
             end)
-            v110.Changed:Connect(function()
-                if v110.UserInputState == Enum.UserInputState.End then
-                    v106 = false
-                    if v109 then v109:Disconnect() v109 = nil end
-                    if v105 then v105() end
+            b111.Changed:Connect(function()
+                if b111.UserInputState == Enum.UserInputState.End then
+                    b107 = false
+                    if b110 then b110:Disconnect() b110 = nil end
+                    if b106 then b106() end
                 end
             end)
         end
     end)
 end
 
-local function v113(v62, v71, v114, v72)
-    local v115 = Instance.new("Frame", v62)
-    v115.Size = v71
-    v115.Position = v114
-    v115.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
-    v115.BorderSizePixel = 0
-    v61(v115, 8)
-    Instance.new("UIStroke", v115).Color = Color3.fromRGB(50, 50, 60)
-    local v116 = Instance.new("TextLabel", v115)
-    v116.Size = UDim2.new(1, -10, 1, -10)
-    v116.Position = UDim2.new(0, 5, 0, 5)
-    v116.BackgroundTransparency = 1
-    v116.Text = v72
-    v116.Font = Enum.Font.GothamBold
-    v116.TextSize = 14
-    v116.TextColor3 = Color3.fromRGB(180, 180, 180)
-    v116.TextXAlignment = Enum.TextXAlignment.Center
-    v116.TextWrapped = true
-    v116.TextYAlignment = Enum.TextYAlignment.Top
-    return v115, v116
+local function b114(b63, b72, b115, b73)
+    local b116 = Instance.new("Frame", b63)
+    b116.Size = b72
+    b116.Position = b115
+    b116.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+    b116.BorderSizePixel = 0
+    b62(b116, 8)
+    Instance.new("UIStroke", b116).Color = Color3.fromRGB(50, 50, 60)
+    local b117 = Instance.new("TextLabel", b116)
+    b117.Size = UDim2.new(1, -10, 1, -10)
+    b117.Position = UDim2.new(0, 5, 0, 5)
+    b117.BackgroundTransparency = 1
+    b117.Text = b73
+    b117.Font = Enum.Font.GothamBold
+    b117.TextSize = 14
+    b117.TextColor3 = Color3.fromRGB(180, 180, 180)
+    b117.TextXAlignment = Enum.TextXAlignment.Center
+    b117.TextWrapped = true
+    b117.TextYAlignment = Enum.TextYAlignment.Top
+    return b116, b117
 end
 
-local function v117(v62, v118)
-    local v119 = Instance.new("Frame", v62)
-    v119.Size = UDim2.new(1, -20, 0, 1)
-    v119.Position = UDim2.new(0, 10, 0, v118)
-    v119.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
-    v119.BorderSizePixel = 0
-    return v119
+local function b118(b63, b119)
+    local b120 = Instance.new("Frame", b63)
+    b120.Size = UDim2.new(1, -20, 0, 1)
+    b120.Position = UDim2.new(0, 10, 0, b119)
+    b120.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
+    b120.BorderSizePixel = 0
+    return b120
 end
 
-local function v120(v62, v72, v118, v121)
-    local v122 = Instance.new("TextLabel", v62)
-    v122.Size = UDim2.new(1, -20, 0, 20)
-    v122.Position = UDim2.new(0, 10, 0, v118)
-    v122.BackgroundTransparency = 1
-    v122.Text = v72
-    v122.Font = Enum.Font.GothamBold
-    v122.TextSize = 13
-    v122.TextColor3 = v121 or Color3.fromRGB(200, 200, 200)
-    v122.TextXAlignment = Enum.TextXAlignment.Left
-    return v122
+local function b121(b63, b73, b119, b122)
+    local b123 = Instance.new("TextLabel", b63)
+    b123.Size = UDim2.new(1, -20, 0, 20)
+    b123.Position = UDim2.new(0, 10, 0, b119)
+    b123.BackgroundTransparency = 1
+    b123.Text = b73
+    b123.Font = Enum.Font.GothamBold
+    b123.TextSize = 13
+    b123.TextColor3 = b122 or Color3.fromRGB(200, 200, 200)
+    b123.TextXAlignment = Enum.TextXAlignment.Left
+    return b123
 end
 
-local function v123(v62, v124, v125)
-    local v126 = Instance.new("Frame", v62)
-    v126.Size = UDim2.new(1, 0, 0, v124)
-    v126.BackgroundColor3 = Color3.fromRGB(35, 35, 42)
-    v126.BorderSizePixel = 0
-    v126.LayoutOrder = v125 or 1
-    v61(v126, 10)
-    v65(v126, Color3.fromRGB(35, 35, 42), Color3.fromRGB(40, 40, 47), 90)
-    return v126
+local function b124(b63, b125, b126)
+    local b127 = Instance.new("Frame", b63)
+    b127.Size = UDim2.new(1, 0, 0, b125)
+    b127.BackgroundColor3 = Color3.fromRGB(35, 35, 42)
+    b127.BorderSizePixel = 0
+    b127.LayoutOrder = b126 or 1
+    b62(b127, 10)
+    b66(b127, Color3.fromRGB(35, 35, 42), Color3.fromRGB(40, 40, 47), 90)
+    return b127
 end
 
-local v127 = v6:FindFirstChild("UniversalUtility") or (gethui and gethui():FindFirstChild("UniversalUtility"))
-if v127 then v127:Destroy() end
+local b128 = b6:FindFirstChild("UniversalUtility") or (gethui and gethui():FindFirstChild("UniversalUtility"))
+if b128 then b128:Destroy() end
 
-local v128 = Instance.new("ScreenGui")
-v128.Name = "UniversalUtility"
-v128.ResetOnSpawn = false
-v128.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+local b129 = Instance.new("ScreenGui")
+b129.Name = "UniversalUtility"
+b129.ResetOnSpawn = false
+b129.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 if syn and syn.protect_gui then
-    syn.protect_gui(v128)
-    v128.Parent = v6
+    syn.protect_gui(b129)
+    b129.Parent = b6
 elseif gethui then
-    v128.Parent = gethui()
+    b129.Parent = gethui()
 else
-    v128.Parent = v6
+    b129.Parent = b6
 end
 
-local v129 = Instance.new("Frame", v128)
-v129.Name = "MainFrame"
-v129.Size = UDim2.new(0, 0, 0, 0)
-v129.Position = UDim2.new(0.5, 0, 0.5, 0)
-v129.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
-v129.BorderSizePixel = 0
-v129.Active = true
-v129.ClipsDescendants = true
-v129.Visible = false
-v61(v129, 16)
+local b130 = Instance.new("Frame", b129)
+b130.Name = "MainFrame"
+b130.Size = UDim2.new(0, 0, 0, 0)
+b130.Position = UDim2.new(0.5, 0, 0.5, 0)
+b130.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
+b130.BorderSizePixel = 0
+b130.Active = true
+b130.ClipsDescendants = true
+b130.Visible = false
+b62(b130, 16)
 
-v104(v129, v33)
+b105(b130, b34)
 
-v56 = Instance.new("UIScale", v129)
-v56.Scale = 1
+b57 = Instance.new("UIScale", b130)
+b57.Scale = 1
 
-local v130 = Instance.new("ImageLabel", v129)
-v130.BackgroundTransparency = 1
-v130.Position = UDim2.new(0, -15, 0, -15)
-v130.Size = UDim2.new(1, 30, 1, 30)
-v130.ZIndex = 0
-v130.Image = "rbxassetid://6014261993"
-v130.ImageColor3 = Color3.fromRGB(0, 0, 0)
-v130.ImageTransparency = 0.5
-v130.ScaleType = Enum.ScaleType.Slice
-v130.SliceCenter = Rect.new(49, 49, 450, 450)
+local b131 = Instance.new("ImageLabel", b130)
+b131.BackgroundTransparency = 1
+b131.Position = UDim2.new(0, -15, 0, -15)
+b131.Size = UDim2.new(1, 30, 1, 30)
+b131.ZIndex = 0
+b131.Image = "rbxassetid://6014261993"
+b131.ImageColor3 = Color3.fromRGB(0, 0, 0)
+b131.ImageTransparency = 0.5
+b131.ScaleType = Enum.ScaleType.Slice
+b131.SliceCenter = Rect.new(49, 49, 450, 450)
 
-local v131 = Instance.new("Frame", v129)
-v131.Size = UDim2.new(1, 0, 0, 40)
-v131.Position = UDim2.new(0, 0, 0, 5)
-v131.BackgroundColor3 = Color3.fromRGB(35, 35, 42)
-v131.BorderSizePixel = 0
-v61(v131, 16)
-v65(v131, Color3.fromRGB(35, 35, 42), Color3.fromRGB(30, 30, 37), 90)
+local b132 = Instance.new("Frame", b130)
+b132.Size = UDim2.new(1, 0, 0, 40)
+b132.Position = UDim2.new(0, 0, 0, 5)
+b132.BackgroundColor3 = Color3.fromRGB(35, 35, 42)
+b132.BorderSizePixel = 0
+b62(b132, 16)
+b66(b132, Color3.fromRGB(35, 35, 42), Color3.fromRGB(30, 30, 37), 90)
 
-local v132 = Instance.new("TextLabel", v131)
-v132.Size = UDim2.new(1, -80, 1, 0)
-v132.Position = UDim2.new(0, 15, 0, 0)
-v132.BackgroundTransparency = 1
-v132.Text = "⚡ Universal Utility"
-v132.Font = Enum.Font.GothamBold
-v132.TextSize = 24
-v132.TextColor3 = Color3.fromRGB(255, 255, 255)
-v132.TextXAlignment = Enum.TextXAlignment.Left
+local b133 = Instance.new("TextLabel", b132)
+b133.Size = UDim2.new(1, -80, 1, 0)
+b133.Position = UDim2.new(0, 15, 0, 0)
+b133.BackgroundTransparency = 1
+b133.Text = "⚡ Universal Utility"
+b133.Font = Enum.Font.GothamBold
+b133.TextSize = 24
+b133.TextColor3 = Color3.fromRGB(255, 255, 255)
+b133.TextXAlignment = Enum.TextXAlignment.Left
 
-local v133 = Instance.new("ImageButton", v131)
-v133.Size = UDim2.new(0, 30, 0, 30)
-v133.Position = UDim2.new(1, -12.5, 0.5, 0)
-v133.AnchorPoint = Vector2.new(1, 0.5)
-v133.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
-v133.BorderSizePixel = 0
-v133.Image = "rbxassetid://3926305904"
-v133.ImageRectOffset = Vector2.new(284, 4)
-v133.ImageRectSize = Vector2.new(24, 24)
-v133.ImageColor3 = Color3.fromRGB(255, 255, 255)
-v61(v133, 8)
+local b134 = Instance.new("ImageButton", b132)
+b134.Size = UDim2.new(0, 30, 0, 30)
+b134.Position = UDim2.new(1, -12.5, 0.5, 0)
+b134.AnchorPoint = Vector2.new(1, 0.5)
+b134.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
+b134.BorderSizePixel = 0
+b134.Image = "rbxassetid://3926305904"
+b134.ImageRectOffset = Vector2.new(284, 4)
+b134.ImageRectSize = Vector2.new(24, 24)
+b134.ImageColor3 = Color3.fromRGB(255, 255, 255)
+b62(b134, 8)
 
-local v134 = Instance.new("Frame", v129)
-v134.Size = UDim2.new(0, 180, 1, -57)
-v134.Position = UDim2.new(0, 2.5, 0, 50)
-v134.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
-v134.BorderSizePixel = 0
-v61(v134, 12)
-v65(v134, Color3.fromRGB(30, 30, 35), Color3.fromRGB(25, 25, 30), 90)
+local b135 = Instance.new("Frame", b130)
+b135.Size = UDim2.new(0, 180, 1, -57)
+b135.Position = UDim2.new(0, 2.5, 0, 50)
+b135.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+b135.BorderSizePixel = 0
+b62(b135, 12)
+b66(b135, Color3.fromRGB(30, 30, 35), Color3.fromRGB(25, 25, 30), 90)
 
-local v135 = Instance.new("Frame", v129)
-v135.Size = UDim2.new(1, -180, 1, -40)
-v135.Position = UDim2.new(0, 180, 0, 50)
-v135.BackgroundTransparency = 1
-v135.BorderSizePixel = 0
-v135.ClipsDescendants = true
+local b136 = Instance.new("Frame", b130)
+b136.Size = UDim2.new(1, -180, 1, -40)
+b136.Position = UDim2.new(0, 180, 0, 50)
+b136.BackgroundTransparency = 1
+b136.BorderSizePixel = 0
+b136.ClipsDescendants = true
 
-local v136 = Instance.new("ImageButton", v128)
-v136.Name = "ReopenButton"
-v136.Size = UDim2.new(0, 0, 0, 0)
-v136.Position = UDim2.new(0.5, 0, 0, 30)
-v136.BackgroundColor3 = Color3.fromRGB(100, 150, 255)
-v136.BorderSizePixel = 0
-v136.Visible = false
-v136.ZIndex = 10
-v136.Active = true
-v136.ImageTransparency = 1
-v61(v136, 100)
-v65(v136, Color3.fromRGB(100, 150, 255), Color3.fromRGB(80, 130, 235), 45)
+local b137 = Instance.new("ImageButton", b129)
+b137.Name = "ReopenButton"
+b137.Size = UDim2.new(0, 0, 0, 0)
+b137.Position = UDim2.new(0.5, 0, 0, 30)
+b137.BackgroundColor3 = Color3.fromRGB(100, 150, 255)
+b137.BorderSizePixel = 0
+b137.Visible = false
+b137.ZIndex = 10
+b137.Active = true
+b137.ImageTransparency = 1
+b62(b137, 100)
+b66(b137, Color3.fromRGB(100, 150, 255), Color3.fromRGB(80, 130, 235), 45)
 
-local v137 = Instance.new("TextLabel", v136)
-v137.Size = UDim2.new(1, 0, 1, 0)
-v137.BackgroundTransparency = 1
-v137.Text = "⚡"
-v137.Font = Enum.Font.GothamBold
-v137.TextSize = 24
-v137.TextColor3 = Color3.fromRGB(255, 255, 255)
-v137.TextTransparency = 1
+local b138 = Instance.new("TextLabel", b137)
+b138.Size = UDim2.new(1, 0, 1, 0)
+b138.BackgroundTransparency = 1
+b138.Text = "⚡"
+b138.Font = Enum.Font.GothamBold
+b138.TextSize = 24
+b138.TextColor3 = Color3.fromRGB(255, 255, 255)
+b138.TextTransparency = 1
 
-local v138, v139, v140, v141, v142 = false, nil, nil, nil, false
-local v143 = nil
+local b139, b140, b141, b142, b143 = false, nil, nil, nil, false
+local b144 = nil
 
-v136.InputBegan:Connect(function(v144)
-    if v144.UserInputType == Enum.UserInputType.MouseButton1 or v144.UserInputType == Enum.UserInputType.Touch then
-        v138 = true
-        v142 = false
-        v139 = v144.Position
-        v140 = v136.Position
-        if v141 then v141:Disconnect() end
-        v141 = v3.InputChanged:Connect(function(v145)
-            if (v145.UserInputType == Enum.UserInputType.MouseMovement or v145.UserInputType == Enum.UserInputType.Touch) and v138 then
-                local v146 = v145.Position - v139
-                if math.abs(v146.X) > 5 or math.abs(v146.Y) > 5 then v142 = true end
-                v136.Position = UDim2.new(v140.X.Scale, v140.X.Offset + v146.X, 0, v140.Y.Offset + v146.Y)
+b137.InputBegan:Connect(function(b145)
+    if b145.UserInputType == Enum.UserInputType.MouseButton1 or b145.UserInputType == Enum.UserInputType.Touch then
+        b139 = true
+        b143 = false
+        b140 = b145.Position
+        b141 = b137.Position
+        if b142 then b142:Disconnect() end
+        b142 = b3.InputChanged:Connect(function(b146)
+            if (b146.UserInputType == Enum.UserInputType.MouseMovement or b146.UserInputType == Enum.UserInputType.Touch) and b139 then
+                local b147 = b146.Position - b140
+                if math.abs(b147.X) > 5 or math.abs(b147.Y) > 5 then b143 = true end
+                b137.Position = UDim2.new(b141.X.Scale, b141.X.Offset + b147.X, 0, b141.Y.Offset + b147.Y)
             end
         end)
-        v144.Changed:Connect(function()
-            if v144.UserInputState == Enum.UserInputState.End then
-                v138 = false
-                if v141 then v141:Disconnect() v141 = nil end
+        b145.Changed:Connect(function()
+            if b145.UserInputState == Enum.UserInputState.End then
+                b139 = false
+                if b142 then b142:Disconnect() b142 = nil end
                 task.wait(0.1)
-                if v142 then v33() end
-                v142 = false
+                if b143 then b34() end
+                b143 = false
             end
         end)
     end
 end)
 
-local v147 = {}
-local v148 = {}
+local b148 = {}
+local b149 = {}
+local b150 = {}
 
 _G.UU.UI = {
-    ScreenGui = v128,
-    MainFrame = v129,
-    ContentFrame = v135,
-    SideNav = v134,
-    CloseButton = v133,
-    ReopenButton = v136,
-    TabButtons = v147,
-    TabContents = v148,
-    TweenPresets = v39,
-    ActiveTweens = v40,
-    PlayTween = v43,
-    CancelTween = v41,
-    UIScale = v56,
+    ScreenGui = b129,
+    MainFrame = b130,
+    ContentFrame = b136,
+    SideNav = b135,
+    CloseButton = b134,
+    ReopenButton = b137,
+    TabButtons = b148,
+    TabContents = b149,
+    TweenPresets = b40,
+    ActiveTweens = b41,
+    PlayTween = b44,
+    CancelTween = b42,
+    UIScale = b57,
+    AllFrames = b150,
 }
 
-local function v149(v150, v151, v152)
-    local v153 = Instance.new("TextButton", v134)
-    v153.Name = v150 .. "Tab"
-    v153.Size = UDim2.new(1, -10, 0, 55)
-    v153.Position = UDim2.new(0, 5, 0, 5 + ((v152 - 1) * 60))
-    v153.BackgroundColor3 = Color3.fromRGB(35, 35, 42)
-    v153.BorderSizePixel = 0
-    v153.Text = ""
-    v153.AutoButtonColor = false
-    v61(v153, 8)
+local function b151(b152, b153, b154)
+    local b155 = Instance.new("TextButton", b135)
+    b155.Name = b152 .. "Tab"
+    b155.Size = UDim2.new(1, -10, 0, 55)
+    b155.Position = UDim2.new(0, 5, 0, 5 + ((b154 - 1) * 60))
+    b155.BackgroundColor3 = Color3.fromRGB(35, 35, 42)
+    b155.BorderSizePixel = 0
+    b155.Text = ""
+    b155.AutoButtonColor = false
+    b62(b155, 8)
 
-    local v154 = Instance.new("TextLabel", v153)
-    v154.Size = UDim2.new(0, 30, 1, 0)
-    v154.Position = UDim2.new(0, 10, 0, 0)
-    v154.BackgroundTransparency = 1
-    v154.Text = v151
-    v154.Font = Enum.Font.GothamBold
-    v154.TextSize = 24
-    v154.TextColor3 = Color3.fromRGB(180, 180, 180)
-    v154.TextXAlignment = Enum.TextXAlignment.Left
+    local b156 = Instance.new("TextLabel", b155)
+    b156.Size = UDim2.new(0, 30, 1, 0)
+    b156.Position = UDim2.new(0, 10, 0, 0)
+    b156.BackgroundTransparency = 1
+    b156.Text = b153
+    b156.Font = Enum.Font.GothamBold
+    b156.TextSize = 24
+    b156.TextColor3 = Color3.fromRGB(180, 180, 180)
+    b156.TextXAlignment = Enum.TextXAlignment.Left
 
-    local v155 = Instance.new("TextLabel", v153)
-    v155.Size = UDim2.new(1, -50, 1, 0)
-    v155.Position = UDim2.new(0, 45, 0, 0)
-    v155.BackgroundTransparency = 1
-    v155.Text = v150
-    v155.Font = Enum.Font.GothamBold
-    v155.TextSize = 13
-    v155.TextColor3 = Color3.fromRGB(180, 180, 180)
-    v155.TextXAlignment = Enum.TextXAlignment.Left
+    local b157 = Instance.new("TextLabel", b155)
+    b157.Size = UDim2.new(1, -50, 1, 0)
+    b157.Position = UDim2.new(0, 45, 0, 0)
+    b157.BackgroundTransparency = 1
+    b157.Text = b152
+    b157.Font = Enum.Font.GothamBold
+    b157.TextSize = 13
+    b157.TextColor3 = Color3.fromRGB(180, 180, 180)
+    b157.TextXAlignment = Enum.TextXAlignment.Left
 
-    v147[v150] = { Button = v153, Icon = v154, Label = v155 }
+    b148[b152] = { Button = b155, Icon = b156, Label = b157 }
+    b150["Tab_" .. b152] = b155
 
-    v153.MouseEnter:Connect(function()
-        if v20.CurrentTab ~= v150 then
-            v43(v153, v39.Fast, { BackgroundColor3 = Color3.fromRGB(45, 45, 52) })
-            v43(v154, v39.Fast, { TextColor3 = Color3.fromRGB(200, 200, 200) })
-            v43(v155, v39.Fast, { TextColor3 = Color3.fromRGB(200, 200, 200) })
+    b155.MouseEnter:Connect(function()
+        if b21.CurrentTab ~= b152 then
+            b44(b155, b40.Fast, { BackgroundColor3 = Color3.fromRGB(45, 45, 52) })
+            b44(b156, b40.Fast, { TextColor3 = Color3.fromRGB(200, 200, 200) })
+            b44(b157, b40.Fast, { TextColor3 = Color3.fromRGB(200, 200, 200) })
         end
     end)
-    v153.MouseLeave:Connect(function()
-        if v20.CurrentTab ~= v150 then
-            v43(v153, v39.Fast, { BackgroundColor3 = Color3.fromRGB(35, 35, 42) })
-            v43(v154, v39.Fast, { TextColor3 = Color3.fromRGB(180, 180, 180) })
-            v43(v155, v39.Fast, { TextColor3 = Color3.fromRGB(180, 180, 180) })
+    b155.MouseLeave:Connect(function()
+        if b21.CurrentTab ~= b152 then
+            b44(b155, b40.Fast, { BackgroundColor3 = Color3.fromRGB(35, 35, 42) })
+            b44(b156, b40.Fast, { TextColor3 = Color3.fromRGB(180, 180, 180) })
+            b44(b157, b40.Fast, { TextColor3 = Color3.fromRGB(180, 180, 180) })
         end
     end)
-    return v153
+    return b155
 end
 
-local function v156(v150)
-    local v157 = Instance.new("ScrollingFrame", v135)
-    v157.Name = v150 .. "Content"
-    v157.Size = UDim2.new(1, -10, 1, -10)
-    v157.Position = UDim2.new(0, 5, 0, 5)
-    v157.BackgroundTransparency = 1
-    v157.BorderSizePixel = 0
-    v157.ScrollBarThickness = 4
-    v157.ScrollBarImageColor3 = Color3.fromRGB(100, 150, 255)
-    v157.ScrollBarImageTransparency = 0.5
-    v157.CanvasSize = UDim2.new(0, 0, 0, 0)
-    v157.Visible = false
-    v157.AutomaticCanvasSize = Enum.AutomaticSize.Y
-    local v158 = Instance.new("UIListLayout", v157)
-    v158.SortOrder = Enum.SortOrder.LayoutOrder
-    v158.Padding = UDim.new(0, 10)
-    v148[v150] = v157
-    return v157
+local function b158(b152)
+    local b159 = Instance.new("ScrollingFrame", b136)
+    b159.Name = b152 .. "Content"
+    b159.Size = UDim2.new(1, -10, 1, -10)
+    b159.Position = UDim2.new(0, 5, 0, 5)
+    b159.BackgroundTransparency = 1
+    b159.BorderSizePixel = 0
+    b159.ScrollBarThickness = 4
+    b159.ScrollBarImageColor3 = Color3.fromRGB(100, 150, 255)
+    b159.ScrollBarImageTransparency = 0.5
+    b159.CanvasSize = UDim2.new(0, 0, 0, 0)
+    b159.Visible = false
+    b159.AutomaticCanvasSize = Enum.AutomaticSize.Y
+    local b160 = Instance.new("UIListLayout", b159)
+    b160.SortOrder = Enum.SortOrder.LayoutOrder
+    b160.Padding = UDim.new(0, 10)
+    b149[b152] = b159
+    b150["Content_" .. b152] = b159
+    return b159
 end
 
-local v159 = {
+local b161 = {
     { name = "Home",               icon = "🏠", order = 1 },
     { name = "Anti-AFK",           icon = "⚡", order = 2 },
     { name = "KeySpam",            icon = "⌨️", order = 3 },
@@ -741,701 +749,745 @@ local v159 = {
     { name = "Settings",           icon = "⚙️", order = 7 },
 }
 
-for v160, v161 in ipairs(v159) do
-    v149(v161.name, v161.icon, v161.order)
-    v156(v161.name)
+for b162, b163 in ipairs(b161) do
+    b151(b163.name, b163.icon, b163.order)
+    b158(b163.name)
 end
 
-local v162, v163, v164 = {}, {}, {}
-local v165, v166, v167, v168 = {}, {}, {}, {}
+local b164, b165, b166 = {}, {}, {}
+local b167, b168, b169, b170 = {}, {}, {}, {}
 
 do
-    local v169 = v148["Home"]
-    local v170 = v123(v169, 200, 1)
+    local b171 = b149["Home"]
+    local b172 = b124(b171, 200, 1)
+    b150["Home_Card1"] = b172
 
-    local v171 = Instance.new("ImageLabel", v170)
-    v171.Size = UDim2.new(0, 120, 0, 140)
-    v171.Position = UDim2.new(0, 10, 0, 10)
-    v171.BackgroundColor3 = Color3.fromRGB(45, 45, 52)
-    v171.BorderSizePixel = 0
-    v171.Image = "rbxasset://textures/ui/GuiImagePlaceholder.png"
-    v61(v171, 10)
-    Instance.new("UIStroke", v171).Color = Color3.fromRGB(100, 150, 255)
+    local b173 = Instance.new("ImageLabel", b172)
+    b173.Size = UDim2.new(0, 120, 0, 140)
+    b173.Position = UDim2.new(0, 10, 0, 10)
+    b173.BackgroundColor3 = Color3.fromRGB(45, 45, 52)
+    b173.BorderSizePixel = 0
+    b173.Image = "rbxasset://textures/ui/GuiImagePlaceholder.png"
+    b62(b173, 10)
+    Instance.new("UIStroke", b173).Color = Color3.fromRGB(100, 150, 255)
 
-    local v172 = Instance.new("TextLabel", v170)
-    v172.Size = UDim2.new(1, -145, 0, 22)
-    v172.Position = UDim2.new(0, 140, 0, 10)
-    v172.BackgroundTransparency = 1
-    v172.Text = v11
-    v172.Font = Enum.Font.GothamBold
-    v172.TextSize = 28
-    v172.TextColor3 = Color3.fromRGB(255, 255, 255)
-    v172.TextXAlignment = Enum.TextXAlignment.Left
+    local b174 = Instance.new("TextLabel", b172)
+    b174.Size = UDim2.new(1, -145, 0, 22)
+    b174.Position = UDim2.new(0, 140, 0, 10)
+    b174.BackgroundTransparency = 1
+    b174.Text = b12
+    b174.Font = Enum.Font.GothamBold
+    b174.TextSize = 28
+    b174.TextColor3 = Color3.fromRGB(255, 255, 255)
+    b174.TextXAlignment = Enum.TextXAlignment.Left
 
-    local v173 = Instance.new("TextLabel", v170)
-    v173.Size = UDim2.new(1, -145, 0, 16)
-    v173.Position = UDim2.new(0, 140, 0, 35)
-    v173.BackgroundTransparency = 1
-    v173.Text = "User ID: " .. v12
-    v173.Font = Enum.Font.Gotham
-    v173.TextSize = 12
-    v173.TextColor3 = Color3.fromRGB(150, 150, 150)
-    v173.TextXAlignment = Enum.TextXAlignment.Left
+    local b175 = Instance.new("TextLabel", b172)
+    b175.Size = UDim2.new(1, -145, 0, 16)
+    b175.Position = UDim2.new(0, 140, 0, 33)
+    b175.BackgroundTransparency = 1
+    b175.Text = "User ID: " .. b13
+    b175.Font = Enum.Font.Gotham
+    b175.TextSize = 12
+    b175.TextColor3 = Color3.fromRGB(150, 150, 150)
+    b175.TextXAlignment = Enum.TextXAlignment.Left
 
-    local v174 = Instance.new("TextLabel", v170)
-    v174.Size = UDim2.new(1, -145, 0, 18)
-    v174.Position = UDim2.new(0, 140, 0, 55)
-    v174.BackgroundTransparency = 1
-    v174.Text = "FPS: 60"
-    v174.Font = Enum.Font.Gotham
-    v174.TextSize = 20
-    v174.TextColor3 = Color3.fromRGB(100, 200, 255)
-    v174.TextXAlignment = Enum.TextXAlignment.Left
+    local b176 = Instance.new("TextLabel", b172)
+    b176.Size = UDim2.new(1, -145, 0, 18)
+    b176.Position = UDim2.new(0, 140, 0, 55)
+    b176.BackgroundTransparency = 1
+    b176.Text = "FPS: 60"
+    b176.Font = Enum.Font.Gotham
+    b176.TextSize = 16
+    b176.TextColor3 = Color3.fromRGB(100, 200, 255)
+    b176.TextXAlignment = Enum.TextXAlignment.Left
 
-    local v175 = Instance.new("TextLabel", v170)
-    v175.Size = UDim2.new(1, -145, 0, 18)
-    v175.Position = UDim2.new(0, 140, 0, 75)
-    v175.BackgroundTransparency = 1
-    v175.Text = "Ping: 0 ms"
-    v175.Font = Enum.Font.Gotham
-    v175.TextSize = 20
-    v175.TextColor3 = Color3.fromRGB(0, 255, 0)
-    v175.TextXAlignment = Enum.TextXAlignment.Left
+    local b177 = Instance.new("TextLabel", b172)
+    b177.Size = UDim2.new(1, -145, 0, 18)
+    b177.Position = UDim2.new(0, 140, 0, 70)
+    b177.BackgroundTransparency = 1
+    b177.Text = "Ping: 0 ms"
+    b177.Font = Enum.Font.Gotham
+    b177.TextSize = 16
+    b177.TextColor3 = Color3.fromRGB(0, 255, 0)
+    b177.TextXAlignment = Enum.TextXAlignment.Left
 
-    local v176, v177 = "Unknown", "N/A"
+    local b178 = Instance.new("TextLabel", b172)
+    b178.Size = UDim2.new(1, -145, 0, 18)
+    b178.Position = UDim2.new(0, 140, 0, 90)
+    b178.BackgroundTransparency = 1
+    b178.Text = "Memory: 0 MB"
+    b178.Font = Enum.Font.Gotham
+    b178.TextSize = 16
+    b178.TextColor3 = Color3.fromRGB(255, 180, 100)
+    b178.TextXAlignment = Enum.TextXAlignment.Left
+
+    local b179, b180 = "Unknown", "N/A"
     if identifyexecutor then
-        v176, v177 = identifyexecutor()
+        b179, b180 = identifyexecutor()
     elseif getexecutorname then
-        v176 = getexecutorname()
+        b179 = getexecutorname()
     end
 
-    local v178 = Instance.new("TextLabel", v170)
-    v178.Size = UDim2.new(1, -145, 0, 18)
-    v178.Position = UDim2.new(0, 140, 0, 100)
-    v178.BackgroundTransparency = 1
-    v178.Text = "Executor: " .. v176 .. " " .. v177
-    v178.Font = Enum.Font.Gotham
-    v178.TextSize = 20
-    v178.TextColor3 = Color3.fromRGB(255, 100, 200)
-    v178.TextXAlignment = Enum.TextXAlignment.Left
+    local b181 = Instance.new("TextLabel", b172)
+    b181.Size = UDim2.new(1, -145, 0, 18)
+    b181.Position = UDim2.new(0, 140, 0, 105)
+    b181.BackgroundTransparency = 1
+    b181.Text = "Executor: " .. b179 .. " " .. b180
+    b181.Font = Enum.Font.Gotham
+    b181.TextSize = 16
+    b181.TextColor3 = Color3.fromRGB(255, 100, 200)
+    b181.TextXAlignment = Enum.TextXAlignment.Left
 
-    local v179 = Instance.new("TextLabel", v170)
-    v179.Size = UDim2.new(1, -145, 0, 18)
-    v179.Position = UDim2.new(0, 140, 0, 125)
-    v179.BackgroundTransparency = 1
-    v179.Text = "Device: " .. v18()
-    v179.Font = Enum.Font.Gotham
-    v179.TextSize = 20
-    v179.TextColor3 = Color3.fromRGB(180, 255, 150)
-    v179.TextXAlignment = Enum.TextXAlignment.Left
+    local b182 = Instance.new("TextLabel", b172)
+    b182.Size = UDim2.new(1, -145, 0, 18)
+    b182.Position = UDim2.new(0, 140, 0, 125)
+    b182.BackgroundTransparency = 1
+    b182.Text = "Device: " .. b19()
+    b182.Font = Enum.Font.Gotham
+    b182.TextSize = 16
+    b182.TextColor3 = Color3.fromRGB(180, 255, 150)
+    b182.TextXAlignment = Enum.TextXAlignment.Left
 
-    local v180 = v54()
-    local v181 = Instance.new("TextLabel", v170)
-    v181.Size = UDim2.new(1, -145, 0, 18)
-    v181.Position = UDim2.new(0, 140, 0, 140)
-    v181.BackgroundTransparency = 1
-    v181.Text = string.format("Resolution: %dx%d", v180.X, v180.Y)
-    v181.Font = Enum.Font.Gotham
-    v181.TextSize = 12
-    v181.TextColor3 = Color3.fromRGB(150, 150, 150)
-    v181.TextXAlignment = Enum.TextXAlignment.Left
+    local b183 = b55()
+    local b184 = Instance.new("TextLabel", b172)
+    b184.Size = UDim2.new(1, -145, 0, 18)
+    b184.Position = UDim2.new(0, 140, 0, 137.5)
+    b184.BackgroundTransparency = 1
+    b184.Text = string.format("Resolution: %dx%d", b183.X, b183.Y)
+    b184.Font = Enum.Font.Gotham
+    b184.TextSize = 12
+    b184.TextColor3 = Color3.fromRGB(150, 150, 150)
+    b184.TextXAlignment = Enum.TextXAlignment.Left
 
-    local v182 = v123(v169, 220, 2)
+    local b185 = b124(b171, 220, 2)
+    b150["Home_Card2"] = b185
 
-    local v183 = Instance.new("ImageLabel", v182)
-    v183.Size = UDim2.new(0, 120, 0, 140)
-    v183.Position = UDim2.new(0, 10, 0, 10)
-    v183.BackgroundColor3 = Color3.fromRGB(45, 45, 52)
-    v183.BorderSizePixel = 0
-    v183.Image = "rbxasset://textures/ui/GuiImagePlaceholder.png"
-    v61(v183, 10)
-    Instance.new("UIStroke", v183).Color = Color3.fromRGB(100, 150, 255)
+    local b186 = Instance.new("ImageLabel", b185)
+    b186.Size = UDim2.new(0, 120, 0, 140)
+    b186.Position = UDim2.new(0, 10, 0, 10)
+    b186.BackgroundColor3 = Color3.fromRGB(45, 45, 52)
+    b186.BorderSizePixel = 0
+    b186.Image = "rbxasset://textures/ui/GuiImagePlaceholder.png"
+    b62(b186, 10)
+    Instance.new("UIStroke", b186).Color = Color3.fromRGB(100, 150, 255)
 
-    local v184 = Instance.new("TextLabel", v182)
-    v184.Size = UDim2.new(1, -145, 0, 24)
-    v184.Position = UDim2.new(0, 140, 0, 10)
-    v184.BackgroundTransparency = 1
-    v184.Text = "Loading game info..."
-    v184.Font = Enum.Font.GothamBold
-    v184.TextSize = 24
-    v184.TextColor3 = Color3.fromRGB(255, 255, 255)
-    v184.TextXAlignment = Enum.TextXAlignment.Left
-    v184.TextWrapped = true
+    local b187 = Instance.new("TextLabel", b185)
+    b187.Size = UDim2.new(1, -145, 0, 24)
+    b187.Position = UDim2.new(0, 140, 0, 10)
+    b187.BackgroundTransparency = 1
+    b187.Text = "Loading game info..."
+    b187.Font = Enum.Font.GothamBold
+    b187.TextSize = 24
+    b187.TextColor3 = Color3.fromRGB(255, 255, 255)
+    b187.TextXAlignment = Enum.TextXAlignment.Left
+    b187.TextWrapped = true
 
-    local v185 = Instance.new("TextLabel", v182)
-    v185.Size = UDim2.new(1, -145, 0, 18)
-    v185.Position = UDim2.new(0, 140, 0, 50)
-    v185.BackgroundTransparency = 1
-    v185.Text = "Place ID: " .. game.PlaceId
-    v185.Font = Enum.Font.Gotham
-    v185.TextSize = 20
-    v185.TextColor3 = Color3.fromRGB(150, 180, 255)
-    v185.TextXAlignment = Enum.TextXAlignment.Left
+    local b188 = Instance.new("TextLabel", b185)
+    b188.Size = UDim2.new(1, -145, 0, 18)
+    b188.Position = UDim2.new(0, 140, 0, 50)
+    b188.BackgroundTransparency = 1
+    b188.Text = "Place ID: " .. game.PlaceId
+    b188.Font = Enum.Font.Gotham
+    b188.TextSize = 20
+    b188.TextColor3 = Color3.fromRGB(150, 180, 255)
+    b188.TextXAlignment = Enum.TextXAlignment.Left
 
-    local v186 = Instance.new("TextLabel", v182)
-    v186.Size = UDim2.new(1, -145, 0, 18)
-    v186.Position = UDim2.new(0, 140, 0, 90)
-    v186.BackgroundTransparency = 1
-    v186.Text = "Players Connected: " .. #v1:GetPlayers()
-    v186.Font = Enum.Font.Gotham
-    v186.TextSize = 20
-    v186.TextColor3 = Color3.fromRGB(150, 255, 180)
-    v186.TextXAlignment = Enum.TextXAlignment.Left
+    local b189 = Instance.new("TextLabel", b185)
+    b189.Size = UDim2.new(1, -145, 0, 18)
+    b189.Position = UDim2.new(0, 140, 0, 90)
+    b189.BackgroundTransparency = 1
+    b189.Text = "Players Connected: " .. #b1:GetPlayers()
+    b189.Font = Enum.Font.Gotham
+    b189.TextSize = 20
+    b189.TextColor3 = Color3.fromRGB(150, 255, 180)
+    b189.TextXAlignment = Enum.TextXAlignment.Left
 
-    local v187 = Instance.new("TextLabel", v182)
-    v187.Size = UDim2.new(1, -145, 0, 18)
-    v187.Position = UDim2.new(0, 140, 0, 130)
-    v187.BackgroundTransparency = 1
-    v187.Text = "Server JobId: " .. game.JobId
-    v187.Font = Enum.Font.Gotham
-    v187.TextSize = 12
-    v187.TextColor3 = Color3.fromRGB(255, 180, 180)
-    v187.TextXAlignment = Enum.TextXAlignment.Left
+    local b190 = Instance.new("TextLabel", b185)
+    b190.Size = UDim2.new(1, -145, 0, 18)
+    b190.Position = UDim2.new(0, 140, 0, 130)
+    b190.BackgroundTransparency = 1
+    b190.Text = "Server JobId: " .. game.JobId
+    b190.Font = Enum.Font.Gotham
+    b190.TextSize = 12
+    b190.TextColor3 = Color3.fromRGB(255, 180, 180)
+    b190.TextXAlignment = Enum.TextXAlignment.Left
 
-    local function v188()
-        v186.Text = "Players Connected: " .. #v1:GetPlayers()
+    local function b191()
+        b189.Text = "Players Connected: " .. #b1:GetPlayers()
     end
-    table.insert(_G.UU.Connections, v1.PlayerAdded:Connect(v188))
-    table.insert(_G.UU.Connections, v1.PlayerRemoving:Connect(v188))
+    table.insert(_G.UU.Connections, b1.PlayerAdded:Connect(b191))
+    table.insert(_G.UU.Connections, b1.PlayerRemoving:Connect(b191))
 
-    _G.UU.UI.PlayerImage = v171
-    _G.UU.UI.GameName = v184
-    _G.UU.UI.GameImage = v183
-    _G.UU.UI.ResolutionLabel = v181
-    _G.UU.UI.DeviceLabel = v179
-    v162.FPSLabel = v174
-    v162.PingLabel = v175
+    _G.UU.UI.PlayerImage = b173
+    _G.UU.UI.GameName = b187
+    _G.UU.UI.GameImage = b186
+    _G.UU.UI.ResolutionLabel = b184
+    _G.UU.UI.DeviceLabel = b182
+    b164.FPSLabel = b176
+    b164.PingLabel = b177
+    b164.MemoryLabel = b178
 end
 
 do
-    local v189 = v148["Anti-AFK"]
-    local v190 = v123(v189, 400, 1)
+    local b189 = b149["Anti-AFK"]
+    local b190 = b124(b189, 400, 1)
+    b150["AntiAFK_Card"] = b190
 
-    local v191 = Instance.new("TextLabel", v190)
-    v191.Size = UDim2.new(1, -20, 0, 26); v191.Position = UDim2.new(0, 10, 0, 8)
-    v191.BackgroundTransparency = 1; v191.Text = "⚡ Anti-AFK System"
-    v191.Font = Enum.Font.GothamBold; v191.TextSize = 18
-    v191.TextColor3 = Color3.fromRGB(100, 200, 255); v191.TextXAlignment = Enum.TextXAlignment.Left
+    local b191 = Instance.new("TextLabel", b190)
+    b191.Size = UDim2.new(1, -20, 0, 26); b191.Position = UDim2.new(0, 10, 0, 8)
+    b191.BackgroundTransparency = 1; b191.Text = "⚡ Anti-AFK System"
+    b191.Font = Enum.Font.GothamBold; b191.TextSize = 18
+    b191.TextColor3 = Color3.fromRGB(100, 200, 255); b191.TextXAlignment = Enum.TextXAlignment.Left
 
-    local v192 = Instance.new("TextLabel", v190)
-    v192.Size = UDim2.new(1, -20, 0, 16); v192.Position = UDim2.new(0, 10, 0, 34)
-    v192.BackgroundTransparency = 1; v192.Text = "Prevent disconnections by simulating player activity"
-    v192.Font = Enum.Font.Gotham; v192.TextSize = 12
-    v192.TextColor3 = Color3.fromRGB(150, 150, 150); v192.TextXAlignment = Enum.TextXAlignment.Left
+    local b192 = Instance.new("TextLabel", b190)
+    b192.Size = UDim2.new(1, -20, 0, 16); b192.Position = UDim2.new(0, 10, 0, 34)
+    b192.BackgroundTransparency = 1; b192.Text = "Prevent disconnections by simulating player activity"
+    b192.Font = Enum.Font.Gotham; b192.TextSize = 12
+    b192.TextColor3 = Color3.fromRGB(150, 150, 150); b192.TextXAlignment = Enum.TextXAlignment.Left
 
-    local v193 = v70(v190, UDim2.new(0, 140, 0, 36), "Auto Jump: OFF")
-    v193.Position = UDim2.new(0.25, 0, 0, 65)
-    local v194 = v70(v190, UDim2.new(0, 140, 0, 36), "Auto Click: OFF")
-    v194.Position = UDim2.new(0.75, 0, 0, 65)
+    local b193 = b71(b190, UDim2.new(0, 140, 0, 36), "Auto Jump: OFF")
+    b193.Position = UDim2.new(0.25, 0, 0, 65)
+    local b194 = b71(b190, UDim2.new(0, 140, 0, 36), "Auto Click: OFF")
+    b194.Position = UDim2.new(0.75, 0, 0, 65)
 
-    v117(v190, 115)
-    v120(v190, "Click Position Mode", 127)
+    b118(b190, 115)
+    b121(b190, "Click Position Mode", 127)
 
-    local v195 = v70(v190, UDim2.new(0, 85, 0, 30), "Current")
-    v195.Position = UDim2.new(0.2, 0, 0, 155)
-    local v196 = v70(v190, UDim2.new(0, 85, 0, 30), "Center")
-    v196.Position = UDim2.new(0.5, 0, 0, 155)
-    local v197 = v70(v190, UDim2.new(0, 85, 0, 30), "Random")
-    v197.Position = UDim2.new(0.8, 0, 0, 155)
+    local b195 = b71(b190, UDim2.new(0, 85, 0, 30), "Current")
+    b195.Position = UDim2.new(0.2, 0, 0, 155)
+    local b196 = b71(b190, UDim2.new(0, 85, 0, 30), "Center")
+    b196.Position = UDim2.new(0.5, 0, 0, 155)
+    local b197 = b71(b190, UDim2.new(0, 85, 0, 30), "Random")
+    b197.Position = UDim2.new(0.8, 0, 0, 155)
 
-    v117(v190, 198)
+    b118(b190, 198)
 
-    local v198, v199, v200, v201, v202 = v74(v190, UDim2.new(1, -20, 0, 50), 5, 30, 10, "Jump Interval (seconds)")
-    v198.Position = UDim2.new(0, 10, 0, 213)
-    local v203, v204, v205, v206, v207 = v74(v190, UDim2.new(1, -20, 0, 50), 1, 10, 3, "Click Interval (seconds)")
-    v203.Position = UDim2.new(0, 10, 0, 280)
+    local b198, b199, b200, b201, b202 = b75(b190, UDim2.new(1, -20, 0, 50), 5, 30, 10, "Jump Interval (seconds)")
+    b198.Position = UDim2.new(0, 10, 0, 213)
+    local b203, b204, b205, b206, b207 = b75(b190, UDim2.new(1, -20, 0, 50), 1, 10, 3, "Click Interval (seconds)")
+    b203.Position = UDim2.new(0, 10, 0, 280)
 
-    local v208, v209 = v113(v190, UDim2.new(1, -20, 0, 45), UDim2.new(0, 10, 0, 345), "Status: All Inactive")
+    local b208, b209 = b114(b190, UDim2.new(1, -20, 0, 45), UDim2.new(0, 10, 0, 345), "Status: All Inactive")
 
-    v163 = {
-        JumpToggle = v193,
-        ClickToggle = v194,
-        ClickTypeCurrent = v195,
-        ClickTypeCenter = v196,
-        ClickTypeRandom = v197,
-        JumpDelaySlider = v199,
-        JumpSliderFill = v200,
-        JumpSliderButton = v201,
-        JumpDelayBox = v202,
-        ClickDelaySlider = v204,
-        ClickSliderFill = v205,
-        ClickSliderButton = v206,
-        ClickDelayBox = v207,
-        Status = v209,
+    b165 = {
+        JumpToggle = b193,
+        ClickToggle = b194,
+        ClickTypeCurrent = b195,
+        ClickTypeCenter = b196,
+        ClickTypeRandom = b197,
+        JumpDelaySlider = b199,
+        JumpSliderFill = b200,
+        JumpSliderButton = b201,
+        JumpDelayBox = b202,
+        ClickDelaySlider = b204,
+        ClickSliderFill = b205,
+        ClickSliderButton = b206,
+        ClickDelayBox = b207,
+        Status = b209,
     }
 end
 
 do
-    local v210 = v148["KeySpam"]
-    local v211 = v123(v210, 320, 1)
+    local b210 = b149["KeySpam"]
+    local b211 = b124(b210, 320, 1)
+    b150["KeySpam_Card"] = b211
 
-    local v212 = Instance.new("TextLabel", v211)
-    v212.Size = UDim2.new(1, -20, 0, 26); v212.Position = UDim2.new(0, 10, 0, 8)
-    v212.BackgroundTransparency = 1; v212.Text = "⌨️ Key Spam Controller"
-    v212.Font = Enum.Font.GothamBold; v212.TextSize = 18
-    v212.TextColor3 = Color3.fromRGB(255, 200, 100); v212.TextXAlignment = Enum.TextXAlignment.Left
+    local b212 = Instance.new("TextLabel", b211)
+    b212.Size = UDim2.new(1, -20, 0, 26); b212.Position = UDim2.new(0, 10, 0, 8)
+    b212.BackgroundTransparency = 1; b212.Text = "⌨️ Key Spam Controller"
+    b212.Font = Enum.Font.GothamBold; b212.TextSize = 18
+    b212.TextColor3 = Color3.fromRGB(255, 200, 100); b212.TextXAlignment = Enum.TextXAlignment.Left
 
-    local v213 = Instance.new("TextLabel", v211)
-    v213.Size = UDim2.new(1, -20, 0, 16); v213.Position = UDim2.new(0, 10, 0, 34)
-    v213.BackgroundTransparency = 1; v213.Text = "Automatically spam any keyboard key at custom intervals"
-    v213.Font = Enum.Font.Gotham; v213.TextSize = 12
-    v213.TextColor3 = Color3.fromRGB(150, 150, 150); v213.TextXAlignment = Enum.TextXAlignment.Left
+    local b213 = Instance.new("TextLabel", b211)
+    b213.Size = UDim2.new(1, -20, 0, 16); b213.Position = UDim2.new(0, 10, 0, 34)
+    b213.BackgroundTransparency = 1; b213.Text = "Automatically spam any keyboard key at custom intervals"
+    b213.Font = Enum.Font.Gotham; b213.TextSize = 12
+    b213.TextColor3 = Color3.fromRGB(150, 150, 150); b213.TextXAlignment = Enum.TextXAlignment.Left
 
-    v120(v211, "Target Key", 60)
+    b121(b211, "Target Key", 60)
 
-    local v214 = Instance.new("TextBox", v211)
-    v214.Size = UDim2.new(1, -20, 0, 40)
-    v214.Position = UDim2.new(0, 10, 0, 82)
-    v214.BackgroundColor3 = Color3.fromRGB(45, 45, 52)
-    v214.Text = v20.SpamKey
-    v214.PlaceholderText = "Enter key (A-Z, 0-9, F1-F12)"
-    v214.Font = Enum.Font.Gotham
-    v214.TextSize = 14
-    v214.TextColor3 = Color3.fromRGB(255, 255, 255)
-    v214.PlaceholderColor3 = Color3.fromRGB(120, 120, 120)
-    v214.BorderSizePixel = 0
-    v214.ClearTextOnFocus = false
-    v61(v214, 8)
-    Instance.new("UIStroke", v214).Color = Color3.fromRGB(60, 60, 70)
+    local b214 = Instance.new("TextBox", b211)
+    b214.Size = UDim2.new(1, -20, 0, 40)
+    b214.Position = UDim2.new(0, 10, 0, 82)
+    b214.BackgroundColor3 = Color3.fromRGB(45, 45, 52)
+    b214.Text = b21.SpamKey
+    b214.PlaceholderText = "Enter key (A-Z, 0-9, F1-F12)"
+    b214.Font = Enum.Font.Gotham
+    b214.TextSize = 14
+    b214.TextColor3 = Color3.fromRGB(255, 255, 255)
+    b214.PlaceholderColor3 = Color3.fromRGB(120, 120, 120)
+    b214.BorderSizePixel = 0
+    b214.ClearTextOnFocus = false
+    b62(b214, 8)
+    Instance.new("UIStroke", b214).Color = Color3.fromRGB(60, 60, 70)
 
-    v117(v211, 135)
+    b118(b211, 135)
 
-    local v215, v216, v217, v218, v219 = v74(v211, UDim2.new(1, -20, 0, 50), 0.05, 5, 0.1, "Spam Interval (seconds)")
-    v215.Position = UDim2.new(0, 10, 0, 150)
+    local b215, b216, b217, b218, b219 = b75(b211, UDim2.new(1, -20, 0, 50), 0.05, 5, 0.1, "Spam Interval (seconds)")
+    b215.Position = UDim2.new(0, 10, 0, 150)
 
-    local v220 = v70(v211, UDim2.new(0, 120, 0, 36), "OFF")
-    v220.Position = UDim2.new(0.5, 0, 0, 220)
+    local b220 = b71(b211, UDim2.new(0, 120, 0, 36), "OFF")
+    b220.Position = UDim2.new(0.5, 0, 0, 220)
 
-    local v221, v222 = v113(v211, UDim2.new(1, -20, 0, 45), UDim2.new(0, 10, 0, 265), "System Status: Inactive")
+    local b221, b222 = b114(b211, UDim2.new(1, -20, 0, 45), UDim2.new(0, 10, 0, 265), "System Status: Inactive")
 
-    v164 = {
-        SpamInput = v214,
-        SpamDelaySlider = v216,
-        SpamSliderFill = v217,
-        SpamSliderButton = v218,
-        SpamDelayBox = v219,
-        AutoSpamToggle = v220,
-        Status = v222,
+    b166 = {
+        SpamInput = b214,
+        SpamDelaySlider = b216,
+        SpamSliderFill = b217,
+        SpamSliderButton = b218,
+        SpamDelayBox = b219,
+        AutoSpamToggle = b220,
+        Status = b222,
     }
 end
 
 do
-    local v223 = v148["Performance Status"]
-    local v224 = v123(v223, 580, 1)
+    local b223 = b149["Performance Status"]
+    local b224 = b124(b223, 640, 1)
+    b150["Performance_Card"] = b224
 
-    local v225 = Instance.new("TextLabel", v224)
-    v225.Size = UDim2.new(1, -20, 0, 26); v225.Position = UDim2.new(0, 10, 0, 8)
-    v225.BackgroundTransparency = 1; v225.Text = "📊 Performance Monitor"
-    v225.Font = Enum.Font.GothamBold; v225.TextSize = 18
-    v225.TextColor3 = Color3.fromRGB(100, 255, 150); v225.TextXAlignment = Enum.TextXAlignment.Left
+    local b225 = Instance.new("TextLabel", b224)
+    b225.Size = UDim2.new(1, -20, 0, 26); b225.Position = UDim2.new(0, 10, 0, 8)
+    b225.BackgroundTransparency = 1; b225.Text = "📊 Performance Monitor"
+    b225.Font = Enum.Font.GothamBold; b225.TextSize = 18
+    b225.TextColor3 = Color3.fromRGB(100, 255, 150); b225.TextXAlignment = Enum.TextXAlignment.Left
 
-    local v226 = Instance.new("TextLabel", v224)
-    v226.Size = UDim2.new(1, -20, 0, 16); v226.Position = UDim2.new(0, 10, 0, 34)
-    v226.BackgroundTransparency = 1; v226.Text = "Track real-time performance metrics and unlock FPS limits"
-    v226.Font = Enum.Font.Gotham; v226.TextSize = 12
-    v226.TextColor3 = Color3.fromRGB(150, 150, 150); v226.TextXAlignment = Enum.TextXAlignment.Left
+    local b226 = Instance.new("TextLabel", b224)
+    b226.Size = UDim2.new(1, -20, 0, 16); b226.Position = UDim2.new(0, 10, 0, 34)
+    b226.BackgroundTransparency = 1; b226.Text = "Track real-time performance metrics and unlock FPS limits"
+    b226.Font = Enum.Font.Gotham; b226.TextSize = 12
+    b226.TextColor3 = Color3.fromRGB(150, 150, 150); b226.TextXAlignment = Enum.TextXAlignment.Left
 
-    local v227 = v70(v224, UDim2.new(0, 160, 0, 36), "FPS Unlock: OFF")
-    v227.Position = UDim2.new(0.5, 0, 0, 65)
+    local b227 = b71(b224, UDim2.new(0, 160, 0, 36), "FPS Unlock: OFF")
+    b227.Position = UDim2.new(0.5, 0, 0, 65)
 
-    local v228 = Instance.new("TextLabel", v224)
-    v228.Size = UDim2.new(1, -20, 0, 20)
-    v228.Position = UDim2.new(0, 10, 0, 108)
-    v228.BackgroundTransparency = 1
-    v228.Text = "Current Limit: 60 FPS"
-    v228.Font = Enum.Font.Gotham
-    v228.TextSize = 13
-    v228.TextColor3 = Color3.fromRGB(180, 180, 180)
-    v228.TextXAlignment = Enum.TextXAlignment.Center
+    local b228 = Instance.new("TextLabel", b224)
+    b228.Size = UDim2.new(1, -20, 0, 20)
+    b228.Position = UDim2.new(0, 10, 0, 108)
+    b228.BackgroundTransparency = 1
+    b228.Text = "Current Limit: 60 FPS"
+    b228.Font = Enum.Font.Gotham
+    b228.TextSize = 13
+    b228.TextColor3 = Color3.fromRGB(180, 180, 180)
+    b228.TextXAlignment = Enum.TextXAlignment.Center
 
-    local v229, v230, v231, v232, v233 = v74(v224, UDim2.new(1, -20, 0, 50), 15, 360, 60, "Target FPS Limit")
-    v229.Position = UDim2.new(0, 10, 0, 140)
+    local b229, b230, b231, b232, b233 = b75(b224, UDim2.new(1, -20, 0, 50), 15, 360, 60, "Target FPS Limit")
+    b229.Position = UDim2.new(0, 10, 0, 140)
 
-    v117(v224, 205)
-    v120(v224, "Framerate Statistics", 215)
+    b118(b224, 205)
+    b121(b224, "Framerate Statistics", 215)
 
-    local v234 = Instance.new("Frame", v224)
-    v234.Size = UDim2.new(1, -20, 0, 50)
-    v234.Position = UDim2.new(0, 10, 0, 240)
-    v234.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
-    v234.BorderSizePixel = 0
-    v61(v234, 8)
-    Instance.new("UIStroke", v234).Color = Color3.fromRGB(50, 50, 60)
+    local b234 = Instance.new("Frame", b224)
+    b234.Size = UDim2.new(1, -20, 0, 50)
+    b234.Position = UDim2.new(0, 10, 0, 240)
+    b234.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+    b234.BorderSizePixel = 0
+    b62(b234, 8)
+    Instance.new("UIStroke", b234).Color = Color3.fromRGB(50, 50, 60)
 
-    local function v235(v62, v236, v72, v121)
-        local v237 = Instance.new("TextLabel", v62)
-        v237.Size = UDim2.new(v236[3], 0, 1, 0)
-        v237.Position = UDim2.new(v236[1], 0, 0, 0)
-        v237.BackgroundTransparency = 1
-        v237.Text = v72
-        v237.Font = Enum.Font.GothamBold
-        v237.TextSize = 13
-        v237.TextColor3 = v121
-        v237.TextXAlignment = Enum.TextXAlignment.Center
-        return v237
+    local function b235(b236, b237, b238, b239)
+        local b240 = Instance.new("TextLabel", b236)
+        b240.Size = UDim2.new(b237[3], 0, 1, 0)
+        b240.Position = UDim2.new(b237[1], 0, 0, 0)
+        b240.BackgroundTransparency = 1
+        b240.Text = b238
+        b240.Font = Enum.Font.GothamBold
+        b240.TextSize = 13
+        b240.TextColor3 = b239
+        b240.TextXAlignment = Enum.TextXAlignment.Center
+        return b240
     end
 
-    local v238 = v235(v234, {0, 0, 0.33}, "Current: 60", Color3.fromRGB(100, 200, 255))
-    local v239 = v235(v234, {0.33, 0, 0.33}, "Average: 60", Color3.fromRGB(50, 220, 100))
-    local v240 = v235(v234, {0.66, 0, 0.34}, "Min: 60 | Max: 60", Color3.fromRGB(255, 200, 100))
+    local b241 = b235(b234, {0, 0, 0.33}, "Current: 60", Color3.fromRGB(100, 200, 255))
+    local b242 = b235(b234, {0.33, 0, 0.33}, "Average: 60", Color3.fromRGB(50, 220, 100))
+    local b243 = b235(b234, {0.66, 0, 0.34}, "Min: 60 | Max: 60", Color3.fromRGB(255, 200, 100))
 
-    v117(v224, 305)
-    v120(v224, "Network Latency Statistics", 315)
+    b118(b224, 305)
+    b121(b224, "Network Latency Statistics", 315)
 
-    local v241 = Instance.new("Frame", v224)
-    v241.Size = UDim2.new(1, -20, 0, 50)
-    v241.Position = UDim2.new(0, 10, 0, 340)
-    v241.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
-    v241.BorderSizePixel = 0
-    v61(v241, 8)
-    Instance.new("UIStroke", v241).Color = Color3.fromRGB(50, 50, 60)
+    local b244 = Instance.new("Frame", b224)
+    b244.Size = UDim2.new(1, -20, 0, 50)
+    b244.Position = UDim2.new(0, 10, 0, 340)
+    b244.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+    b244.BorderSizePixel = 0
+    b62(b244, 8)
+    Instance.new("UIStroke", b244).Color = Color3.fromRGB(50, 50, 60)
 
-    local v242 = v235(v241, {0, 0, 0.33}, "Current: 0ms", Color3.fromRGB(100, 200, 255))
-    local v243 = v235(v241, {0.33, 0, 0.33}, "Average: 0ms", Color3.fromRGB(50, 220, 100))
-    local v244 = v235(v241, {0.66, 0, 0.34}, "Min: 0ms | Max: 0ms", Color3.fromRGB(255, 200, 100))
+    local b245 = b235(b244, {0, 0, 0.33}, "Current: 0ms", Color3.fromRGB(100, 200, 255))
+    local b246 = b235(b244, {0.33, 0, 0.33}, "Average: 0ms", Color3.fromRGB(50, 220, 100))
+    local b247 = b235(b244, {0.66, 0, 0.34}, "Min: 0ms | Max: 0ms", Color3.fromRGB(255, 200, 100))
 
-    local v245 = Instance.new("Frame", v224)
-    v245.Size = UDim2.new(1, -20, 0, 50)
-    v245.Position = UDim2.new(0, 10, 0, 405)
-    v245.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
-    v245.BorderSizePixel = 0
-    v61(v245, 8)
-    Instance.new("UIStroke", v245).Color = Color3.fromRGB(50, 50, 60)
+    local b248 = Instance.new("Frame", b224)
+    b248.Size = UDim2.new(1, -20, 0, 50)
+    b248.Position = UDim2.new(0, 10, 0, 405)
+    b248.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+    b248.BorderSizePixel = 0
+    b62(b248, 8)
+    Instance.new("UIStroke", b248).Color = Color3.fromRGB(50, 50, 60)
 
-    v235(v245, {0, 0, 0.5}, "Connection Quality", Color3.fromRGB(255, 255, 255))
-    local v246 = v235(v245, {0.5, 0, 0.5}, "Excellent", Color3.fromRGB(50, 220, 100))
+    b235(b248, {0, 0, 0.5}, "Connection Quality", Color3.fromRGB(255, 255, 255))
+    local b249 = b235(b248, {0.5, 0, 0.5}, "Excellent", Color3.fromRGB(50, 220, 100))
 
-    local v247 = Instance.new("TextLabel", v224)
-    v247.Size = UDim2.new(1, -20, 0, 110)
-    v247.Position = UDim2.new(0, 10, 0, 465)
-    v247.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
-    v247.BorderSizePixel = 0
-    v247.Text = "Performance monitoring tracks your game's framerate and network latency in real-time.\n\nLowering FPS limits reduces memory usage. Higher FPS provides smoother gameplay but increases resource consumption.\n\nOptimal FPS depends on your device capabilities."
-    v247.Font = Enum.Font.Gotham
-    v247.TextSize = 12
-    v247.TextColor3 = Color3.fromRGB(200, 180, 150)
-    v247.TextWrapped = true
-    v247.TextXAlignment = Enum.TextXAlignment.Left
-    v247.TextYAlignment = Enum.TextYAlignment.Top
-    v61(v247, 8)
-    Instance.new("UIStroke", v247).Color = Color3.fromRGB(50, 50, 60)
-    local v248 = Instance.new("UIPadding", v247)
-    v248.PaddingLeft = UDim.new(0, 10); v248.PaddingRight = UDim.new(0, 10)
-    v248.PaddingTop = UDim.new(0, 10); v248.PaddingBottom = UDim.new(0, 10)
+    b118(b224, 465)
+    b121(b224, "Memory Usage Statistics", 475)
 
-    v165 = {
-        FPSUnlockToggle = v227,
-        FPSUnlockStatus = v228,
-        FPSSlider = v230,
-        FPSFill = v231,
-        FPSButton = v232,
-        FPSValueBox = v233,
-        FPSStats = { Current = v238, Avg = v239, MinMax = v240 },
-        PingStats = { Current = v242, Avg = v243, MinMax = v244, Quality = v246 },
+    local b250 = Instance.new("Frame", b224)
+    b250.Size = UDim2.new(1, -20, 0, 50)
+    b250.Position = UDim2.new(0, 10, 0, 500)
+    b250.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+    b250.BorderSizePixel = 0
+    b62(b250, 8)
+    Instance.new("UIStroke", b250).Color = Color3.fromRGB(50, 50, 60)
+
+    local b251 = b235(b250, {0, 0, 0.5}, "Current: 0 MB", Color3.fromRGB(255, 180, 100))
+    local b252 = b235(b250, {0.5, 0, 0.5}, "Peak: 0 MB", Color3.fromRGB(255, 150, 50))
+
+    local b253 = Instance.new("TextLabel", b224)
+    b253.Size = UDim2.new(1, -20, 0, 60)
+    b253.Position = UDim2.new(0, 10, 0, 560)
+    b253.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+    b253.BorderSizePixel = 0
+    b253.Text = "Performance monitoring tracks your game's framerate, network latency, and memory usage in real-time.\n\nLowering FPS limits reduces memory usage. Higher FPS provides smoother gameplay but increases resource consumption."
+    b253.Font = Enum.Font.Gotham
+    b253.TextSize = 12
+    b253.TextColor3 = Color3.fromRGB(200, 180, 150)
+    b253.TextWrapped = true
+    b253.TextXAlignment = Enum.TextXAlignment.Left
+    b253.TextYAlignment = Enum.TextYAlignment.Top
+    b62(b253, 8)
+    Instance.new("UIStroke", b253).Color = Color3.fromRGB(50, 50, 60)
+    local b254 = Instance.new("UIPadding", b253)
+    b254.PaddingLeft = UDim.new(0, 10); b254.PaddingRight = UDim.new(0, 10)
+    b254.PaddingTop = UDim.new(0, 10); b254.PaddingBottom = UDim.new(0, 10)
+
+    b167 = {
+        FPSUnlockToggle = b227,
+        FPSUnlockStatus = b228,
+        FPSSlider = b230,
+        FPSFill = b231,
+        FPSButton = b232,
+        FPSValueBox = b233,
+        FPSStats = { Current = b241, Avg = b242, MinMax = b243 },
+        PingStats = { Current = b245, Avg = b246, MinMax = b247, Quality = b249 },
+        MemoryStats = { Current = b251, Peak = b252 },
     }
 end
 
 do
-    local v249 = v148["Auto Rejoin"]
-    local v250 = v123(v249, 250, 1)
+    local b255 = b149["Auto Rejoin"]
+    local b256 = b124(b255, 250, 1)
+    b150["AutoRejoin_Card"] = b256
 
-    local v251 = Instance.new("TextLabel", v250)
-    v251.Size = UDim2.new(1, -20, 0, 26); v251.Position = UDim2.new(0, 10, 0, 8)
-    v251.BackgroundTransparency = 1; v251.Text = "🔄 Auto Rejoin System"
-    v251.Font = Enum.Font.GothamBold; v251.TextSize = 18
-    v251.TextColor3 = Color3.fromRGB(150, 200, 255); v251.TextXAlignment = Enum.TextXAlignment.Left
+    local b257 = Instance.new("TextLabel", b256)
+    b257.Size = UDim2.new(1, -20, 0, 26); b257.Position = UDim2.new(0, 10, 0, 8)
+    b257.BackgroundTransparency = 1; b257.Text = "🔄 Auto Rejoin System"
+    b257.Font = Enum.Font.GothamBold; b257.TextSize = 18
+    b257.TextColor3 = Color3.fromRGB(150, 200, 255); b257.TextXAlignment = Enum.TextXAlignment.Left
 
-    local v252 = Instance.new("TextLabel", v250)
-    v252.Size = UDim2.new(1, -20, 0, 16); v252.Position = UDim2.new(0, 10, 0, 34)
-    v252.BackgroundTransparency = 1; v252.Text = "Automatically reconnect when disconnected from the server"
-    v252.Font = Enum.Font.Gotham; v252.TextSize = 12
-    v252.TextColor3 = Color3.fromRGB(150, 150, 150); v252.TextXAlignment = Enum.TextXAlignment.Left
+    local b258 = Instance.new("TextLabel", b256)
+    b258.Size = UDim2.new(1, -20, 0, 16); b258.Position = UDim2.new(0, 10, 0, 34)
+    b258.BackgroundTransparency = 1; b258.Text = "Automatically reconnect when disconnected from the server"
+    b258.Font = Enum.Font.Gotham; b258.TextSize = 12
+    b258.TextColor3 = Color3.fromRGB(150, 150, 150); b258.TextXAlignment = Enum.TextXAlignment.Left
 
-    local v253 = v70(v250, UDim2.new(0, 180, 0, 40), "Auto Rejoin: OFF")
-    v253.Position = UDim2.new(0.5, 0, 0, 75)
+    local b259 = b71(b256, UDim2.new(0, 180, 0, 40), "Auto Rejoin: OFF")
+    b259.Position = UDim2.new(0.5, 0, 0, 75)
 
-    local v254, v255 = v113(v250, UDim2.new(1, -20, 0, 105), UDim2.new(0, 10, 0, 135),
+    local b260, b261 = b114(b256, UDim2.new(1, -20, 0, 105), UDim2.new(0, 10, 0, 135),
         "System Status: Disabled\n\nWhen enabled, this feature will automatically rejoin the current server when you get disconnected due to errors or AFK timeout.")
 
-    v166 = { AutoRejoinToggle = v253, Status = v255 }
+    b168 = { AutoRejoinToggle = b259, Status = b261 }
 end
 
 do
-    local v256 = v148["Script Loader"]
-    local v257 = v123(v256, 460, 1)
+    local b262 = b149["Script Loader"]
+    local b263 = b124(b262, 460, 1)
+    b150["ScriptLoader_Card"] = b263
 
-    local v258 = Instance.new("TextLabel", v257)
-    v258.Size = UDim2.new(1, -20, 0, 26); v258.Position = UDim2.new(0, 10, 0, 8)
-    v258.BackgroundTransparency = 1; v258.Text = "💾 Script Executor"
-    v258.Font = Enum.Font.GothamBold; v258.TextSize = 18
-    v258.TextColor3 = Color3.fromRGB(200, 150, 255); v258.TextXAlignment = Enum.TextXAlignment.Left
+    local b264 = Instance.new("TextLabel", b263)
+    b264.Size = UDim2.new(1, -20, 0, 26); b264.Position = UDim2.new(0, 10, 0, 8)
+    b264.BackgroundTransparency = 1; b264.Text = "💾 Script Executor"
+    b264.Font = Enum.Font.GothamBold; b264.TextSize = 18
+    b264.TextColor3 = Color3.fromRGB(200, 150, 255); b264.TextXAlignment = Enum.TextXAlignment.Left
 
-    local v259 = Instance.new("TextLabel", v257)
-    v259.Size = UDim2.new(1, -20, 0, 16); v259.Position = UDim2.new(0, 10, 0, 34)
-    v259.BackgroundTransparency = 1; v259.Text = "Execute custom Lua scripts with auto-save and auto-load capabilities"
-    v259.Font = Enum.Font.Gotham; v259.TextSize = 12
-    v259.TextColor3 = Color3.fromRGB(150, 150, 150); v259.TextXAlignment = Enum.TextXAlignment.Left
+    local b265 = Instance.new("TextLabel", b263)
+    b265.Size = UDim2.new(1, -20, 0, 16); b265.Position = UDim2.new(0, 10, 0, 34)
+    b265.BackgroundTransparency = 1; b265.Text = "Execute custom Lua scripts with auto-save and auto-load capabilities"
+    b265.Font = Enum.Font.Gotham; b265.TextSize = 12
+    b265.TextColor3 = Color3.fromRGB(150, 150, 150); b265.TextXAlignment = Enum.TextXAlignment.Left
 
-    local v260 = Instance.new("Frame", v257)
-    v260.Size = UDim2.new(1, -20, 0, 220)
-    v260.Position = UDim2.new(0, 10, 0, 60)
-    v260.BackgroundColor3 = Color3.fromRGB(45, 45, 52)
-    v260.BorderSizePixel = 0
-    v61(v260, 8)
-    Instance.new("UIStroke", v260).Color = Color3.fromRGB(60, 60, 70)
+    local b266 = Instance.new("Frame", b263)
+    b266.Size = UDim2.new(1, -20, 0, 220)
+    b266.Position = UDim2.new(0, 10, 0, 60)
+    b266.BackgroundColor3 = Color3.fromRGB(45, 45, 52)
+    b266.BorderSizePixel = 0
+    b62(b266, 8)
+    Instance.new("UIStroke", b266).Color = Color3.fromRGB(60, 60, 70)
 
-    local v261 = Instance.new("ScrollingFrame", v260)
-    v261.Size = UDim2.new(0, 40, 1, 0)
-    v261.BackgroundColor3 = Color3.fromRGB(35, 35, 40)
-    v261.BorderSizePixel = 0
-    v261.ScrollBarThickness = 0
-    v261.ScrollingEnabled = false
-    v261.CanvasSize = UDim2.new(0, 0, 0, 220)
-    v61(v261, 8)
+    local b267 = Instance.new("ScrollingFrame", b266)
+    b267.Size = UDim2.new(0, 40, 1, 0)
+    b267.BackgroundColor3 = Color3.fromRGB(35, 35, 40)
+    b267.BorderSizePixel = 0
+    b267.ScrollBarThickness = 0
+    b267.ScrollingEnabled = false
+    b267.CanvasSize = UDim2.new(0, 0, 0, 220)
+    b62(b267, 8)
 
-    local v262 = Instance.new("TextLabel", v261)
-    v262.Size = UDim2.new(1, -5, 1, 0)
-    v262.BackgroundTransparency = 1
-    v262.Text = "1"
-    v262.Font = Enum.Font.Code
-    v262.TextSize = 12
-    v262.TextColor3 = Color3.fromRGB(120, 120, 120)
-    v262.TextXAlignment = Enum.TextXAlignment.Right
-    v262.TextYAlignment = Enum.TextYAlignment.Top
+    local b268 = Instance.new("TextLabel", b267)
+    b268.Size = UDim2.new(1, -5, 1, 0)
+    b268.BackgroundTransparency = 1
+    b268.Text = "1"
+    b268.Font = Enum.Font.Code
+    b268.TextSize = 12
+    b268.TextColor3 = Color3.fromRGB(120, 120, 120)
+    b268.TextXAlignment = Enum.TextXAlignment.Right
+    b268.TextYAlignment = Enum.TextYAlignment.Top
 
-    local v263 = Instance.new("Frame", v260)
-    v263.Size = UDim2.new(0, 1, 1, 0)
-    v263.Position = UDim2.new(0, 40, 0, 0)
-    v263.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
-    v263.BorderSizePixel = 0
+    local b269 = Instance.new("Frame", b266)
+    b269.Size = UDim2.new(0, 1, 1, 0)
+    b269.Position = UDim2.new(0, 40, 0, 0)
+    b269.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+    b269.BorderSizePixel = 0
 
-    local v264 = Instance.new("ScrollingFrame", v260)
-    v264.Size = UDim2.new(1, -41, 1, 0)
-    v264.Position = UDim2.new(0, 41, 0, 0)
-    v264.BackgroundTransparency = 1
-    v264.BorderSizePixel = 0
-    v264.ScrollBarThickness = 4
-    v264.ScrollBarImageColor3 = Color3.fromRGB(100, 150, 255)
-    v264.ScrollBarImageTransparency = 0.5
-    v264.CanvasSize = UDim2.new(0, 0, 0, 220)
+    local b270 = Instance.new("ScrollingFrame", b266)
+    b270.Size = UDim2.new(1, -41, 1, 0)
+    b270.Position = UDim2.new(0, 41, 0, 0)
+    b270.BackgroundTransparency = 1
+    b270.BorderSizePixel = 0
+    b270.ScrollBarThickness = 4
+    b270.ScrollBarImageColor3 = Color3.fromRGB(100, 150, 255)
+    b270.ScrollBarImageTransparency = 0.5
+    b270.CanvasSize = UDim2.new(0, 0, 0, 220)
 
-    local v265 = Instance.new("TextBox", v264)
-    v265.Size = UDim2.new(1, -10, 1, 0)
-    v265.Position = UDim2.new(0, 5, 0, 0)
-    v265.BackgroundTransparency = 1
-    v265.Text = v20.SavedCode
-    v265.PlaceholderText = "-- Paste your Lua code here..."
-    v265.Font = Enum.Font.Code
-    v265.TextSize = 12
-    v265.TextColor3 = Color3.fromRGB(255, 255, 255)
-    v265.PlaceholderColor3 = Color3.fromRGB(120, 120, 120)
-    v265.BorderSizePixel = 0
-    v265.TextWrapped = true
-    v265.TextXAlignment = Enum.TextXAlignment.Left
-    v265.TextYAlignment = Enum.TextYAlignment.Top
-    v265.MultiLine = true
-    v265.ClearTextOnFocus = false
-    v265.TextEditable = true
+    local b271 = Instance.new("TextBox", b270)
+    b271.Size = UDim2.new(1, -10, 1, 0)
+    b271.Position = UDim2.new(0, 5, 0, 0)
+    b271.BackgroundTransparency = 1
+    b271.Text = b21.SavedCode
+    b271.PlaceholderText = "-- Paste your Lua code here..."
+    b271.Font = Enum.Font.Code
+    b271.TextSize = 12
+    b271.TextColor3 = Color3.fromRGB(255, 255, 255)
+    b271.PlaceholderColor3 = Color3.fromRGB(120, 120, 120)
+    b271.BorderSizePixel = 0
+    b271.TextWrapped = true
+    b271.TextXAlignment = Enum.TextXAlignment.Left
+    b271.TextYAlignment = Enum.TextYAlignment.Top
+    b271.MultiLine = true
+    b271.ClearTextOnFocus = false
+    b271.TextEditable = true
 
-    local v266 = v70(v257, UDim2.new(0, 140, 0, 36), "Execute")
-    v266.Position = UDim2.new(0.25, 0, 0, 300)
-    local v267 = v70(v257, UDim2.new(0, 140, 0, 36), "Auto Load: OFF")
-    v267.Position = UDim2.new(0.75, 0, 0, 300)
+    local b272 = b71(b263, UDim2.new(0, 140, 0, 36), "Execute")
+    b272.Position = UDim2.new(0.25, 0, 0, 300)
+    local b273 = b71(b263, UDim2.new(0, 140, 0, 36), "Auto Load: OFF")
+    b273.Position = UDim2.new(0.75, 0, 0, 300)
 
-    local v268, v269 = v113(v257, UDim2.new(1, -20, 0, 40), UDim2.new(0, 10, 0, 350), "System Status: Ready to execute")
+    local b274, b275 = b114(b263, UDim2.new(1, -20, 0, 40), UDim2.new(0, 10, 0, 350), "System Status: Ready to execute")
 
-    local v270 = Instance.new("TextLabel", v257)
-    v270.Size = UDim2.new(1, -20, 0, 60)
-    v270.Position = UDim2.new(0, 10, 0, 395)
-    v270.BackgroundTransparency = 1
-    v270.Text = "Your code is automatically saved while typing. Enable Auto Load to execute your script automatically when rejoining.\n\nChanges are saved in real-time."
-    v270.Font = Enum.Font.Gotham
-    v270.TextSize = 12
-    v270.TextColor3 = Color3.fromRGB(130, 130, 130)
-    v270.TextXAlignment = Enum.TextXAlignment.Center
-    v270.TextWrapped = true
+    local b276 = Instance.new("TextLabel", b263)
+    b276.Size = UDim2.new(1, -20, 0, 60)
+    b276.Position = UDim2.new(0, 10, 0, 395)
+    b276.BackgroundTransparency = 1
+    b276.Text = "Your code is automatically saved while typing. Enable Auto Load to execute your script automatically when rejoining.\n\nChanges are saved in real-time."
+    b276.Font = Enum.Font.Gotham
+    b276.TextSize = 12
+    b276.TextColor3 = Color3.fromRGB(130, 130, 130)
+    b276.TextXAlignment = Enum.TextXAlignment.Center
+    b276.TextWrapped = true
 
-    v167 = {
-        LoadStringBox = v265,
-        LineNumbers = v262,
-        LoadStringScrollFrame = v264,
-        LineNumbersScrollFrame = v261,
-        ExecuteButton = v266,
-        AutoLoadButton = v267,
-        Status = v269,
+    b169 = {
+        LoadStringBox = b271,
+        LineNumbers = b268,
+        LoadStringScrollFrame = b270,
+        LineNumbersScrollFrame = b267,
+        ExecuteButton = b272,
+        AutoLoadButton = b273,
+        Status = b275,
     }
 end
 
 do
-    local v271 = v148["Settings"]
-    local v272 = v123(v271, 230, 1)
+    local b277 = b149["Settings"]
+    local b278 = b124(b277, 230, 1)
+    b150["Settings_Card"] = b278
 
-    local v273 = Instance.new("TextLabel", v272)
-    v273.Size = UDim2.new(1, -20, 0, 26); v273.Position = UDim2.new(0, 10, 0, 8)
-    v273.BackgroundTransparency = 1; v273.Text = "⚙️ UI Configuration"
-    v273.Font = Enum.Font.GothamBold; v273.TextSize = 18
-    v273.TextColor3 = Color3.fromRGB(255, 180, 100); v273.TextXAlignment = Enum.TextXAlignment.Left
+    local b279 = Instance.new("TextLabel", b278)
+    b279.Size = UDim2.new(1, -20, 0, 26); b279.Position = UDim2.new(0, 10, 0, 8)
+    b279.BackgroundTransparency = 1; b279.Text = "⚙️ UI Configuration"
+    b279.Font = Enum.Font.GothamBold; b279.TextSize = 18
+    b279.TextColor3 = Color3.fromRGB(255, 180, 100); b279.TextXAlignment = Enum.TextXAlignment.Left
 
-    local v274 = Instance.new("TextLabel", v272)
-    v274.Size = UDim2.new(1, -20, 0, 16); v274.Position = UDim2.new(0, 10, 0, 34)
-    v274.BackgroundTransparency = 1; v274.Text = "Customize interface preferences and keybinds"
-    v274.Font = Enum.Font.Gotham; v274.TextSize = 11
-    v274.TextColor3 = Color3.fromRGB(150, 150, 150); v274.TextXAlignment = Enum.TextXAlignment.Left
+    local b280 = Instance.new("TextLabel", b278)
+    b280.Size = UDim2.new(1, -20, 0, 16); b280.Position = UDim2.new(0, 10, 0, 34)
+    b280.BackgroundTransparency = 1; b280.Text = "Customize interface preferences and keybinds"
+    b280.Font = Enum.Font.Gotham; b280.TextSize = 11
+    b280.TextColor3 = Color3.fromRGB(150, 150, 150); b280.TextXAlignment = Enum.TextXAlignment.Left
 
-    v120(v272, "Toggle Keybind", 60)
+    b121(b278, "Toggle Keybind", 60)
 
-    local v275 = v21[v20.Keybind] or v20.Keybind.Name
-    local v276 = v70(v272, UDim2.new(0, 220, 0, 40), "Current Key: " .. v275)
-    v276.Position = UDim2.new(0.5, 0, 0, 90)
+    local b281 = b22[b21.Keybind] or b21.Keybind.Name
+    local b282 = b71(b278, UDim2.new(0, 220, 0, 40), "Current Key: " .. b281)
+    b282.Position = UDim2.new(0.5, 0, 0, 90)
 
-    local v277, v278 = v113(v272, UDim2.new(1, -20, 0, 85), UDim2.new(0, 10, 0, 140),
-        "Click the button above to change your toggle keybind.\n\nPress the assigned keybind at any time to show or hide this menu.")
+    b118(b278, 140)
 
-    v168 = { KeybindButton = v276, Status = v278 }
+    local b283 = b71(b278, UDim2.new(0, 220, 0, 40), "Auto Hide UI: OFF")
+    b283.Position = UDim2.new(0.5, 0, 0, 155)
+
+    local b284, b285 = b114(b278, UDim2.new(1, -20, 0, 85), UDim2.new(0, 10, 0, 205),
+        "Click the keybind button above to change your toggle keybind.\n\nEnable Auto Hide to start with UI hidden on next execution.")
+
+    b170 = {
+        KeybindButton = b282,
+        AutoHideToggle = b283,
+        Status = b285,
+    }
 end
 
-local v279 = typeof(setfpscap) == "function"
-if v279 then
-    local v280 = pcall(setfpscap, 60)
-    if not v280 then v279 = false end
+local b286 = typeof(setfpscap) == "function"
+if b286 then
+    local b287 = pcall(setfpscap, 60)
+    if not b287 then b286 = false end
 end
 
-local v281, v282, v283 = {}, {}, 60
-local v284, v285, v286 = tick(), 0, 60
+local b288, b289, b290 = {}, {}, 60
+local b291, b292, b293 = tick(), 0, 60
+local b294 = 0
 
-for v287 = 1, 60 do
-    table.insert(v281, 60)
-    table.insert(v282, 0)
+for b295 = 1, 60 do
+    table.insert(b288, 60)
+    table.insert(b289, 0)
 end
 
-local function v288()
-    local v289 = v163
-    if not v289.Status then return end
-    local v290, v291
-    if v20.JumpEnabled and v20.ClickEnabled then
-        v290, v291 = "Status: Jump & Click Active", Color3.fromRGB(50, 220, 100)
-    elseif v20.JumpEnabled then
-        v290, v291 = "Status: Jump Active", Color3.fromRGB(100, 200, 255)
-    elseif v20.ClickEnabled then
-        v290, v291 = "Status: Click Active", Color3.fromRGB(255, 200, 100)
+local function b296()
+    local b297 = b165
+    if not b297.Status then return end
+    local b298, b299
+    if b21.JumpEnabled and b21.ClickEnabled then
+        b298, b299 = "Status: Jump & Click Active", Color3.fromRGB(50, 220, 100)
+    elseif b21.JumpEnabled then
+        b298, b299 = "Status: Jump Active", Color3.fromRGB(100, 200, 255)
+    elseif b21.ClickEnabled then
+        b298, b299 = "Status: Click Active", Color3.fromRGB(255, 200, 100)
     else
-        v290, v291 = "Status: All Inactive", Color3.fromRGB(180, 180, 180)
+        b298, b299 = "Status: All Inactive", Color3.fromRGB(180, 180, 180)
     end
-    v43(v289.Status, v39.Fast, { TextColor3 = v291 })
-    v289.Status.Text = v290
+    b44(b297.Status, b40.Fast, { TextColor3 = b299 })
+    b297.Status.Text = b298
 end
 
-local function v292()
-    local v293 = {
-        Current = v163.ClickTypeCurrent,
-        Center = v163.ClickTypeCenter,
-        Random = v163.ClickTypeRandom,
+local function b300()
+    local b301 = {
+        Current = b165.ClickTypeCurrent,
+        Center = b165.ClickTypeCenter,
+        Random = b165.ClickTypeRandom,
     }
-    for v294, v295 in pairs(v293) do
-        if v295 then
-            local v296 = v20.ClickType == v294 and Color3.fromRGB(100, 150, 255) or Color3.fromRGB(45, 45, 52)
-            if _G.UU.ButtonStates[v295] then _G.UU.ButtonStates[v295].BaseColor = v296 end
-            v43(v295, v39.Fast, { BackgroundColor3 = v296 })
+    for b302, b303 in pairs(b301) do
+        if b303 then
+            local b304 = b21.ClickType == b302 and Color3.fromRGB(100, 150, 255) or Color3.fromRGB(45, 45, 52)
+            if _G.UU.ButtonStates[b303] then _G.UU.ButtonStates[b303].BaseColor = b304 end
+            b44(b303, b40.Fast, { BackgroundColor3 = b304 })
         end
     end
 end
 
-local function v297()
-    v51("Jump")
+local function b305()
+    b52("Jump")
     _G.UU.Threads.Jump = task.spawn(function()
-        while v20.JumpEnabled do
-            task.wait(v20.JumpDelay)
-            if v20.JumpEnabled and v10.Character then
-                local v298 = v10.Character:FindFirstChildOfClass("Humanoid")
-                if v298 then v298:ChangeState(Enum.HumanoidStateType.Jumping) end
+        while b21.JumpEnabled do
+            task.wait(b21.JumpDelay)
+            if b21.JumpEnabled and b11.Character then
+                local b306 = b11.Character:FindFirstChildOfClass("Humanoid")
+                if b306 then b306:ChangeState(Enum.HumanoidStateType.Jumping) end
             end
         end
         _G.UU.Threads.Jump = nil
     end)
 end
 
-local function v299()
-    v51("Click")
+local function b307()
+    b52("Click")
     _G.UU.Threads.Click = task.spawn(function()
-        while v20.ClickEnabled do
-            task.wait(v20.ClickDelay)
-            if v20.ClickEnabled then
-                local v300, v301
-                if v20.ClickType == "Current" then
-                    local v302 = v3:GetMouseLocation()
-                    v300, v301 = v302.X, v302.Y
-                elseif v20.ClickType == "Center" then
-                    local v303 = workspace.CurrentCamera.ViewportSize
-                    v300, v301 = v303.X / 2, v303.Y / 2
+        while b21.ClickEnabled do
+            task.wait(b21.ClickDelay)
+            if b21.ClickEnabled then
+                local b308, b309
+                if b21.ClickType == "Current" then
+                    local b310 = b3:GetMouseLocation()
+                    b308, b309 = b310.X, b310.Y
+                elseif b21.ClickType == "Center" then
+                    local b311 = workspace.CurrentCamera.ViewportSize
+                    b308, b309 = b311.X / 2, b311.Y / 2
                 else
-                    local v304 = workspace.CurrentCamera.ViewportSize
-                    v300, v301 = math.random(100, v304.X - 100), math.random(100, v304.Y - 100)
+                    local b312 = workspace.CurrentCamera.ViewportSize
+                    b308, b309 = math.random(100, b312.X - 100), math.random(100, b312.Y - 100)
                 end
-                v4:SendMouseButtonEvent(v300, v301, 0, true, game, 0)
+                b4:SendMouseButtonEvent(b308, b309, 0, true, game, 0)
                 task.wait(0.05)
-                v4:SendMouseButtonEvent(v300, v301, 0, false, game, 0)
+                b4:SendMouseButtonEvent(b308, b309, 0, false, game, 0)
             end
         end
         _G.UU.Threads.Click = nil
     end)
 end
 
-local function v305()
-    v51("Spam")
-    local v306 = v20.SpamKey:upper()
-    local v307 = v22[v306]
-    if not v307 then return end
+local function b313()
+    b52("Spam")
+    local b314 = b21.SpamKey:upper()
+    local b315 = b23[b314]
+    if not b315 then return end
     _G.UU.Threads.Spam = task.spawn(function()
-        while v20.AutoSpamEnabled do
-            task.wait(v20.SpamDelay)
-            if v20.AutoSpamEnabled then
-                v4:SendKeyEvent(true, v307, false, game)
+        while b21.AutoSpamEnabled do
+            task.wait(b21.SpamDelay)
+            if b21.AutoSpamEnabled then
+                b4:SendKeyEvent(true, b315, false, game)
                 task.wait(0.05)
-                v4:SendKeyEvent(false, v307, false, game)
+                b4:SendKeyEvent(false, b315, false, game)
             end
         end
         _G.UU.Threads.Spam = nil
     end)
 end
 
-local v308 = false
-local v309 = nil
+local b316 = false
+local b317 = nil
 
-local function v310()
-    if v309 then
-        pcall(function() v309:Disconnect() end)
-        v309 = nil
+local function b318()
+    if b317 then
+        pcall(function() b317:Disconnect() end)
+        b317 = nil
     end
-    if not v20.AutoRejoinEnabled then return end
+    if not b21.AutoRejoinEnabled then return end
     task.spawn(function()
-        local v311 = v6:FindFirstChild("RobloxPromptGui")
-        if not v311 then
-            local v312, v313 = pcall(function() return v6:WaitForChild("RobloxPromptGui", 10) end)
-            if not v312 or not v313 then
-                if v166.Status then
-                    v166.Status.Text = "Status: Enabled (waiting for prompt GUI...)\n\nAutomatically rejoins the game when disconnected."
+        local b319 = b6:FindFirstChild("RobloxPromptGui")
+        if not b319 then
+            local b320, b321 = pcall(function() return b6:WaitForChild("RobloxPromptGui", 10) end)
+            if not b320 or not b321 then
+                if b168.Status then
+                    b168.Status.Text = "Status: Enabled (waiting for prompt GUI...)\n\nAutomatically rejoins the game when disconnected."
                 end
                 return
             end
-            v311 = v313
+            b319 = b321
         end
-        local v314 = v311:FindFirstChild("promptOverlay")
-        if not v314 then
-            local v315, v316 = pcall(function() return v311:WaitForChild("promptOverlay", 10) end)
-            if not v315 or not v316 then
-                if v166.Status then
-                    v166.Status.Text = "Status: Enabled (prompt overlay unavailable)\n\nAutomatically rejoins the game when disconnected."
+        local b322 = b319:FindFirstChild("promptOverlay")
+        if not b322 then
+            local b323, b324 = pcall(function() return b319:WaitForChild("promptOverlay", 10) end)
+            if not b323 or not b324 then
+                if b168.Status then
+                    b168.Status.Text = "Status: Enabled (prompt overlay unavailable)\n\nAutomatically rejoins the game when disconnected."
                 end
                 return
             end
-            v314 = v316
+            b322 = b324
         end
-        v309 = v314.ChildAdded:Connect(function(v317)
-            if v317.Name == "ErrorPrompt" and v20.AutoRejoinEnabled and not v308 then
-                v308 = true
+        b317 = b322.ChildAdded:Connect(function(b325)
+            if b325.Name == "ErrorPrompt" and b21.AutoRejoinEnabled and not b316 then
+                b316 = true
                 _G.UU.Threads.Rejoin = task.spawn(function()
-                    while v20.AutoRejoinEnabled and v308 do
-                        v7:Teleport(game.PlaceId, v10)
+                    while b21.AutoRejoinEnabled and b316 do
+                        b7:Teleport(game.PlaceId, b11)
                         task.wait(2)
                     end
                     _G.UU.Threads.Rejoin = nil
@@ -1445,804 +1497,845 @@ local function v310()
     end)
 end
 
-local function v318(v319)
-    if not v319 or v319 == "" then return false, "Empty script" end
-    local v320, v321 = pcall(function()
-        local v322, v323 = loadstring(v319)
-        if not v322 then error(v323) end
-        v322()
+local function b326(b327)
+    if not b327 or b327 == "" then return false, "Empty script" end
+    local b328, b329 = pcall(function()
+        local b330, b331 = loadstring(b327)
+        if not b330 then error(b331) end
+        b330()
     end)
-    if v320 then return true, "Executed successfully!" end
-    return false, "Error - " .. tostring(v321):sub(1, 50) .. "..."
+    if b328 then return true, "Executed successfully!" end
+    return false, "Error - " .. tostring(b329):sub(1, 50) .. "..."
 end
 
-local v324 = { jump = false, click = false, spam = false, fps = false }
+local b332 = { jump = false, click = false, spam = false, fps = false }
 
-local function v325(v88)
-    v20.JumpDelay = 5 + (v88 * 25)
-    v85(v163.JumpSliderFill, v163.JumpDelayBox, v20.JumpDelay, 5, 30, "%.1f")
-    v33()
+local function b333(b334)
+    b21.JumpDelay = 5 + (b334 * 25)
+    b86(b165.JumpSliderFill, b165.JumpDelayBox, b21.JumpDelay, 5, 30, "%.1f")
+    b34()
 end
 
-local function v326(v88)
-    v20.ClickDelay = 1 + (v88 * 9)
-    v85(v163.ClickSliderFill, v163.ClickDelayBox, v20.ClickDelay, 1, 10, "%.1f")
-    v33()
+local function b335(b334)
+    b21.ClickDelay = 1 + (b334 * 9)
+    b86(b165.ClickSliderFill, b165.ClickDelayBox, b21.ClickDelay, 1, 10, "%.1f")
+    b34()
 end
 
-local function v327(v88)
-    v20.SpamDelay = 0.05 + (v88 * 4.95)
-    v85(v164.SpamSliderFill, v164.SpamDelayBox, v20.SpamDelay, 0.05, 5, "%.2f")
-    v33()
+local function b336(b334)
+    b21.SpamDelay = 0.05 + (b334 * 4.95)
+    b86(b166.SpamSliderFill, b166.SpamDelayBox, b21.SpamDelay, 0.05, 5, "%.2f")
+    b34()
 end
 
-local function v328(v88)
-    v20.TargetFPS = math.floor(15 + (v88 * 345))
-    v85(v165.FPSFill, v165.FPSValueBox, v20.TargetFPS, 15, 360, "%d")
-    if v20.FPSUnlockEnabled and v279 then
-        pcall(setfpscap, v20.TargetFPS)
-        v165.FPSUnlockStatus.Text = "Your target: " .. v20.TargetFPS .. " FPS"
+local function b337(b334)
+    b21.TargetFPS = math.floor(15 + (b334 * 345))
+    b86(b167.FPSFill, b167.FPSValueBox, b21.TargetFPS, 15, 360, "%d")
+    if b21.FPSUnlockEnabled and b286 then
+        pcall(setfpscap, b21.TargetFPS)
+        b167.FPSUnlockStatus.Text = "Your target: " .. b21.TargetFPS .. " FPS"
     end
-    v33()
+    b34()
 end
 
-v163.JumpSliderButton.MouseButton1Down:Connect(function() v324.jump = true; v89(v163.JumpSliderButton, 0.9) end)
-v163.ClickSliderButton.MouseButton1Down:Connect(function() v324.click = true; v89(v163.ClickSliderButton, 0.9) end)
-v164.SpamSliderButton.MouseButton1Down:Connect(function() v324.spam = true; v89(v164.SpamSliderButton, 0.9) end)
-v165.FPSButton.MouseButton1Down:Connect(function() v324.fps = true; v89(v165.FPSButton, 0.9) end)
+b165.JumpSliderButton.MouseButton1Down:Connect(function() b332.jump = true; b90(b165.JumpSliderButton, 0.9) end)
+b165.ClickSliderButton.MouseButton1Down:Connect(function() b332.click = true; b90(b165.ClickSliderButton, 0.9) end)
+b166.SpamSliderButton.MouseButton1Down:Connect(function() b332.spam = true; b90(b166.SpamSliderButton, 0.9) end)
+b167.FPSButton.MouseButton1Down:Connect(function() b332.fps = true; b90(b167.FPSButton, 0.9) end)
 
-table.insert(_G.UU.Connections, v3.InputEnded:Connect(function(v110)
-    if v110.UserInputType == Enum.UserInputType.MouseButton1 then
-        v324.jump = false
-        v324.click = false
-        v324.spam = false
-        v324.fps = false
-    end
-end))
-
-table.insert(_G.UU.Connections, v3.InputChanged:Connect(function(v110)
-    if v110.UserInputType ~= Enum.UserInputType.MouseMovement then return end
-    local v329 = v3:GetMouseLocation().X
-    if v324.jump and v163.JumpDelaySlider then
-        v325(math.clamp((v329 - v163.JumpDelaySlider.AbsolutePosition.X) / v163.JumpDelaySlider.AbsoluteSize.X, 0, 1))
-    elseif v324.click and v163.ClickDelaySlider then
-        v326(math.clamp((v329 - v163.ClickDelaySlider.AbsolutePosition.X) / v163.ClickDelaySlider.AbsoluteSize.X, 0, 1))
-    elseif v324.spam and v164.SpamDelaySlider then
-        v327(math.clamp((v329 - v164.SpamDelaySlider.AbsolutePosition.X) / v164.SpamDelaySlider.AbsoluteSize.X, 0, 1))
-    elseif v324.fps and v165.FPSSlider then
-        v328(math.clamp((v329 - v165.FPSSlider.AbsolutePosition.X) / v165.FPSSlider.AbsoluteSize.X, 0, 1))
+table.insert(_G.UU.Connections, b3.InputEnded:Connect(function(b338)
+    if b338.UserInputType == Enum.UserInputType.MouseButton1 then
+        b332.jump = false
+        b332.click = false
+        b332.spam = false
+        b332.fps = false
     end
 end))
 
-v163.JumpDelayBox.FocusLost:Connect(function()
-    local v86 = math.clamp(tonumber(v163.JumpDelayBox.Text) or v20.JumpDelay, 5, 30)
-    v325((v86 - 5) / 25)
+table.insert(_G.UU.Connections, b3.InputChanged:Connect(function(b338)
+    if b338.UserInputType ~= Enum.UserInputType.MouseMovement then return end
+    local b339 = b3:GetMouseLocation().X
+    if b332.jump and b165.JumpDelaySlider then
+        b333(math.clamp((b339 - b165.JumpDelaySlider.AbsolutePosition.X) / b165.JumpDelaySlider.AbsoluteSize.X, 0, 1))
+    elseif b332.click and b165.ClickDelaySlider then
+        b335(math.clamp((b339 - b165.ClickDelaySlider.AbsolutePosition.X) / b165.ClickDelaySlider.AbsoluteSize.X, 0, 1))
+    elseif b332.spam and b166.SpamDelaySlider then
+        b336(math.clamp((b339 - b166.SpamDelaySlider.AbsolutePosition.X) / b166.SpamDelaySlider.AbsoluteSize.X, 0, 1))
+    elseif b332.fps and b167.FPSSlider then
+        b337(math.clamp((b339 - b167.FPSSlider.AbsolutePosition.X) / b167.FPSSlider.AbsoluteSize.X, 0, 1))
+    end
+end))
+
+b165.JumpDelayBox.FocusLost:Connect(function()
+    local b334 = math.clamp(tonumber(b165.JumpDelayBox.Text) or b21.JumpDelay, 5, 30)
+    b333((b334 - 5) / 25)
 end)
-v163.ClickDelayBox.FocusLost:Connect(function()
-    local v86 = math.clamp(tonumber(v163.ClickDelayBox.Text) or v20.ClickDelay, 1, 10)
-    v326((v86 - 1) / 9)
+b165.ClickDelayBox.FocusLost:Connect(function()
+    local b334 = math.clamp(tonumber(b165.ClickDelayBox.Text) or b21.ClickDelay, 1, 10)
+    b335((b334 - 1) / 9)
 end)
-v164.SpamDelayBox.FocusLost:Connect(function()
-    local v86 = math.clamp(tonumber(v164.SpamDelayBox.Text) or v20.SpamDelay, 0.05, 5)
-    v327((v86 - 0.05) / 4.95)
+b166.SpamDelayBox.FocusLost:Connect(function()
+    local b334 = math.clamp(tonumber(b166.SpamDelayBox.Text) or b21.SpamDelay, 0.05, 5)
+    b336((b334 - 0.05) / 4.95)
 end)
-v165.FPSValueBox.FocusLost:Connect(function()
-    local v86 = math.clamp(tonumber(v165.FPSValueBox.Text) or v20.TargetFPS, 15, 360)
-    v328((v86 - 15) / 345)
+b167.FPSValueBox.FocusLost:Connect(function()
+    local b334 = math.clamp(tonumber(b167.FPSValueBox.Text) or b21.TargetFPS, 15, 360)
+    b337((b334 - 15) / 345)
 end)
-v164.SpamInput.FocusLost:Connect(function()
-    v20.SpamKey = v164.SpamInput.Text:upper()
-    v33()
+b166.SpamInput.FocusLost:Connect(function()
+    b21.SpamKey = b166.SpamInput.Text:upper()
+    b34()
 end)
 
-local v330 = false
-local function v331(v332)
-    if v330 or v20.ClickType == v332 then return end
-    v330 = true
-    v20.ClickType = v332
-    v292()
-    v33()
-    task.delay(0.1, function() v330 = false end)
+local b340 = false
+local function b341(b342)
+    if b340 or b21.ClickType == b342 then return end
+    b340 = true
+    b21.ClickType = b342
+    b300()
+    b34()
+    task.delay(0.1, function() b340 = false end)
 end
 
-v163.ClickTypeCurrent.MouseButton1Click:Connect(function() v331("Current"); v89(v163.ClickTypeCurrent) end)
-v163.ClickTypeCenter.MouseButton1Click:Connect(function() v331("Center"); v89(v163.ClickTypeCenter) end)
-v163.ClickTypeRandom.MouseButton1Click:Connect(function() v331("Random"); v89(v163.ClickTypeRandom) end)
+b165.ClickTypeCurrent.MouseButton1Click:Connect(function() b341("Current"); b90(b165.ClickTypeCurrent) end)
+b165.ClickTypeCenter.MouseButton1Click:Connect(function() b341("Center"); b90(b165.ClickTypeCenter) end)
+b165.ClickTypeRandom.MouseButton1Click:Connect(function() b341("Random"); b90(b165.ClickTypeRandom) end)
 
-v163.JumpToggle.MouseButton1Click:Connect(function()
-    if not v48("Jump", 0.3) then return end
-    v89(v163.JumpToggle)
-    v20.JumpEnabled = not v20.JumpEnabled
-    local v296 = v20.JumpEnabled and Color3.fromRGB(50, 220, 100) or Color3.fromRGB(220, 50, 50)
-    if _G.UU.ButtonStates[v163.JumpToggle] then _G.UU.ButtonStates[v163.JumpToggle].BaseColor = v296 end
-    v43(v163.JumpToggle, v39.Medium, { BackgroundColor3 = v296 })
-    v163.JumpToggle.Text = "Auto Jump: " .. (v20.JumpEnabled and "ON" or "OFF")
-    if v20.JumpEnabled then task.wait(0.05); v297() else v51("Jump") end
-    v288(); v33()
+b165.JumpToggle.MouseButton1Click:Connect(function()
+    if not b49("Jump", 0.3) then return end
+    b90(b165.JumpToggle)
+    b21.JumpEnabled = not b21.JumpEnabled
+    local b304 = b21.JumpEnabled and Color3.fromRGB(50, 220, 100) or Color3.fromRGB(220, 50, 50)
+    if _G.UU.ButtonStates[b165.JumpToggle] then _G.UU.ButtonStates[b165.JumpToggle].BaseColor = b304 end
+    b44(b165.JumpToggle, b40.Medium, { BackgroundColor3 = b304 })
+    b165.JumpToggle.Text = "Auto Jump: " .. (b21.JumpEnabled and "ON" or "OFF")
+    if b21.JumpEnabled then task.wait(0.05); b305() else b52("Jump") end
+    b296(); b34()
 end)
 
-v163.ClickToggle.MouseButton1Click:Connect(function()
-    if not v48("Click", 0.3) then return end
-    v89(v163.ClickToggle)
-    v20.ClickEnabled = not v20.ClickEnabled
-    local v296 = v20.ClickEnabled and Color3.fromRGB(50, 220, 100) or Color3.fromRGB(220, 50, 50)
-    if _G.UU.ButtonStates[v163.ClickToggle] then _G.UU.ButtonStates[v163.ClickToggle].BaseColor = v296 end
-    v43(v163.ClickToggle, v39.Medium, { BackgroundColor3 = v296 })
-    v163.ClickToggle.Text = "Auto Click: " .. (v20.ClickEnabled and "ON" or "OFF")
-    if v20.ClickEnabled then task.wait(0.05); v299() else v51("Click") end
-    v288(); v33()
+b165.ClickToggle.MouseButton1Click:Connect(function()
+    if not b49("Click", 0.3) then return end
+    b90(b165.ClickToggle)
+    b21.ClickEnabled = not b21.ClickEnabled
+    local b304 = b21.ClickEnabled and Color3.fromRGB(50, 220, 100) or Color3.fromRGB(220, 50, 50)
+    if _G.UU.ButtonStates[b165.ClickToggle] then _G.UU.ButtonStates[b165.ClickToggle].BaseColor = b304 end
+    b44(b165.ClickToggle, b40.Medium, { BackgroundColor3 = b304 })
+    b165.ClickToggle.Text = "Auto Click: " .. (b21.ClickEnabled and "ON" or "OFF")
+    if b21.ClickEnabled then task.wait(0.05); b307() else b52("Click") end
+    b296(); b34()
 end)
 
-v164.AutoSpamToggle.MouseButton1Click:Connect(function()
-    if not v48("Spam", 0.3) then return end
-    v89(v164.AutoSpamToggle)
-    v20.AutoSpamEnabled = not v20.AutoSpamEnabled
-    if v20.AutoSpamEnabled then
-        local v306 = v164.SpamInput.Text:upper()
-        local v307 = v22[v306]
-        if not v307 then
-            v20.AutoSpamEnabled = false
-            v164.Status.Text = "Status: Invalid key"
-            v43(v164.Status, v39.Fast, { TextColor3 = Color3.fromRGB(220, 50, 50) })
+b166.AutoSpamToggle.MouseButton1Click:Connect(function()
+    if not b49("Spam", 0.3) then return end
+    b90(b166.AutoSpamToggle)
+    b21.AutoSpamEnabled = not b21.AutoSpamEnabled
+    if b21.AutoSpamEnabled then
+        local b314 = b166.SpamInput.Text:upper()
+        local b315 = b23[b314]
+        if not b315 then
+            b21.AutoSpamEnabled = false
+            b166.Status.Text = "Status: Invalid key"
+            b44(b166.Status, b40.Fast, { TextColor3 = Color3.fromRGB(220, 50, 50) })
             return
         end
-        if v307 == Enum.KeyCode.P or v307 == v20.Keybind then
-            v20.AutoSpamEnabled = false
-            v164.Status.Text = "Status: Key reserved"
-            v43(v164.Status, v39.Fast, { TextColor3 = Color3.fromRGB(220, 50, 50) })
+        if b315 == Enum.KeyCode.P or b315 == b21.Keybind then
+            b21.AutoSpamEnabled = false
+            b166.Status.Text = "Status: Key reserved"
+            b44(b166.Status, b40.Fast, { TextColor3 = Color3.fromRGB(220, 50, 50) })
             return
         end
-        v20.SpamKey = v306
-        local v296 = Color3.fromRGB(50, 220, 100)
-        if _G.UU.ButtonStates[v164.AutoSpamToggle] then _G.UU.ButtonStates[v164.AutoSpamToggle].BaseColor = v296 end
-        v43(v164.AutoSpamToggle, v39.Medium, { BackgroundColor3 = v296 })
-        v164.AutoSpamToggle.Text = "ON"
-        v164.Status.Text = "Status: Spamming " .. v306
-        v43(v164.Status, v39.Fast, { TextColor3 = Color3.fromRGB(50, 220, 100) })
-        task.wait(0.05); v305()
+        b21.SpamKey = b314
+        local b304 = Color3.fromRGB(50, 220, 100)
+        if _G.UU.ButtonStates[b166.AutoSpamToggle] then _G.UU.ButtonStates[b166.AutoSpamToggle].BaseColor = b304 end
+        b44(b166.AutoSpamToggle, b40.Medium, { BackgroundColor3 = b304 })
+        b166.AutoSpamToggle.Text = "ON"
+        b166.Status.Text = "Status: Spamming " .. b314
+        b44(b166.Status, b40.Fast, { TextColor3 = Color3.fromRGB(50, 220, 100) })
+        task.wait(0.05); b313()
     else
-        local v296 = Color3.fromRGB(220, 50, 50)
-        if _G.UU.ButtonStates[v164.AutoSpamToggle] then _G.UU.ButtonStates[v164.AutoSpamToggle].BaseColor = v296 end
-        v43(v164.AutoSpamToggle, v39.Medium, { BackgroundColor3 = v296 })
-        v164.AutoSpamToggle.Text = "OFF"
-        v164.Status.Text = "Status: Inactive"
-        v43(v164.Status, v39.Fast, { TextColor3 = Color3.fromRGB(180, 180, 180) })
-        v51("Spam")
+        local b304 = Color3.fromRGB(220, 50, 50)
+        if _G.UU.ButtonStates[b166.AutoSpamToggle] then _G.UU.ButtonStates[b166.AutoSpamToggle].BaseColor = b304 end
+        b44(b166.AutoSpamToggle, b40.Medium, { BackgroundColor3 = b304 })
+        b166.AutoSpamToggle.Text = "OFF"
+        b166.Status.Text = "Status: Inactive"
+        b44(b166.Status, b40.Fast, { TextColor3 = Color3.fromRGB(180, 180, 180) })
+        b52("Spam")
     end
-    v33()
+    b34()
 end)
 
-v165.FPSUnlockToggle.MouseButton1Click:Connect(function()
-    if not v48("FPS", 0.3) then return end
-    v89(v165.FPSUnlockToggle)
-    if not v279 then
-        v165.FPSUnlockStatus.Text = "FPS Unlock not supported"
-        v43(v165.FPSUnlockStatus, v39.Fast, { TextColor3 = Color3.fromRGB(220, 50, 50) })
+b167.FPSUnlockToggle.MouseButton1Click:Connect(function()
+    if not b49("FPS", 0.3) then return end
+    b90(b167.FPSUnlockToggle)
+    if not b286 then
+        b167.FPSUnlockStatus.Text = "FPS Unlock not supported"
+        b44(b167.FPSUnlockStatus, b40.Fast, { TextColor3 = Color3.fromRGB(220, 50, 50) })
         return
     end
-    v20.FPSUnlockEnabled = not v20.FPSUnlockEnabled
-    if v20.FPSUnlockEnabled then
-        pcall(setfpscap, v20.TargetFPS)
+    b21.FPSUnlockEnabled = not b21.FPSUnlockEnabled
+    if b21.FPSUnlockEnabled then
+        pcall(setfpscap, b21.TargetFPS)
     else
         pcall(setfpscap, 60)
     end
-    local v296 = v20.FPSUnlockEnabled and Color3.fromRGB(50, 220, 100) or Color3.fromRGB(220, 50, 50)
-    if _G.UU.ButtonStates[v165.FPSUnlockToggle] then _G.UU.ButtonStates[v165.FPSUnlockToggle].BaseColor = v296 end
-    v43(v165.FPSUnlockToggle, v39.Medium, { BackgroundColor3 = v296 })
-    v165.FPSUnlockToggle.Text = "FPS Unlock: " .. (v20.FPSUnlockEnabled and "ON" or "OFF")
-    if v20.FPSUnlockEnabled then
-        v165.FPSUnlockStatus.Text = "Your target: " .. v20.TargetFPS .. " FPS"
-        v43(v165.FPSUnlockStatus, v39.Fast, { TextColor3 = Color3.fromRGB(50, 220, 100) })
+    local b304 = b21.FPSUnlockEnabled and Color3.fromRGB(50, 220, 100) or Color3.fromRGB(220, 50, 50)
+    if _G.UU.ButtonStates[b167.FPSUnlockToggle] then _G.UU.ButtonStates[b167.FPSUnlockToggle].BaseColor = b304 end
+    b44(b167.FPSUnlockToggle, b40.Medium, { BackgroundColor3 = b304 })
+    b167.FPSUnlockToggle.Text = "FPS Unlock: " .. (b21.FPSUnlockEnabled and "ON" or "OFF")
+    if b21.FPSUnlockEnabled then
+        b167.FPSUnlockStatus.Text = "Your target: " .. b21.TargetFPS .. " FPS"
+        b44(b167.FPSUnlockStatus, b40.Fast, { TextColor3 = Color3.fromRGB(50, 220, 100) })
     else
-        v165.FPSUnlockStatus.Text = "Default FPS"
-        v43(v165.FPSUnlockStatus, v39.Fast, { TextColor3 = Color3.fromRGB(180, 180, 180) })
+        b167.FPSUnlockStatus.Text = "Default FPS"
+        b44(b167.FPSUnlockStatus, b40.Fast, { TextColor3 = Color3.fromRGB(180, 180, 180) })
     end
-    v33()
+    b34()
 end)
 
-v166.AutoRejoinToggle.MouseButton1Click:Connect(function()
-    if not v48("Rejoin", 0.3) then return end
-    v89(v166.AutoRejoinToggle)
-    v20.AutoRejoinEnabled = not v20.AutoRejoinEnabled
-    local v296 = v20.AutoRejoinEnabled and Color3.fromRGB(50, 220, 100) or Color3.fromRGB(220, 50, 50)
-    if _G.UU.ButtonStates[v166.AutoRejoinToggle] then _G.UU.ButtonStates[v166.AutoRejoinToggle].BaseColor = v296 end
-    v43(v166.AutoRejoinToggle, v39.Medium, { BackgroundColor3 = v296 })
-    v166.AutoRejoinToggle.Text = "Auto Rejoin: " .. (v20.AutoRejoinEnabled and "ON" or "OFF")
-    if v20.AutoRejoinEnabled then
-        v166.Status.Text = "Status: Enabled\n\nAutomatically rejoins the game when you get disconnected.\nUseful for preventing AFK kicks."
-        v43(v166.Status, v39.Fast, { TextColor3 = Color3.fromRGB(50, 220, 100) })
-        v310()
+b168.AutoRejoinToggle.MouseButton1Click:Connect(function()
+    if not b49("Rejoin", 0.3) then return end
+    b90(b168.AutoRejoinToggle)
+    b21.AutoRejoinEnabled = not b21.AutoRejoinEnabled
+    local b304 = b21.AutoRejoinEnabled and Color3.fromRGB(50, 220, 100) or Color3.fromRGB(220, 50, 50)
+    if _G.UU.ButtonStates[b168.AutoRejoinToggle] then _G.UU.ButtonStates[b168.AutoRejoinToggle].BaseColor = b304 end
+    b44(b168.AutoRejoinToggle, b40.Medium, { BackgroundColor3 = b304 })
+    b168.AutoRejoinToggle.Text = "Auto Rejoin: " .. (b21.AutoRejoinEnabled and "ON" or "OFF")
+    if b21.AutoRejoinEnabled then
+        b168.Status.Text = "Status: Enabled\n\nAutomatically rejoins the game when you get disconnected.\nUseful for preventing AFK kicks."
+        b44(b168.Status, b40.Fast, { TextColor3 = Color3.fromRGB(50, 220, 100) })
+        b318()
     else
-        v308 = false
-        v51("Rejoin")
-        if v309 then pcall(function() v309:Disconnect() end); v309 = nil end
-        v166.Status.Text = "Status: Disabled\n\nWhen enabled, this feature will automatically rejoin the current server when you get disconnected due to errors or AFK timeout."
-        v43(v166.Status, v39.Fast, { TextColor3 = Color3.fromRGB(180, 180, 180) })
+        b316 = false
+        b52("Rejoin")
+        if b317 then pcall(function() b317:Disconnect() end); b317 = nil end
+        b168.Status.Text = "Status: Disabled\n\nWhen enabled, this feature will automatically rejoin the current server when you get disconnected due to errors or AFK timeout."
+        b44(b168.Status, b40.Fast, { TextColor3 = Color3.fromRGB(180, 180, 180) })
     end
-    v33()
+    b34()
 end)
 
-v167.ExecuteButton.MouseButton1Click:Connect(function()
-    if not v48("Execute", 0.5) then return end
-    v89(v167.ExecuteButton)
-    local v319 = v167.LoadStringBox.Text
-    v167.Status.Text = "Status: Executing..."
-    v43(v167.Status, v39.Fast, { TextColor3 = Color3.fromRGB(255, 200, 100) })
-    v43(v167.ExecuteButton, v39.Medium, { BackgroundColor3 = Color3.fromRGB(255, 200, 100) })
-    local v320, v321 = v318(v319)
-    local v333 = v320 and Color3.fromRGB(50, 220, 100) or Color3.fromRGB(220, 50, 50)
-    v167.Status.Text = "Status: " .. v321
-    v43(v167.Status, v39.Fast, { TextColor3 = v333 })
-    v43(v167.ExecuteButton, v39.Medium, { BackgroundColor3 = v333 })
+b169.ExecuteButton.MouseButton1Click:Connect(function()
+    if not b49("Execute", 0.5) then return end
+    b90(b169.ExecuteButton)
+    local b327 = b169.LoadStringBox.Text
+    b169.Status.Text = "Status: Executing..."
+    b44(b169.Status, b40.Fast, { TextColor3 = Color3.fromRGB(255, 200, 100) })
+    b44(b169.ExecuteButton, b40.Medium, { BackgroundColor3 = Color3.fromRGB(255, 200, 100) })
+    local b328, b329 = b326(b327)
+    local b343 = b328 and Color3.fromRGB(50, 220, 100) or Color3.fromRGB(220, 50, 50)
+    b169.Status.Text = "Status: " .. b329
+    b44(b169.Status, b40.Fast, { TextColor3 = b343 })
+    b44(b169.ExecuteButton, b40.Medium, { BackgroundColor3 = b343 })
     task.wait(2)
-    if v167.Status.Text:match("Error") or v167.Status.Text:match("successfully") then
-        v167.Status.Text = "Status: Ready"
-        v43(v167.Status, v39.Fast, { TextColor3 = Color3.fromRGB(180, 180, 180) })
-        v43(v167.ExecuteButton, v39.Medium, { BackgroundColor3 = Color3.fromRGB(45, 45, 52) })
+    if b169.Status.Text:match("Error") or b169.Status.Text:match("successfully") then
+        b169.Status.Text = "Status: Ready"
+        b44(b169.Status, b40.Fast, { TextColor3 = Color3.fromRGB(180, 180, 180) })
+        b44(b169.ExecuteButton, b40.Medium, { BackgroundColor3 = Color3.fromRGB(45, 45, 52) })
     end
 end)
 
-v167.AutoLoadButton.MouseButton1Click:Connect(function()
-    if not v48("AutoLoad", 0.3) then return end
-    v89(v167.AutoLoadButton)
-    v20.AutoLoadEnabled = not v20.AutoLoadEnabled
-    local v296 = v20.AutoLoadEnabled and Color3.fromRGB(50, 220, 100) or Color3.fromRGB(220, 50, 50)
-    if _G.UU.ButtonStates[v167.AutoLoadButton] then _G.UU.ButtonStates[v167.AutoLoadButton].BaseColor = v296 end
-    v43(v167.AutoLoadButton, v39.Medium, { BackgroundColor3 = v296 })
-    v167.AutoLoadButton.Text = "Auto Load: " .. (v20.AutoLoadEnabled and "ON" or "OFF")
-    local v290, v291
-    if v20.AutoLoadEnabled then
-        if v20.SavedCode and v20.SavedCode ~= "" then
-            v290, v291 = "Auto-load enabled", Color3.fromRGB(50, 220, 100)
+b169.AutoLoadButton.MouseButton1Click:Connect(function()
+    if not b49("AutoLoad", 0.3) then return end
+    b90(b169.AutoLoadButton)
+    b21.AutoLoadEnabled = not b21.AutoLoadEnabled
+    local b304 = b21.AutoLoadEnabled and Color3.fromRGB(50, 220, 100) or Color3.fromRGB(220, 50, 50)
+    if _G.UU.ButtonStates[b169.AutoLoadButton] then _G.UU.ButtonStates[b169.AutoLoadButton].BaseColor = b304 end
+    b44(b169.AutoLoadButton, b40.Medium, { BackgroundColor3 = b304 })
+    b169.AutoLoadButton.Text = "Auto Load: " .. (b21.AutoLoadEnabled and "ON" or "OFF")
+    local b298, b299
+    if b21.AutoLoadEnabled then
+        if b21.SavedCode and b21.SavedCode ~= "" then
+            b298, b299 = "Auto-load enabled", Color3.fromRGB(50, 220, 100)
         else
-            v290, v291 = "No code to auto-load", Color3.fromRGB(220, 50, 50)
+            b298, b299 = "No code to auto-load", Color3.fromRGB(220, 50, 50)
         end
     else
-        v290, v291 = "Auto-load disabled", Color3.fromRGB(180, 180, 180)
+        b298, b299 = "Auto-load disabled", Color3.fromRGB(180, 180, 180)
     end
-    v167.Status.Text = "Status: " .. v290
-    v43(v167.Status, v39.Fast, { TextColor3 = v291 })
+    b169.Status.Text = "Status: " .. b298
+    b44(b169.Status, b40.Fast, { TextColor3 = b299 })
     task.wait(2)
-    if v167.Status.Text:match("enabled") or v167.Status.Text:match("disabled") or v167.Status.Text:match("code") then
-        v167.Status.Text = "Status: Ready"
-        v43(v167.Status, v39.Fast, { TextColor3 = Color3.fromRGB(180, 180, 180) })
+    if b169.Status.Text:match("enabled") or b169.Status.Text:match("disabled") or b169.Status.Text:match("code") then
+        b169.Status.Text = "Status: Ready"
+        b44(b169.Status, b40.Fast, { TextColor3 = Color3.fromRGB(180, 180, 180) })
     end
-    v33()
+    b34()
 end)
 
-v167.LoadStringBox:GetPropertyChangedSignal("Text"):Connect(function()
+b169.LoadStringBox:GetPropertyChangedSignal("Text"):Connect(function()
     if _G.UU.Threads.SaveCode then
         pcall(task.cancel, _G.UU.Threads.SaveCode)
         _G.UU.Threads.SaveCode = nil
     end
     _G.UU.Threads.SaveCode = task.delay(1.0, function()
         _G.UU.Threads.SaveCode = nil
-        v20.SavedCode = v167.LoadStringBox.Text
-        v33()
-        v167.Status.Text = "Status: Code auto-saved ✓"
-        v43(v167.Status, v39.Fast, { TextColor3 = Color3.fromRGB(100, 200, 255) })
+        b21.SavedCode = b169.LoadStringBox.Text
+        b34()
+        b169.Status.Text = "Status: Code auto-saved ✓"
+        b44(b169.Status, b40.Fast, { TextColor3 = Color3.fromRGB(100, 200, 255) })
         task.wait(2)
-        if v167.Status.Text == "Status: Code auto-saved ✓" then
-            v167.Status.Text = "Status: Ready"
-            v43(v167.Status, v39.Fast, { TextColor3 = Color3.fromRGB(180, 180, 180) })
+        if b169.Status.Text == "Status: Code auto-saved ✓" then
+            b169.Status.Text = "Status: Ready"
+            b44(b169.Status, b40.Fast, { TextColor3 = Color3.fromRGB(180, 180, 180) })
         end
     end)
-    v92(v167.LoadStringBox, v167.LineNumbers, v167.LoadStringScrollFrame, v167.LineNumbersScrollFrame)
+    b93(b169.LoadStringBox, b169.LineNumbers, b169.LoadStringScrollFrame, b169.LineNumbersScrollFrame)
 end)
 
-v167.LoadStringScrollFrame:GetPropertyChangedSignal("CanvasPosition"):Connect(function()
-    v167.LineNumbersScrollFrame.CanvasPosition = Vector2.new(0, v167.LoadStringScrollFrame.CanvasPosition.Y)
+b169.LoadStringScrollFrame:GetPropertyChangedSignal("CanvasPosition"):Connect(function()
+    b169.LineNumbersScrollFrame.CanvasPosition = Vector2.new(0, b169.LoadStringScrollFrame.CanvasPosition.Y)
 end)
 
-v168.KeybindButton.MouseButton1Click:Connect(function()
-    if not v48("Keybind", 0.5) or v20.IsChangingKeybind then return end
-    v89(v168.KeybindButton)
-    v20.IsChangingKeybind = true
-    v168.KeybindButton.Text = "Press any key..."
-    v168.Status.Text = "Waiting for input..."
-    v43(v168.Status, v39.Fast, { TextColor3 = Color3.fromRGB(255, 200, 100) })
-    v168.KeybindButton.Active = false
-    local v334
-    local v335 = task.delay(5, function()
+b170.KeybindButton.MouseButton1Click:Connect(function()
+    if not b49("Keybind", 0.5) or b21.IsChangingKeybind then return end
+    b90(b170.KeybindButton)
+    b21.IsChangingKeybind = true
+    b170.KeybindButton.Text = "Press any key..."
+    b170.Status.Text = "Waiting for input..."
+    b44(b170.Status, b40.Fast, { TextColor3 = Color3.fromRGB(255, 200, 100) })
+    b170.KeybindButton.Active = false
+    local b344
+    local b345 = task.delay(5, function()
         _G.UU.Threads.KeybindTimeout = nil
-        if v334 then v334:Disconnect() end
-        v20.IsChangingKeybind = false
-        v168.KeybindButton.Active = true
-        v168.KeybindButton.Text = "Toggle Keybind: " .. (v21[v20.Keybind] or v20.Keybind.Name)
-        v168.Status.Text = "Timeout - Click again to retry"
-        v43(v168.Status, v39.Fast, { TextColor3 = Color3.fromRGB(255, 100, 100) })
+        if b344 then b344:Disconnect() end
+        b21.IsChangingKeybind = false
+        b170.KeybindButton.Active = true
+        b170.KeybindButton.Text = "Toggle Keybind: " .. (b22[b21.Keybind] or b21.Keybind.Name)
+        b170.Status.Text = "Timeout - Click again to retry"
+        b44(b170.Status, b40.Fast, { TextColor3 = Color3.fromRGB(255, 100, 100) })
         task.wait(2)
-        if v168.Status.Text:match("Timeout") then
-            v168.Status.Text = "Click the button above to change your toggle keybind."
-            v43(v168.Status, v39.Fast, { TextColor3 = Color3.fromRGB(150, 150, 150) })
+        if b170.Status.Text:match("Timeout") then
+            b170.Status.Text = "Click the button above to change your toggle keybind."
+            b44(b170.Status, b40.Fast, { TextColor3 = Color3.fromRGB(150, 150, 150) })
         end
     end)
-    _G.UU.Threads.KeybindTimeout = v335
-    v334 = v3.InputBegan:Connect(function(v110, v336)
-        if v110.UserInputType == Enum.UserInputType.Keyboard and not v336 then
+    _G.UU.Threads.KeybindTimeout = b345
+    b344 = b3.InputBegan:Connect(function(b338, b346)
+        if b338.UserInputType == Enum.UserInputType.Keyboard and not b346 then
             if _G.UU.Threads.KeybindTimeout then
                 pcall(task.cancel, _G.UU.Threads.KeybindTimeout)
                 _G.UU.Threads.KeybindTimeout = nil
             end
-            v20.Keybind = v110.KeyCode
-            local v275 = v21[v110.KeyCode] or v110.KeyCode.Name
-            v168.KeybindButton.Text = "Toggle Keybind: " .. v275
-            v168.Status.Text = "Keybind changed successfully!"
-            v43(v168.Status, v39.Fast, { TextColor3 = Color3.fromRGB(50, 220, 100) })
-            v33()
-            v168.KeybindButton.Active = true
-            v334:Disconnect()
-            task.delay(0.1, function() v20.IsChangingKeybind = false end)
+            b21.Keybind = b338.KeyCode
+            local b281 = b22[b338.KeyCode] or b338.KeyCode.Name
+            b170.KeybindButton.Text = "Toggle Keybind: " .. b281
+            b170.Status.Text = "Keybind changed successfully!"
+            b44(b170.Status, b40.Fast, { TextColor3 = Color3.fromRGB(50, 220, 100) })
+            b34()
+            b170.KeybindButton.Active = true
+            b344:Disconnect()
+            task.delay(0.1, function() b21.IsChangingKeybind = false end)
             task.wait(1.5)
-            if v168.Status.Text:match("successfully") then
-                v168.Status.Text = "Click the button above to change your toggle keybind."
-                v43(v168.Status, v39.Fast, { TextColor3 = Color3.fromRGB(150, 150, 150) })
+            if b170.Status.Text:match("successfully") then
+                b170.Status.Text = "Click the button above to change your toggle keybind."
+                b44(b170.Status, b40.Fast, { TextColor3 = Color3.fromRGB(150, 150, 150) })
             end
         end
     end)
 end)
 
-local function v337(v150)
-    if v20.CurrentTab == v150 then return end
-    if not v48("Tab", 0.15) then return end
-    v20.CurrentTab = v150
-    v33()
-    for v338, v339 in pairs(v148) do
-        if v338 == v150 then
-            v339.Visible = true
-            v339.Position = UDim2.new(0, 15, 0, 0)
-            v43(v339, v39.Smooth, { Position = UDim2.new(0, 5, 0, 0) })
+b170.AutoHideToggle.MouseButton1Click:Connect(function()
+    if not b49("AutoHide", 0.3) then return end
+    b90(b170.AutoHideToggle)
+    b21.AutoHideEnabled = not b21.AutoHideEnabled
+    local b304 = b21.AutoHideEnabled and Color3.fromRGB(50, 220, 100) or Color3.fromRGB(220, 50, 50)
+    if _G.UU.ButtonStates[b170.AutoHideToggle] then _G.UU.ButtonStates[b170.AutoHideToggle].BaseColor = b304 end
+    b44(b170.AutoHideToggle, b40.Medium, { BackgroundColor3 = b304 })
+    b170.AutoHideToggle.Text = "Auto Hide UI: " .. (b21.AutoHideEnabled and "ON" or "OFF")
+    if b21.AutoHideEnabled then
+        b170.Status.Text = "Auto-hide enabled - UI will start hidden on next execution"
+        b44(b170.Status, b40.Fast, { TextColor3 = Color3.fromRGB(50, 220, 100) })
+    else
+        b170.Status.Text = "Auto-hide disabled - UI will show normally on start"
+        b44(b170.Status, b40.Fast, { TextColor3 = Color3.fromRGB(180, 180, 180) })
+    end
+    b34()
+end)
+
+local function b347(b152)
+    if b21.CurrentTab == b152 then return end
+    if not b49("Tab", 0.15) then return end
+    b21.CurrentTab = b152
+    b34()
+    for b348, b349 in pairs(b149) do
+        if b348 == b152 then
+            b349.Visible = true
+            b349.Position = UDim2.new(0, 15, 0, 0)
+            b44(b349, b40.Smooth, { Position = UDim2.new(0, 5, 0, 0) })
         else
-            v339.Visible = false
+            b349.Visible = false
         end
     end
-    for v338, v340 in pairs(v147) do
-        local v341 = v338 == v150
-        v43(v340.Button, v39.Fast, { BackgroundColor3 = v341 and Color3.fromRGB(100, 150, 255) or Color3.fromRGB(35, 35, 42) })
-        v43(v340.Icon, v39.Fast, { TextColor3 = v341 and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(180, 180, 180), TextSize = v341 and 20 or 18 })
-        v43(v340.Label, v39.Fast, { TextColor3 = v341 and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(180, 180, 180) })
+    for b348, b350 in pairs(b148) do
+        local b351 = b348 == b152
+        b44(b350.Button, b40.Fast, { BackgroundColor3 = b351 and Color3.fromRGB(100, 150, 255) or Color3.fromRGB(35, 35, 42) })
+        b44(b350.Icon, b40.Fast, { TextColor3 = b351 and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(180, 180, 180), TextSize = b351 and 20 or 18 })
+        b44(b350.Label, b40.Fast, { TextColor3 = b351 and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(180, 180, 180) })
     end
 end
 
-for v160, v161 in ipairs(v159) do
-    if v147[v161.name] then
-        local v150 = v161.name
-        v147[v150].Button.MouseButton1Click:Connect(function() v337(v150) end)
+for b162, b163 in ipairs(b161) do
+    if b148[b163.name] then
+        local b152 = b163.name
+        b148[b152].Button.MouseButton1Click:Connect(function() b347(b152) end)
     end
 end
 
-local v342 = {}
-local v343 = false
+local b352 = {}
+local b353 = false
 
-local function v344()
-    if v343 or #v342 == 0 then return end
-    v343 = true
-    local v345 = table.remove(v342, 1)
-    v345()
+local function b354()
+    if b353 or #b352 == 0 then return end
+    b353 = true
+    local b355 = table.remove(b352, 1)
+    b355()
     task.wait(0.05)
-    v343 = false
-    if #v342 > 0 then v344() end
+    b353 = false
+    if #b352 > 0 then b354() end
 end
 
-local function v346(v345)
-    table.insert(v342, v345)
-    v344()
+local function b356(b355)
+    table.insert(b352, b355)
+    b354()
 end
 
-local function v347(v59, v60)
-    local v348 = v55.Width * v60
-    local v349 = v55.Height * v60
-    local v350 = math.max(0, (v59.X - v348) / 2)
-    local v351 = math.max(0, (v59.Y - v349) / 2)
-    return v350, v351
+local function b357(b358, b359)
+    local b360 = b56.Width * b359
+    local b361 = b56.Height * b359
+    local b362 = math.max(0, (b358.X - b360) / 2)
+    local b363 = math.max(0, (b358.Y - b361) / 2)
+    return b362, b363
 end
 
-local function v352(v59, v60)
-    local v353 = math.floor(60 * v60)
-    local v350 = math.max(0, (v59.X - v353) / 2)
-    local v351 = math.max(0, math.min(30, v59.Y - v353))
-    return v353, v350, v351
+local function b364(b358, b359)
+    local b365 = math.floor(60 * b359)
+    local b362 = math.max(0, (b358.X - b365) / 2)
+    local b363 = math.max(0, math.min(30, b358.Y - b365))
+    return b365, b362, b363
 end
 
-local function v354(v355)
-    if not v56 then return end
-    v43(v56, v39.Smooth, { Scale = v355 })
-    v57 = v355
-    if v136.Visible and v20.SavedReopenPosition then
-        v136.Position = UDim2.new(0, v20.SavedReopenPosition.X, 0, v20.SavedReopenPosition.Y)
+local function b366(b367)
+    if not b57 then return end
+    b44(b57, b40.Smooth, { Scale = b367 })
+    b58 = b367
+    if b137.Visible and b21.SavedReopenPosition then
+        b137.Position = UDim2.new(0, b21.SavedReopenPosition.X, 0, b21.SavedReopenPosition.Y)
     end
-    v137.TextSize = math.floor(24 * v355)
+    b138.TextSize = math.floor(24 * b367)
 end
 
-local v356 = TweenInfo.new(0.45, Enum.EasingStyle.Back, Enum.EasingDirection.Out, 0, false, 0)
-local v357 = TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In, 0, false, 0)
+local b368 = TweenInfo.new(0.45, Enum.EasingStyle.Back, Enum.EasingDirection.Out, 0, false, 0)
+local b369 = TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In, 0, false, 0)
 
-local function v358()
-    if not v48("UI", 0.6) then return end
-    v346(function()
-        if v129.Visible then
-            local currentUIPosX = v129.Position.X.Offset
-            local currentUIPosY = v129.Position.Y.Offset
-            v20.SavedUIPosition = { X = currentUIPosX, Y = currentUIPosY }
+local function b370()
+    if not b49("UI", 0.6) then return end
+    b356(function()
+        if b130.Visible then
+            local currentUIPosX = b130.Position.X.Offset
+            local currentUIPosY = b130.Position.Y.Offset
+            b21.SavedUIPosition = { X = currentUIPosX, Y = currentUIPosY }
             
-            v129.Size = UDim2.new(0, v55.Width, 0, v55.Height)
-            local v359 = v43(v56, v357, { Scale = 0 })
-            v359.Completed:Wait()
-            v129.Visible = false
-            v56.Scale = 0
-            v33()
+            b130.Size = UDim2.new(0, b56.Width, 0, b56.Height)
+            local b371 = b44(b57, b369, { Scale = 0 })
+            b371.Completed:Wait()
+            b130.Visible = false
+            b57.Scale = 0
+            b34()
 
-            local v180 = v54()
-            local v353 = math.floor(60 * v57)
+            local b372 = b55()
+            local b365 = math.floor(60 * b58)
             local savedReopenX, savedReopenY
-            if v20.SavedReopenPosition then
-                savedReopenX = v20.SavedReopenPosition.X
-                savedReopenY = v20.SavedReopenPosition.Y
+            if b21.SavedReopenPosition then
+                savedReopenX = b21.SavedReopenPosition.X
+                savedReopenY = b21.SavedReopenPosition.Y
             else
-                local _, defX, defY = v352(v180, v57)
+                local _, defX, defY = b364(b372, b58)
                 savedReopenX = defX
                 savedReopenY = defY
             end
             
-            v136.Size = UDim2.new(0, 0, 0, 0)
-            v136.Position = UDim2.new(0, savedReopenX, 0, savedReopenY)
-            v136.ImageTransparency = 1
-            v137.TextTransparency = 1
-            v136.Rotation = -180
-            v136.Visible = true
+            b137.Size = UDim2.new(0, 0, 0, 0)
+            b137.Position = UDim2.new(0, savedReopenX, 0, savedReopenY)
+            b137.ImageTransparency = 1
+            b138.TextTransparency = 1
+            b137.Rotation = -180
+            b137.Visible = true
 
-            local v360 = v2:Create(v136, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-                Size = UDim2.new(0, v353, 0, v353),
+            local b373 = b2:Create(b137, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+                Size = UDim2.new(0, b365, 0, b365),
                 Position = UDim2.new(0, savedReopenX, 0, savedReopenY),
                 ImageTransparency = 0,
                 Rotation = 0,
             })
-            local v361 = v2:Create(v137, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+            local b374 = b2:Create(b138, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
                 TextTransparency = 0,
             })
-            v360:Play()
-            task.delay(0.15, function() v361:Play() end)
-            v360.Completed:Wait()
+            b373:Play()
+            task.delay(0.15, function() b374:Play() end)
+            b373.Completed:Wait()
         else
-            if v143 then v143:Disconnect(); v143 = nil end
+            if b144 then b144:Disconnect(); b144 = nil end
 
-            local currentReopenX = v136.Position.X.Offset
-            local currentReopenY = v136.Position.Y.Offset
-            v20.SavedReopenPosition = { X = currentReopenX, Y = currentReopenY }
+            local currentReopenX = b137.Position.X.Offset
+            local currentReopenY = b137.Position.Y.Offset
+            b21.SavedReopenPosition = { X = currentReopenX, Y = currentReopenY }
             
-            local v362 = v136.Size.X.Offset
-            local v363 = v136.Position
+            local b375 = b137.Size.X.Offset
+            local b376 = b137.Position
 
-            local v364 = v2:Create(v136, TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
+            local b377 = b2:Create(b137, TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
                 Size = UDim2.new(0, 0, 0, 0),
                 Position = UDim2.new(0, currentReopenX, 0, currentReopenY),
                 ImageTransparency = 1,
                 Rotation = 90,
             })
-            local v365 = v2:Create(v137, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+            local b378 = b2:Create(b138, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
                 TextTransparency = 1,
             })
-            v365:Play()
-            v364:Play()
-            v364.Completed:Wait()
+            b378:Play()
+            b377:Play()
+            b377.Completed:Wait()
 
-            v136.Visible = false
-            v136.Rotation = 0
-            v136.ImageTransparency = 0
-            v137.TextTransparency = 0
-            v33()
+            b137.Visible = false
+            b137.Rotation = 0
+            b137.ImageTransparency = 0
+            b138.TextTransparency = 0
+            b34()
 
-            v129.Visible = true
-            v129.Size = UDim2.new(0, v55.Width, 0, v55.Height)
-            v56.Scale = 0
+            b130.Visible = true
+            b130.Size = UDim2.new(0, b56.Width, 0, b56.Height)
+            b57.Scale = 0
             local savedUIX, savedUIY
-            if v20.SavedUIPosition then
-                savedUIX = v20.SavedUIPosition.X
-                savedUIY = v20.SavedUIPosition.Y
+            if b21.SavedUIPosition then
+                savedUIX = b21.SavedUIPosition.X
+                savedUIY = b21.SavedUIPosition.Y
             else
-                local defX, defY = v347(v54(), v57)
+                local defX, defY = b357(b55(), b58)
                 savedUIX = defX
                 savedUIY = defY
             end
-            v129.Position = UDim2.new(0, savedUIX, 0, savedUIY)
-            local v366 = v43(v56, v356, { Scale = v57 })
-            v366.Completed:Wait()
+            b130.Position = UDim2.new(0, savedUIX, 0, savedUIY)
+            local b379 = b44(b57, b368, { Scale = b58 })
+            b379.Completed:Wait()
         end
     end)
 end
 
-v133.MouseButton1Click:Connect(v358)
-v133.MouseEnter:Connect(function() v43(v133, v39.Fast, { BackgroundColor3 = Color3.fromRGB(240, 70, 70), Size = UDim2.new(0, 34, 0, 34), Rotation = 90 }) end)
-v133.MouseLeave:Connect(function() v43(v133, v39.Fast, { BackgroundColor3 = Color3.fromRGB(220, 50, 50), Size = UDim2.new(0, 30, 0, 30), Rotation = 0 }) end)
-v133.MouseButton1Down:Connect(function() v43(v133, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Size = UDim2.new(0, 28, 0, 28) }) end)
-v133.MouseButton1Up:Connect(function() v43(v133, v39.Fast, { Size = UDim2.new(0, 30, 0, 30) }) end)
+b134.MouseButton1Click:Connect(b370)
+b134.MouseEnter:Connect(function() b44(b134, b40.Fast, { BackgroundColor3 = Color3.fromRGB(240, 70, 70), Size = UDim2.new(0, 34, 0, 34), Rotation = 90 }) end)
+b134.MouseLeave:Connect(function() b44(b134, b40.Fast, { BackgroundColor3 = Color3.fromRGB(220, 50, 50), Size = UDim2.new(0, 30, 0, 30), Rotation = 0 }) end)
+b134.MouseButton1Down:Connect(function() b44(b134, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Size = UDim2.new(0, 28, 0, 28) }) end)
+b134.MouseButton1Up:Connect(function() b44(b134, b40.Fast, { Size = UDim2.new(0, 30, 0, 30) }) end)
 
-v136.MouseButton1Click:Connect(function() if not v142 then v358() end end)
+b137.MouseButton1Click:Connect(function() if not b143 then b370() end end)
 
-v136.MouseEnter:Connect(function()
-    if not v138 then
-        local v353 = math.floor(60 * v57)
-        v43(v136, v39.Medium, { Size = UDim2.new(0, math.floor(v353 * 1.17), 0, math.floor(v353 * 1.17)) })
-        if v143 then v143:Disconnect() end
-        v143 = v5.RenderStepped:Connect(function(v367)
-            if v136.Visible then
-                v136.Rotation = (v136.Rotation + (v367 * 180)) % 360
+b137.MouseEnter:Connect(function()
+    if not b139 then
+        local b365 = math.floor(60 * b58)
+        b44(b137, b40.Medium, { Size = UDim2.new(0, math.floor(b365 * 1.17), 0, math.floor(b365 * 1.17)) })
+        if b144 then b144:Disconnect() end
+        b144 = b5.RenderStepped:Connect(function(b380)
+            if b137.Visible then
+                b137.Rotation = (b137.Rotation + (b380 * 180)) % 360
             else
-                if v143 then v143:Disconnect(); v143 = nil end
+                if b144 then b144:Disconnect(); b144 = nil end
             end
         end)
     end
 end)
-v136.MouseLeave:Connect(function()
-    if v143 then v143:Disconnect(); v143 = nil end
-    if not v138 then
-        local v353 = math.floor(60 * v57)
-        v43(v136, v39.Medium, { Size = UDim2.new(0, v353, 0, v353), Rotation = 0 })
+b137.MouseLeave:Connect(function()
+    if b144 then b144:Disconnect(); b144 = nil end
+    if not b139 then
+        local b365 = math.floor(60 * b58)
+        b44(b137, b40.Medium, { Size = UDim2.new(0, b365, 0, b365), Rotation = 0 })
     end
 end)
-v136.MouseButton1Down:Connect(function()
-    if not v138 then
-        local v353 = math.floor(60 * v57)
-        v43(v136, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Size = UDim2.new(0, math.floor(v353 * 0.92), 0, math.floor(v353 * 0.92)) })
+b137.MouseButton1Down:Connect(function()
+    if not b139 then
+        local b365 = math.floor(60 * b58)
+        b44(b137, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Size = UDim2.new(0, math.floor(b365 * 0.92), 0, math.floor(b365 * 0.92)) })
     end
 end)
-v136.MouseButton1Up:Connect(function()
-    if not v138 then
-        local v353 = math.floor(60 * v57)
-        v43(v136, v39.Fast, { Size = UDim2.new(0, v353, 0, v353) })
+b137.MouseButton1Up:Connect(function()
+    if not b139 then
+        local b365 = math.floor(60 * b58)
+        b44(b137, b40.Fast, { Size = UDim2.new(0, b365, 0, b365) })
     end
 end)
 
-table.insert(_G.UU.Connections, v3.InputBegan:Connect(function(v110, v336)
-    if not v336 and v110.KeyCode == v20.Keybind and not v20.IsChangingKeybind then
-        v358()
+table.insert(_G.UU.Connections, b3.InputBegan:Connect(function(b338, b346)
+    if not b346 and b338.KeyCode == b21.Keybind and not b21.IsChangingKeybind then
+        b370()
     end
 end))
 
-local v368 = Vector2.new(0, 0)
-local v369 = false
+local b381 = Vector2.new(0, 0)
+local b382 = false
 
-local function v370()
-    if v369 then return end
-    v369 = true
+local function b383()
+    if b382 then return end
+    b382 = true
     task.delay(0.1, function()
-        v369 = false
-        local v371 = v54()
-        if math.abs(v371.X - v368.X) < 2 and math.abs(v371.Y - v368.Y) < 2 then return end
-        v368 = v371
-        local v372 = v58(v371)
-        if _G.UU.UI.ResolutionLabel then _G.UU.UI.ResolutionLabel.Text = string.format("Resolution: %dx%d", v371.X, v371.Y) end
-        if _G.UU.UI.DeviceLabel then _G.UU.UI.DeviceLabel.Text = "Device: " .. v18() end
-        v354(v372)
-        v20.SavedUIPosition = nil
-        v20.SavedReopenPosition = nil
+        b382 = false
+        local b384 = b55()
+        if math.abs(b384.X - b381.X) < 2 and math.abs(b384.Y - b381.Y) < 2 then return end
+        b381 = b384
+        local b385 = b59(b384)
+        if _G.UU.UI.ResolutionLabel then _G.UU.UI.ResolutionLabel.Text = string.format("Resolution: %dx%d", b384.X, b384.Y) end
+        if _G.UU.UI.DeviceLabel then _G.UU.UI.DeviceLabel.Text = "Device: " .. b19() end
+        b366(b385)
+        b21.SavedUIPosition = nil
+        b21.SavedReopenPosition = nil
         
-        local v350, v351 = v347(v371, v372)
-        v129.Position = UDim2.new(0, v350, 0, v351)
+        local b362, b363 = b357(b384, b385)
+        b130.Position = UDim2.new(0, b362, 0, b363)
         
-        local v353 = math.floor(60 * v57)
-        v350 = math.max(0, (v371.X - v353) / 2)
-        v351 = math.max(0, math.min(30, v371.Y - v353))
-        v136.Size = UDim2.new(0, v353, 0, v353)
-        v136.Position = UDim2.new(0, v350, 0, v351)
+        local b365 = math.floor(60 * b58)
+        b362 = math.max(0, (b384.X - b365) / 2)
+        b363 = math.max(0, math.min(30, b384.Y - b365))
+        b137.Size = UDim2.new(0, b365, 0, b365)
+        b137.Position = UDim2.new(0, b362, 0, b363)
         
-        v33()
+        b34()
     end)
 end
 
 if workspace.CurrentCamera then
-    table.insert(_G.UU.Connections, workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(v370))
+    table.insert(_G.UU.Connections, workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(b383))
 end
 table.insert(_G.UU.Connections, workspace:GetPropertyChangedSignal("CurrentCamera"):Connect(function()
     if workspace.CurrentCamera then
-        table.insert(_G.UU.Connections, workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(v370))
+        table.insert(_G.UU.Connections, workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(b383))
     end
 end))
 
-table.insert(_G.UU.Connections, v5.RenderStepped:Connect(function()
-    v285 = v285 + 1
-    local v373 = tick()
+table.insert(_G.UU.Connections, b5.RenderStepped:Connect(function()
+    b292 = b292 + 1
+    local b386 = tick()
 
-    if v373 - v284 >= 1 then
-        v283 = math.floor(v285 / (v373 - v284))
-        v285 = 0
-        v284 = v373
-        if v162.FPSLabel then v162.FPSLabel.Text = "FPS: " .. v283 end
-        table.remove(v281, 1); table.insert(v281, v283)
-        local v374, v375, v376 = math.huge, 0, 0
-        for v377, v378 in ipairs(v281) do
-            v374 = math.min(v374, v378)
-            v375 = math.max(v375, v378)
-            v376 = v376 + v378
+    if b386 - b291 >= 1 then
+        b290 = math.floor(b292 / (b386 - b291))
+        b292 = 0
+        b291 = b386
+        if b164.FPSLabel then b164.FPSLabel.Text = "FPS: " .. b290 end
+        table.remove(b288, 1); table.insert(b288, b290)
+        local b387, b388, b389 = math.huge, 0, 0
+        for b390, b391 in ipairs(b288) do
+            b387 = math.min(b387, b391)
+            b388 = math.max(b388, b391)
+            b389 = b389 + b391
         end
-        local v379 = math.floor(v376 / #v281)
-        if v165.FPSStats then
-            v165.FPSStats.Current.Text = "Current: " .. v283
-            v165.FPSStats.Avg.Text = "Average: " .. v379
-            v165.FPSStats.MinMax.Text = string.format("Min: %d | Max: %d", v374, v375)
+        local b392 = math.floor(b389 / #b288)
+        if b167.FPSStats then
+            b167.FPSStats.Current.Text = "Current: " .. b290
+            b167.FPSStats.Avg.Text = "Average: " .. b392
+            b167.FPSStats.MinMax.Text = string.format("Min: %d | Max: %d", b387, b388)
+        end
+
+        local b393 = b10:GetTotalMemoryUsageMb()
+        b294 = math.max(b294, b393)
+        if b164.MemoryLabel then
+            b164.MemoryLabel.Text = string.format("Memory: %.1f MB", b393)
+        end
+        if b167.MemoryStats then
+            b167.MemoryStats.Current.Text = string.format("Current: %.1f MB", b393)
+            b167.MemoryStats.Peak.Text = string.format("Peak: %.1f MB", b294)
         end
     end
 
-    if v285 % 30 == 0 then
-        local v380 = math.floor(v10:GetNetworkPing() * 1000)
-        if v162.PingLabel then
-            v162.PingLabel.Text = "Ping: " .. v380 .. " ms"
-            v162.PingLabel.TextColor3 = v380 < 100 and Color3.fromRGB(0, 255, 0) or v380 < 200 and Color3.fromRGB(255, 255, 0) or Color3.fromRGB(255, 0, 0)
+    if b292 % 30 == 0 then
+        local b394 = math.floor(b11:GetNetworkPing() * 1000)
+        if b164.PingLabel then
+            b164.PingLabel.Text = "Ping: " .. b394 .. " ms"
+            b164.PingLabel.TextColor3 = b394 < 100 and Color3.fromRGB(0, 255, 0) or b394 < 200 and Color3.fromRGB(255, 255, 0) or Color3.fromRGB(255, 0, 0)
         end
-        table.remove(v282, 1); table.insert(v282, v380)
-        local v381, v382, v383 = math.huge, 0, 0
-        for v377, v384 in ipairs(v282) do
-            v381 = math.min(v381, v384)
-            v382 = math.max(v382, v384)
-            v383 = v383 + v384
+        table.remove(b289, 1); table.insert(b289, b394)
+        local b395, b396, b397 = math.huge, 0, 0
+        for b390, b398 in ipairs(b289) do
+            b395 = math.min(b395, b398)
+            b396 = math.max(b396, b398)
+            b397 = b397 + b398
         end
-        local v385 = math.floor(v383 / #v282)
-        if v165.PingStats then
-            v165.PingStats.Current.Text = "Current: " .. v380 .. "ms"
-            v165.PingStats.Avg.Text = "Average: " .. v385 .. "ms"
-            v165.PingStats.MinMax.Text = string.format("Min: %dms | Max: %dms", v381, v382)
-            local v386, v387
-            if v380 < 50 then
-                v386, v387 = "Excellent", Color3.fromRGB(50, 220, 100)
-            elseif v380 < 100 then
-                v386, v387 = "Good", Color3.fromRGB(100, 200, 255)
-            elseif v380 < 200 then
-                v386, v387 = "Fair", Color3.fromRGB(255, 200, 100)
-            elseif v380 < 300 then
-                v386, v387 = "Poor", Color3.fromRGB(255, 150, 50)
+        local b399 = math.floor(b397 / #b289)
+        if b167.PingStats then
+            b167.PingStats.Current.Text = "Current: " .. b394 .. "ms"
+            b167.PingStats.Avg.Text = "Average: " .. b399 .. "ms"
+            b167.PingStats.MinMax.Text = string.format("Min: %dms | Max: %dms", b395, b396)
+            local b400, b401
+            if b394 < 50 then
+                b400, b401 = "Excellent", Color3.fromRGB(50, 220, 100)
+            elseif b394 < 100 then
+                b400, b401 = "Good", Color3.fromRGB(100, 200, 255)
+            elseif b394 < 200 then
+                b400, b401 = "Fair", Color3.fromRGB(255, 200, 100)
+            elseif b394 < 300 then
+                b400, b401 = "Poor", Color3.fromRGB(255, 150, 50)
             else
-                v386, v387 = "Very Poor", Color3.fromRGB(220, 50, 50)
+                b400, b401 = "Very Poor", Color3.fromRGB(220, 50, 50)
             end
-            v165.PingStats.Quality.Text = v386
-            v165.PingStats.Quality.TextColor3 = v387
+            b167.PingStats.Quality.Text = b400
+            b167.PingStats.Quality.TextColor3 = b401
         end
     end
 end))
 
-local v388 = v36()
+local b402 = b37()
 
-local function v389(v73, v390)
-    local v296 = v390 and Color3.fromRGB(50, 220, 100) or Color3.fromRGB(220, 50, 50)
-    v73.BackgroundColor3 = v296
-    if _G.UU.ButtonStates[v73] then _G.UU.ButtonStates[v73].BaseColor = v296 end
+local function b403(b404, b405)
+    local b304 = b405 and Color3.fromRGB(50, 220, 100) or Color3.fromRGB(220, 50, 50)
+    b404.BackgroundColor3 = b304
+    if _G.UU.ButtonStates[b404] then _G.UU.ButtonStates[b404].BaseColor = b304 end
 end
 
-if v388 then
-    if v168.KeybindButton then v168.KeybindButton.Text = "Current Key: " .. (v21[v20.Keybind] or v20.Keybind.Name) end
-    if v164.SpamInput then v164.SpamInput.Text = v20.SpamKey end
-    if v167.LoadStringBox then v167.LoadStringBox.Text = v20.SavedCode end
+if b402 then
+    if b170.KeybindButton then b170.KeybindButton.Text = "Current Key: " .. (b22[b21.Keybind] or b21.Keybind.Name) end
+    if b166.SpamInput then b166.SpamInput.Text = b21.SpamKey end
+    if b169.LoadStringBox then b169.LoadStringBox.Text = b21.SavedCode end
 
-    v325((v20.JumpDelay - 5) / 25)
-    v326((v20.ClickDelay - 1) / 9)
-    v327((v20.SpamDelay - 0.05) / 4.95)
-    v328((v20.TargetFPS - 15) / 345)
-    v292()
+    b333((b21.JumpDelay - 5) / 25)
+    b335((b21.ClickDelay - 1) / 9)
+    b336((b21.SpamDelay - 0.05) / 4.95)
+    b337((b21.TargetFPS - 15) / 345)
+    b300()
 
-    v389(v167.AutoLoadButton, v20.AutoLoadEnabled)
-    v167.AutoLoadButton.Text = "Auto Load: " .. (v20.AutoLoadEnabled and "ON" or "OFF")
+    b403(b169.AutoLoadButton, b21.AutoLoadEnabled)
+    b169.AutoLoadButton.Text = "Auto Load: " .. (b21.AutoLoadEnabled and "ON" or "OFF")
 
-    if v20.AutoRejoinEnabled then
-        v389(v166.AutoRejoinToggle, true)
-        v166.AutoRejoinToggle.Text = "Auto Rejoin: ON"
-        v166.Status.Text = "Status: Enabled\n\nAutomatically rejoins the server when disconnected."
-        v166.Status.TextColor3 = Color3.fromRGB(50, 220, 100)
-        v310()
+    b403(b170.AutoHideToggle, b21.AutoHideEnabled)
+    b170.AutoHideToggle.Text = "Auto Hide UI: " .. (b21.AutoHideEnabled and "ON" or "OFF")
+
+    if b21.AutoRejoinEnabled then
+        b403(b168.AutoRejoinToggle, true)
+        b168.AutoRejoinToggle.Text = "Auto Rejoin: ON"
+        b168.Status.Text = "Status: Enabled\n\nAutomatically rejoins the server when disconnected."
+        b168.Status.TextColor3 = Color3.fromRGB(50, 220, 100)
+        b318()
     end
 
-    if v20.FPSUnlockEnabled and v279 then
-        v389(v165.FPSUnlockToggle, true)
-        v165.FPSUnlockToggle.Text = "FPS Unlock: ON"
-        v165.FPSUnlockStatus.TextColor3 = Color3.fromRGB(50, 220, 100)
-        v165.FPSUnlockStatus.Text = "Current Limit: " .. v20.TargetFPS .. " FPS (Custom)"
-        pcall(setfpscap, v20.TargetFPS)
+    if b21.FPSUnlockEnabled and b286 then
+        b403(b167.FPSUnlockToggle, true)
+        b167.FPSUnlockToggle.Text = "FPS Unlock: ON"
+        b167.FPSUnlockStatus.TextColor3 = Color3.fromRGB(50, 220, 100)
+        b167.FPSUnlockStatus.Text = "Current Limit: " .. b21.TargetFPS .. " FPS (Custom)"
+        pcall(setfpscap, b21.TargetFPS)
     else
-        v389(v165.FPSUnlockToggle, false)
-        v165.FPSUnlockToggle.Text = "FPS Unlock: OFF"
+        b403(b167.FPSUnlockToggle, false)
+        b167.FPSUnlockToggle.Text = "FPS Unlock: OFF"
     end
 
-    v389(v163.JumpToggle, v20.JumpEnabled)
-    v163.JumpToggle.Text = "Auto Jump: " .. (v20.JumpEnabled and "ON" or "OFF")
-    if v20.JumpEnabled then task.wait(0.1); v297() end
+    b403(b165.JumpToggle, b21.JumpEnabled)
+    b165.JumpToggle.Text = "Auto Jump: " .. (b21.JumpEnabled and "ON" or "OFF")
+    if b21.JumpEnabled then task.wait(0.1); b305() end
 
-    v389(v163.ClickToggle, v20.ClickEnabled)
-    v163.ClickToggle.Text = "Auto Click: " .. (v20.ClickEnabled and "ON" or "OFF")
-    if v20.ClickEnabled then task.wait(0.1); v299() end
+    b403(b165.ClickToggle, b21.ClickEnabled)
+    b165.ClickToggle.Text = "Auto Click: " .. (b21.ClickEnabled and "ON" or "OFF")
+    if b21.ClickEnabled then task.wait(0.1); b307() end
 
-    if v20.AutoSpamEnabled and v22[v20.SpamKey] then
-        v389(v164.AutoSpamToggle, true)
-        v164.AutoSpamToggle.Text = "ON"
-        v164.Status.Text = "System Status: Spamming " .. v20.SpamKey
-        v164.Status.TextColor3 = Color3.fromRGB(50, 220, 100)
-        task.wait(0.1); v305()
+    if b21.AutoSpamEnabled and b23[b21.SpamKey] then
+        b403(b166.AutoSpamToggle, true)
+        b166.AutoSpamToggle.Text = "ON"
+        b166.Status.Text = "System Status: Spamming " .. b21.SpamKey
+        b166.Status.TextColor3 = Color3.fromRGB(50, 220, 100)
+        task.wait(0.1); b313()
     else
-        v20.AutoSpamEnabled = false
-        v389(v164.AutoSpamToggle, false)
-        v164.AutoSpamToggle.Text = "OFF"
+        b21.AutoSpamEnabled = false
+        b403(b166.AutoSpamToggle, false)
+        b166.AutoSpamToggle.Text = "OFF"
     end
 
-    v288()
+    b296()
 else
-    v325(0.2); v326(0.22); v327(0.01); v328(0.13)
-    v292()
-    v389(v163.JumpToggle, false); v163.JumpToggle.Text = "Auto Jump: OFF"
-    v389(v163.ClickToggle, false); v163.ClickToggle.Text = "Auto Click: OFF"
-    v389(v164.AutoSpamToggle, false); v164.AutoSpamToggle.Text = "OFF"
-    v389(v165.FPSUnlockToggle, false); v165.FPSUnlockToggle.Text = "FPS Unlock: OFF"
-    v165.FPSUnlockStatus.Text = "Current Limit: 60 FPS (Default)"
-    v389(v167.AutoLoadButton, false); v167.AutoLoadButton.Text = "Auto Load: OFF"
-    v288()
+    b333(0.2); b335(0.22); b336(0.01); b337(0.13)
+    b300()
+    b403(b165.JumpToggle, false); b165.JumpToggle.Text = "Auto Jump: OFF"
+    b403(b165.ClickToggle, false); b165.ClickToggle.Text = "Auto Click: OFF"
+    b403(b166.AutoSpamToggle, false); b166.AutoSpamToggle.Text = "OFF"
+    b403(b167.FPSUnlockToggle, false); b167.FPSUnlockToggle.Text = "FPS Unlock: OFF"
+    b167.FPSUnlockStatus.Text = "Current Limit: 60 FPS (Default)"
+    b403(b169.AutoLoadButton, false); b169.AutoLoadButton.Text = "Auto Load: OFF"
+    b403(b170.AutoHideToggle, false); b170.AutoHideToggle.Text = "Auto Hide UI: OFF"
+    b296()
 end
 
 task.spawn(function()
     pcall(function()
         if _G.UU.UI.PlayerImage then
-            _G.UU.UI.PlayerImage.Image = "rbxthumb://type=AvatarHeadShot&id=" .. v12 .. "&w=420&h=420"
+            _G.UU.UI.PlayerImage.Image = "rbxthumb://type=AvatarHeadShot&id=" .. b13 .. "&w=420&h=420"
         end
         if _G.UU.UI.GameName and _G.UU.UI.GameImage then
-            local v391 = v8:GetProductInfo(game.PlaceId)
-            _G.UU.UI.GameName.Text = v391.Name
-            if v391.IconImageAssetId and v391.IconImageAssetId ~= 0 then
-                _G.UU.UI.GameImage.Image = "rbxthumb://type=Asset&id=" .. v391.IconImageAssetId .. "&w=420&h=420"
+            local b406 = b8:GetProductInfo(game.PlaceId)
+            _G.UU.UI.GameName.Text = b406.Name
+            if b406.IconImageAssetId and b406.IconImageAssetId ~= 0 then
+                _G.UU.UI.GameImage.Image = "rbxthumb://type=Asset&id=" .. b406.IconImageAssetId .. "&w=420&h=420"
             end
         end
     end)
 end)
 
-v92(v167.LoadStringBox, v167.LineNumbers, v167.LoadStringScrollFrame, v167.LineNumbersScrollFrame)
+b93(b169.LoadStringBox, b169.LineNumbers, b169.LoadStringScrollFrame, b169.LineNumbersScrollFrame)
 
-v128.Destroying:Connect(function()
-    for v338, v14 in pairs(_G.UU.Threads) do
-        if v14 and typeof(v14) == "thread" and coroutine.status(v14) ~= "dead" then
-            pcall(task.cancel, v14)
+b129.Destroying:Connect(function()
+    for b348, b15 in pairs(_G.UU.Threads) do
+        if b15 and typeof(b15) == "thread" and coroutine.status(b15) ~= "dead" then
+            pcall(task.cancel, b15)
         end
-        _G.UU.Threads[v338] = nil
+        _G.UU.Threads[b348] = nil
     end
-    if v309 then pcall(function() v309:Disconnect() end); v309 = nil end
-    if v143 then pcall(function() v143:Disconnect() end); v143 = nil end
+    if b317 then pcall(function() b317:Disconnect() end); b317 = nil end
+    if b144 then pcall(function() b144:Disconnect() end); b144 = nil end
 end)
 
-for v338, v339 in pairs(v148) do v339.Visible = false end
-v20.CurrentTab = nil
+for b348, b349 in pairs(b149) do b349.Visible = false end
+b21.CurrentTab = nil
 
-local v392 = v54()
-v368 = v392
-v57 = v58(v392)
+local b407 = b55()
+b381 = b407
+b58 = b59(b407)
 
 task.wait(0.1)
-v129.Visible = true
-v129.Size = UDim2.new(0, v55.Width, 0, v55.Height)
-v56.Scale = 0
 
-local v393 = v392.X
-local v394 = v392.Y
-local v350, v351
-if v20.SavedUIPosition then
-    v350 = v20.SavedUIPosition.X
-    v351 = v20.SavedUIPosition.Y
+local b408 = b21.AutoHideEnabled == false
+
+b130.Size = UDim2.new(0, b56.Width, 0, b56.Height)
+b57.Scale = 0
+
+local b409 = b407.X
+local b410 = b407.Y
+local b362, b363
+if b21.SavedUIPosition then
+    b362 = b21.SavedUIPosition.X
+    b363 = b21.SavedUIPosition.Y
 else
-    v350, v351 = v347(v392, v57)
+    b362, b363 = b357(b407, b58)
 end
-v129.Position = UDim2.new(0, v350, 0, v351)
+b130.Position = UDim2.new(0, b362, 0, b363)
 
-local v353
-if v20.SavedReopenPosition then
-    v350 = v20.SavedReopenPosition.X
-    v351 = v20.SavedReopenPosition.Y
-    v353 = math.floor(60 * v57)
+local b365
+if b21.SavedReopenPosition then
+    b362 = b21.SavedReopenPosition.X
+    b363 = b21.SavedReopenPosition.Y
+    b365 = math.floor(60 * b58)
 else
-    v353, v350, v351 = v352(v392, v57)
+    b365, b362, b363 = b364(b407, b58)
 end
-v136.Size = UDim2.new(0, v353, 0, v353)
-v136.Position = UDim2.new(0, v350, 0, v351)
-v136.Visible = false
-v136.ImageTransparency = 0
-v137.TextTransparency = 0
+b137.Size = UDim2.new(0, b365, 0, b365)
+b137.Position = UDim2.new(0, b362, 0, b363)
+b137.ImageTransparency = 0
+b138.TextTransparency = 0
 
-local v395 = v43(v56, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = v57 })
-v395.Completed:Wait()
+if b408 then
+    b130.Visible = true
+    local b411 = b44(b57, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = b58 })
+    b411.Completed:Wait()
+    b137.Visible = false
+else
+    b130.Visible = false
+    b137.Visible = true
+    b137.Size = UDim2.new(0, b365, 0, b365)
+end
 
-v337("Home")
-v33()
+b347("Home")
+b34()
 
 if queue_on_teleport and not _G.UU.TeleportQueued then
     _G.UU.TeleportQueued = true
@@ -2255,18 +2348,18 @@ _G.UU.Loaded = true
 _G.UU.LoadLock = false
 
 task.defer(function()
-    if v388 and v20.AutoLoadEnabled and v20.SavedCode and v20.SavedCode ~= "" then
-        local v320, v321 = v318(v20.SavedCode)
-        if v320 then
-            v167.Status.Text = "System Status: Auto-load executed successfully"
-            v43(v167.Status, v39.Fast, { TextColor3 = Color3.fromRGB(50, 220, 100) })
+    if b402 and b21.AutoLoadEnabled and b21.SavedCode and b21.SavedCode ~= "" then
+        local b328, b329 = b326(b21.SavedCode)
+        if b328 then
+            b169.Status.Text = "System Status: Auto-load executed successfully"
+            b44(b169.Status, b40.Fast, { TextColor3 = Color3.fromRGB(50, 220, 100) })
         else
-            v167.Status.Text = "System Status: Auto-load failed - " .. v321
-            v43(v167.Status, v39.Fast, { TextColor3 = Color3.fromRGB(220, 50, 50) })
+            b169.Status.Text = "System Status: Auto-load failed - " .. b329
+            b44(b169.Status, b40.Fast, { TextColor3 = Color3.fromRGB(220, 50, 50) })
         end
         task.wait(3)
-        v167.Status.Text = "System Status: Ready to execute"
-        v43(v167.Status, v39.Fast, { TextColor3 = Color3.fromRGB(180, 180, 180) })
+        b169.Status.Text = "System Status: Ready to execute"
+        b44(b169.Status, b40.Fast, { TextColor3 = Color3.fromRGB(180, 180, 180) })
     end
 end)
 
