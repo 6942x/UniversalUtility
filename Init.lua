@@ -818,8 +818,10 @@ do
     b199.TextColor3 = Color3.fromRGB(255, 180, 100); b199.TextXAlignment = Enum.TextXAlignment.Left
 
     local b200, b201 = "Unknown", "N/A"
-    if identifyexecutor then b200, b201 = identifyexecutor()
-    elseif getexecutorname then b200 = getexecutorname() end
+    pcall(function()
+        if identifyexecutor then b200, b201 = identifyexecutor()
+        elseif getexecutorname then b200 = getexecutorname() end
+    end)
 
     local b202 = Instance.new("TextLabel", b193)
     b202.Size = UDim2.new(1, -145, 0, 18); b202.Position = UDim2.new(0, 140, 0, 105)
@@ -870,7 +872,7 @@ do
 
     local b211 = Instance.new("TextLabel", b206)
     b211.Size = UDim2.new(1, -145, 0, 16); b211.Position = UDim2.new(0, 140, 0, 130)
-    b211.BackgroundTransparency = 1; b211.Text = "JobId: "..game.JobId
+    b211.BackgroundTransparency = 1; b211.Text = "JobId: "..(game.JobId ~= "" and game.JobId or "N/A")
     b211.Font = Enum.Font.Gotham; b211.TextSize = 11
     b211.TextColor3 = Color3.fromRGB(255, 180, 180); b211.TextXAlignment = Enum.TextXAlignment.Left
     b211.TextTruncate = Enum.TextTruncate.AtEnd
@@ -901,10 +903,10 @@ do
     b126(b214, "Prevent disconnections by simulating player activity", 34)
 
     local b216, _ = b131(b214, "Auto Jump", 60)
-    local b217, __, b218, b219 = b135(b216, UDim2.new(0, 56, 0, 28), UDim2.new(1, -28, 0.5, 0), b21.JumpEnabled, nil)
+    local b217, _, _, b219 = b135(b216, UDim2.new(0, 56, 0, 28), UDim2.new(1, -28, 0.5, 0), b21.JumpEnabled, nil)
 
     local b220, _ = b131(b214, "Auto Click", 102)
-    local b221, __, b222, b223 = b135(b220, UDim2.new(0, 56, 0, 28), UDim2.new(1, -28, 0.5, 0), b21.ClickEnabled, nil)
+    local b221, _, _, b223 = b135(b220, UDim2.new(0, 56, 0, 28), UDim2.new(1, -28, 0.5, 0), b21.ClickEnabled, nil)
 
     b116(b214, 150)
     b119(b214, "Click Position Mode", 162)
@@ -930,10 +932,10 @@ do
 
     b116(b214, 233)
 
-    local b231, b232, b233, b234, b235 = b69(b214, UDim2.new(1, -20, 0, 50), UDim2.new(0, 10, 0, 248), 10, "Jump Interval (seconds)")
-    local b236, b237, b238, b239, b240 = b69(b214, UDim2.new(1, -20, 0, 50), UDim2.new(0, 10, 0, 315), 3, "Click Interval (seconds)")
+    local _, b232, b233, b234, b235 = b69(b214, UDim2.new(1, -20, 0, 50), UDim2.new(0, 10, 0, 248), 10, "Jump Interval (seconds)")
+    local _, b237, b238, b239, b240 = b69(b214, UDim2.new(1, -20, 0, 50), UDim2.new(0, 10, 0, 315), 3, "Click Interval (seconds)")
 
-    local b241, b242 = b111(b214, UDim2.new(1, -20, 0, 45), UDim2.new(0, 10, 0, 380), "Status: All Inactive")
+    local _, b242 = b111(b214, UDim2.new(1, -20, 0, 45), UDim2.new(0, 10, 0, 380), "Status: All Inactive")
 
     b186 = {
         JumpToggleBtn      = b217,
@@ -983,12 +985,12 @@ do
 
     b116(b244, 135)
 
-    local b247, b248, b249, b250, b251 = b69(b244, UDim2.new(1, -20, 0, 50), UDim2.new(0, 10, 0, 150), 0.1, "Spam Interval (seconds)")
+    local _, b248, b249, b250, b251 = b69(b244, UDim2.new(1, -20, 0, 50), UDim2.new(0, 10, 0, 150), 0.1, "Spam Interval (seconds)")
 
     local b252, _ = b131(b244, "Auto Spam", 215)
-    local b253, __, b254, b255 = b135(b252, UDim2.new(0, 56, 0, 28), UDim2.new(1, -28, 0.5, 0), b21.AutoSpamEnabled, nil)
+    local b253, _, _, b255 = b135(b252, UDim2.new(0, 56, 0, 28), UDim2.new(1, -28, 0.5, 0), b21.AutoSpamEnabled, nil)
 
-    local b256, b257 = b111(b244, UDim2.new(1, -20, 0, 45), UDim2.new(0, 10, 0, 265), "Status: Inactive")
+    local _, b257 = b111(b244, UDim2.new(1, -20, 0, 45), UDim2.new(0, 10, 0, 265), "Status: Inactive")
 
     b187 = {
         SpamInput          = b246,
@@ -1012,7 +1014,7 @@ do
     b126(b259, "Track real-time performance metrics and unlock FPS limits", 34)
 
     local b261, _ = b131(b259, "FPS Unlock", 60)
-    local b262, __, b263, b264 = b135(b261, UDim2.new(0, 56, 0, 28), UDim2.new(1, -28, 0.5, 0), b21.FPSUnlockEnabled, nil)
+    local b262, _, _, b264 = b135(b261, UDim2.new(0, 56, 0, 28), UDim2.new(1, -28, 0.5, 0), b21.FPSUnlockEnabled, nil)
 
     local b265 = Instance.new("TextLabel", b259)
     b265.Size              = UDim2.new(1, -20, 0, 20)
@@ -1024,7 +1026,7 @@ do
     b265.TextColor3        = Color3.fromRGB(180, 180, 180)
     b265.TextXAlignment    = Enum.TextXAlignment.Center
 
-    local b266, b267, b268, b269, b270 = b69(b259, UDim2.new(1, -20, 0, 50), UDim2.new(0, 10, 0, 135), 60, "Target FPS Limit")
+    local _, b267, b268, b269, b270 = b69(b259, UDim2.new(1, -20, 0, 50), UDim2.new(0, 10, 0, 135), 60, "Target FPS Limit")
 
     b116(b259, 200)
     b119(b259, "Framerate Statistics", 210)
@@ -1112,9 +1114,9 @@ do
     b126(b293, "Automatically reconnect when disconnected from the server", 34)
 
     local b295, _ = b131(b293, "Auto Rejoin", 65)
-    local b296, __, b297, b298 = b135(b295, UDim2.new(0, 56, 0, 28), UDim2.new(1, -28, 0.5, 0), b21.AutoRejoinEnabled, nil)
+    local b296, _, _, b298 = b135(b295, UDim2.new(0, 56, 0, 28), UDim2.new(1, -28, 0.5, 0), b21.AutoRejoinEnabled, nil)
 
-    local b299, b300 = b111(b293, UDim2.new(1, -20, 0, 105), UDim2.new(0, 10, 0, 120),
+    local _, b300 = b111(b293, UDim2.new(1, -20, 0, 105), UDim2.new(0, 10, 0, 120),
         "Status: Disabled\n\nWhen enabled, automatically rejoins the current server when disconnected.")
 
     b189 = {
@@ -1126,7 +1128,7 @@ end
 
 do
     local b301 = b170["Script Loader"]
-    local b302 = b122(b301, 480, 1)
+    local b302 = b122(b301, 660, 1)
     b171["ScriptLoader_Card"] = b302
 
     local b303 = b129(b302, "💾 Script Executor", 8)
@@ -1187,7 +1189,7 @@ do
     b309.TextColor3       = Color3.fromRGB(255, 255, 255)
     b309.PlaceholderColor3 = Color3.fromRGB(120, 120, 120)
     b309.BorderSizePixel  = 0
-    b309.TextWrapped      = true
+    b309.TextWrapped      = false
     b309.TextXAlignment   = Enum.TextXAlignment.Left
     b309.TextYAlignment   = Enum.TextYAlignment.Top
     b309.MultiLine        = true
@@ -1210,16 +1212,129 @@ do
 
     local b311, _ = b131(b302, "Auto Load", 300)
     b311.Size = UDim2.new(0.5, -15, 0, 36); b311.Position = UDim2.new(0.5, 5, 0, 300)
-    local b312, __, b313, b314 = b135(b311, UDim2.new(0, 56, 0, 28), UDim2.new(1, -28, 0.5, 0), b21.AutoLoadEnabled, nil)
+    local b312, _, _, b314 = b135(b311, UDim2.new(0, 56, 0, 28), UDim2.new(1, -28, 0.5, 0), b21.AutoLoadEnabled, nil)
 
-    local b315, b316 = b111(b302, UDim2.new(1, -20, 0, 40), UDim2.new(0, 10, 0, 355), "Status: Ready")
+    -- Status row
+    b116(b302, 348)
+    b119(b302, "Status", 360)
+
+    local b316_frame = Instance.new("Frame", b302)
+    b316_frame.Size             = UDim2.new(1, -20, 0, 36)
+    b316_frame.Position         = UDim2.new(0, 10, 0, 382)
+    b316_frame.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+    b316_frame.BorderSizePixel  = 0
+    b60(b316_frame, 8)
+    Instance.new("UIStroke", b316_frame).Color = Color3.fromRGB(50, 50, 60)
+
+    local b316 = Instance.new("TextLabel", b316_frame)
+    b316.Size                = UDim2.new(1, -10, 1, 0)
+    b316.Position            = UDim2.new(0, 10, 0, 0)
+    b316.BackgroundTransparency = 1
+    b316.Text                = "Ready"
+    b316.Font                = Enum.Font.GothamBold
+    b316.TextSize            = 13
+    b316.TextColor3          = Color3.fromRGB(180, 180, 180)
+    b316.TextXAlignment      = Enum.TextXAlignment.Left
+    b316.TextYAlignment      = Enum.TextYAlignment.Center
+    b316.TextTruncate        = Enum.TextTruncate.AtEnd
+
+    -- Output panel
+    b116(b302, 430)
+    b119(b302, "Output", 442)
+
+    local b316_clear = Instance.new("TextButton", b302)
+    b316_clear.Size             = UDim2.new(0, 50, 0, 18)
+    b316_clear.Position         = UDim2.new(1, -60, 0, 440)
+    b316_clear.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+    b316_clear.Text             = "Clear"
+    b316_clear.Font             = Enum.Font.Gotham
+    b316_clear.TextSize         = 11
+    b316_clear.TextColor3       = Color3.fromRGB(180, 180, 180)
+    b316_clear.BorderSizePixel  = 0
+    b316_clear.AutoButtonColor  = false
+    b60(b316_clear, 4)
+    b316_clear.MouseEnter:Connect(function() b43(b316_clear, b39.Fast, { BackgroundColor3 = Color3.fromRGB(80, 80, 90) }) end)
+    b316_clear.MouseLeave:Connect(function() b43(b316_clear, b39.Fast, { BackgroundColor3 = Color3.fromRGB(60, 60, 70) }) end)
+
+    local b316_outFrame = Instance.new("Frame", b302)
+    b316_outFrame.Size             = UDim2.new(1, -20, 0, 140)
+    b316_outFrame.Position         = UDim2.new(0, 10, 0, 465)
+    b316_outFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 24)
+    b316_outFrame.BorderSizePixel  = 0
+    b60(b316_outFrame, 8)
+    Instance.new("UIStroke", b316_outFrame).Color = Color3.fromRGB(50, 50, 60)
+
+    local b316_outScroll = Instance.new("ScrollingFrame", b316_outFrame)
+    b316_outScroll.Size                   = UDim2.new(1, -4, 1, -4)
+    b316_outScroll.Position               = UDim2.new(0, 2, 0, 2)
+    b316_outScroll.BackgroundTransparency = 1
+    b316_outScroll.BorderSizePixel        = 0
+    b316_outScroll.ScrollBarThickness     = 3
+    b316_outScroll.ScrollBarImageColor3   = Color3.fromRGB(100, 150, 255)
+    b316_outScroll.ScrollBarImageTransparency = 0.5
+    b316_outScroll.CanvasSize             = UDim2.new(0, 0, 0, 0)
+    b316_outScroll.AutomaticCanvasSize    = Enum.AutomaticSize.Y
+
+    local b316_outLayout = Instance.new("UIListLayout", b316_outScroll)
+    b316_outLayout.SortOrder  = Enum.SortOrder.LayoutOrder
+    b316_outLayout.Padding    = UDim.new(0, 2)
+
+    local b316_outPad = Instance.new("UIPadding", b316_outScroll)
+    b316_outPad.PaddingLeft   = UDim.new(0, 6)
+    b316_outPad.PaddingRight  = UDim.new(0, 6)
+    b316_outPad.PaddingTop    = UDim.new(0, 4)
+    b316_outPad.PaddingBottom = UDim.new(0, 4)
+
+    local b316_outEmpty = Instance.new("TextLabel", b316_outScroll)
+    b316_outEmpty.Size                = UDim2.new(1, 0, 0, 20)
+    b316_outEmpty.BackgroundTransparency = 1
+    b316_outEmpty.Text                = "No output yet."
+    b316_outEmpty.Font                = Enum.Font.Code
+    b316_outEmpty.TextSize            = 11
+    b316_outEmpty.TextColor3          = Color3.fromRGB(90, 90, 100)
+    b316_outEmpty.TextXAlignment      = Enum.TextXAlignment.Left
+    b316_outEmpty.LayoutOrder         = 1
+
+    local b316_entryCount = 1
+
+    local function b316_addOutput(text, color)
+        b316_outEmpty.Visible = false
+        b316_entryCount = b316_entryCount + 1
+        local entry = Instance.new("TextLabel", b316_outScroll)
+        entry.Size                = UDim2.new(1, 0, 0, 0)
+        entry.AutomaticSize       = Enum.AutomaticSize.Y
+        entry.BackgroundTransparency = 1
+        entry.Text                = text
+        entry.Font                = Enum.Font.Code
+        entry.TextSize            = 11
+        entry.TextColor3          = color or Color3.fromRGB(220, 220, 220)
+        entry.TextXAlignment      = Enum.TextXAlignment.Left
+        entry.TextYAlignment      = Enum.TextYAlignment.Top
+        entry.TextWrapped         = true
+        entry.RichText            = false
+        entry.LayoutOrder         = b316_entryCount
+        task.defer(function()
+            b316_outScroll.CanvasPosition = Vector2.new(0, math.huge)
+        end)
+        return entry
+    end
+
+    b316_clear.MouseButton1Click:Connect(function()
+        for _, child in ipairs(b316_outScroll:GetChildren()) do
+            if child:IsA("TextLabel") and child ~= b316_outEmpty then
+                child:Destroy()
+            end
+        end
+        b316_entryCount = 1
+        b316_outEmpty.Visible = true
+    end)
 
     local b317 = Instance.new("TextLabel", b302)
-    b317.Size = UDim2.new(1, -20, 0, 60); b317.Position = UDim2.new(0, 10, 0, 405)
+    b317.Size = UDim2.new(1, -20, 0, 30); b317.Position = UDim2.new(0, 10, 0, 618)
     b317.BackgroundTransparency = 1
     b317.Text = "Code is auto-saved while typing. Enable Auto Load to execute on rejoin."
-    b317.Font = Enum.Font.Gotham; b317.TextSize = 12
-    b317.TextColor3 = Color3.fromRGB(130, 130, 130)
+    b317.Font = Enum.Font.Gotham; b317.TextSize = 11
+    b317.TextColor3 = Color3.fromRGB(100, 100, 110)
     b317.TextXAlignment = Enum.TextXAlignment.Center; b317.TextWrapped = true
 
     b190 = {
@@ -1231,6 +1346,9 @@ do
         AutoLoadToggleBtn      = b312,
         AutoLoadToggleState    = b314,
         Status                 = b316,
+        OutputScroll           = b316_outScroll,
+        OutputEmpty            = b316_outEmpty,
+        AddOutput              = b316_addOutput,
     }
 end
 
@@ -1263,9 +1381,9 @@ do
     b116(b319, 135)
 
     local b323, _ = b131(b319, "Auto Hide UI", 150)
-    local b324, __, b325, b326 = b135(b323, UDim2.new(0, 56, 0, 28), UDim2.new(1, -28, 0.5, 0), b21.AutoHideEnabled, nil)
+    local b324, _, _, b326 = b135(b323, UDim2.new(0, 56, 0, 28), UDim2.new(1, -28, 0.5, 0), b21.AutoHideEnabled, nil)
 
-    local b327, b328 = b111(b319, UDim2.new(1, -20, 0, 60), UDim2.new(0, 10, 0, 200), "")
+    local _, b328 = b111(b319, UDim2.new(1, -20, 0, 60), UDim2.new(0, 10, 0, 200), "")
     b328.TextColor3 = Color3.fromRGB(150, 150, 150)
 
     b191 = {
@@ -1283,7 +1401,7 @@ if b329 then
 end
 
 local b331, b332, b333 = {}, {}, 60
-local b334, b335, b336 = tick(), 0, 60
+local b334, b335 = tick(), 0
 local b337 = 0
 
 for b338 = 1, 60 do
@@ -1418,14 +1536,14 @@ local function b357()
 end
 
 local function b365(b366)
-    if not b366 or b366 == "" then return false, "Empty script" end
+    if not b366 or b366 == "" then return false, "Empty script", "No code to execute." end
     local b367, b368 = pcall(function()
         local b369, b370 = loadstring(b366)
-        if not b369 then error(b370) end
+        if not b369 then error(b370, 0) end
         b369()
     end)
-    if b367 then return true, "Executed successfully!" end
-    return false, "Error - "..tostring(b368):sub(1, 50).."..."
+    if b367 then return true, "Executed successfully!", nil end
+    return false, "Execution failed", tostring(b368)
 end
 
 local b371 = { jump = false, click = false, spam = false, fps = false }
@@ -1602,62 +1720,57 @@ end)
 b190.ExecuteButton.MouseButton1Click:Connect(function()
     if not b48("Execute", 0.5) then return end
     local b384 = b190.LoadStringBox.Text
-    b190.Status.Text = "Status: Executing..."
-    b43(b190.Status, b39.Fast, { TextColor3 = Color3.fromRGB(255, 200, 100) })
+    b190.Status.Text = "Executing..."
+    b190.Status.TextColor3 = Color3.fromRGB(255, 200, 100)
     b43(b190.ExecuteButton, b39.Medium, { BackgroundColor3 = Color3.fromRGB(255, 200, 100) })
-    local b385, b386 = b365(b384)
-    local b387 = b385 and Color3.fromRGB(50, 220, 100) or Color3.fromRGB(220, 50, 50)
-    b190.Status.Text = "Status: "..b386
-    b43(b190.Status, b39.Fast, { TextColor3 = b387 })
-    b43(b190.ExecuteButton, b39.Medium, { BackgroundColor3 = b387 })
-    task.wait(2)
-    if b190.Status.Text:match("Error") or b190.Status.Text:match("successfully") then
-        b190.Status.Text = "Status: Ready"
-        b43(b190.Status, b39.Fast, { TextColor3 = Color3.fromRGB(180, 180, 180) })
-        b43(b190.ExecuteButton, b39.Medium, { BackgroundColor3 = Color3.fromRGB(100, 150, 255) })
+    local b385, _, b386err = b365(b384)
+    if b385 then
+        b190.AddOutput("Script executed successfully.", Color3.fromRGB(80, 220, 120))
+        b43(b190.ExecuteButton, b39.Medium, { BackgroundColor3 = Color3.fromRGB(50, 180, 80) })
+    else
+        if b386err then
+            b190.AddOutput(b386err, Color3.fromRGB(255, 100, 100))
+        end
+        b43(b190.ExecuteButton, b39.Medium, { BackgroundColor3 = Color3.fromRGB(180, 50, 50) })
     end
+    task.wait(0.5)
+    b190.Status.Text = "Ready"
+    b190.Status.TextColor3 = Color3.fromRGB(180, 180, 180)
+    b43(b190.ExecuteButton, b39.Medium, { BackgroundColor3 = Color3.fromRGB(100, 150, 255) })
 end)
 
 b190.AutoLoadToggleBtn.MouseButton1Click:Connect(function()
     if not b48("AutoLoad", 0.3) then return end
     b21.AutoLoadEnabled = not b21.AutoLoadEnabled
     b148(b190.AutoLoadToggleState, b21.AutoLoadEnabled)
-    local b388, b389
     if b21.AutoLoadEnabled then
         if b21.SavedCode and b21.SavedCode ~= "" then
-            b388, b389 = "Auto-load enabled", Color3.fromRGB(50, 220, 100)
+            b190.AddOutput("Auto-load enabled — will execute saved code on rejoin.", Color3.fromRGB(80, 220, 120))
         else
-            b388, b389 = "No code to auto-load", Color3.fromRGB(220, 50, 50)
+            b190.AddOutput("Auto-load enabled — but no code is saved yet.", Color3.fromRGB(255, 200, 100))
         end
     else
-        b388, b389 = "Auto-load disabled", Color3.fromRGB(180, 180, 180)
-    end
-    b190.Status.Text = "Status: "..b388
-    b43(b190.Status, b39.Fast, { TextColor3 = b389 })
-    task.wait(2)
-    if b190.Status.Text:match("enabled") or b190.Status.Text:match("disabled") or b190.Status.Text:match("code") then
-        b190.Status.Text = "Status: Ready"
-        b43(b190.Status, b39.Fast, { TextColor3 = Color3.fromRGB(180, 180, 180) })
+        b190.AddOutput("Auto-load disabled.", Color3.fromRGB(160, 160, 160))
     end
     b33()
 end)
 
 b190.LoadStringBox:GetPropertyChangedSignal("Text"):Connect(function()
+    b21.SavedCode = b190.LoadStringBox.Text
     if _G.UU.Threads.SaveCode then
         pcall(task.cancel, _G.UU.Threads.SaveCode)
         _G.UU.Threads.SaveCode = nil
     end
+    b190.Status.Text = "Saving..."
+    b190.Status.TextColor3 = Color3.fromRGB(100, 200, 255)
     _G.UU.Threads.SaveCode = task.delay(1.0, function()
         _G.UU.Threads.SaveCode = nil
-        b21.SavedCode = b190.LoadStringBox.Text
         b33()
-        b190.Status.Text = "Status: Code auto-saved ✓"
-        b43(b190.Status, b39.Fast, { TextColor3 = Color3.fromRGB(100, 200, 255) })
-        task.wait(2)
-        if b190.Status.Text == "Status: Code auto-saved ✓" then
-            b190.Status.Text = "Status: Ready"
-            b43(b190.Status, b39.Fast, { TextColor3 = Color3.fromRGB(180, 180, 180) })
-        end
+        b190.Status.Text = "Successfully saved"
+        b190.Status.TextColor3 = Color3.fromRGB(80, 220, 120)
+        task.wait(1.5)
+        b190.Status.Text = "Ready"
+        b190.Status.TextColor3 = Color3.fromRGB(180, 180, 180)
     end)
     b91(b190.LoadStringBox, b190.LineNumbers, b190.LoadStringScrollFrame, b190.LineNumbersScrollFrame)
 end)
@@ -1761,11 +1874,14 @@ local b405 = false
 local function b406()
     if b405 or #b404 == 0 then return end
     b405 = true
-    local b407 = table.remove(b404, 1)
-    b407()
-    task.wait(0.05)
-    b405 = false
-    if #b404 > 0 then b406() end
+    task.spawn(function()
+        while #b404 > 0 do
+            local b407 = table.remove(b404, 1)
+            b407()
+            task.wait(0.05)
+        end
+        b405 = false
+    end)
 end
 
 local function b408(b407)
@@ -1786,8 +1902,8 @@ end
 
 local function b416(b417)
     if not b56 then return end
-    b43(b56, b39.Smooth, { Scale = b417 })
     b57 = b417
+    b43(b56, b39.Smooth, { Scale = b417 })
     b159.TextSize = math.floor(24 * b417)
 end
 
@@ -2163,17 +2279,18 @@ _G.UU.LoadLock  = false
 
 task.defer(function()
     if b462 and b21.AutoLoadEnabled and b21.SavedCode and b21.SavedCode ~= "" then
-        local b475, b476 = b365(b21.SavedCode)
+        b190.Status.Text = "Executing..."
+        b190.Status.TextColor3 = Color3.fromRGB(255, 200, 100)
+        local b475, _, b476err = b365(b21.SavedCode)
         if b475 then
-            b190.Status.Text = "Status: Auto-load executed successfully"
-            b43(b190.Status, b39.Fast, { TextColor3 = Color3.fromRGB(50, 220, 100) })
+            b190.AddOutput("Auto-load executed successfully.", Color3.fromRGB(80, 220, 120))
         else
-            b190.Status.Text = "Status: Auto-load failed — "..b476
-            b43(b190.Status, b39.Fast, { TextColor3 = Color3.fromRGB(220, 50, 50) })
+            if b476err then
+                b190.AddOutput(b476err, Color3.fromRGB(255, 100, 100))
+            end
         end
-        task.wait(3)
-        b190.Status.Text = "Status: Ready"
-        b43(b190.Status, b39.Fast, { TextColor3 = Color3.fromRGB(180, 180, 180) })
+        b190.Status.Text = "Ready"
+        b190.Status.TextColor3 = Color3.fromRGB(180, 180, 180)
     end
 end)
 
