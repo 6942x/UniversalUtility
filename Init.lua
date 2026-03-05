@@ -141,10 +141,10 @@ local function b33()
     if not writefile then return end
     local b34 = _G.UU.UI and _G.UU.UI.MainFrame
     local b35 = _G.UU.UI and _G.UU.UI.ReopenButton
-    if b34 then
+    if b34 and b34.Visible then
         b21.SavedUIPosition = { X = b34.Position.X.Offset, Y = b34.Position.Y.Offset }
     end
-    if b35 then
+    if b35 and b35.Visible then
         b21.SavedReopenPosition = { X = b35.Position.X.Offset, Y = b35.Position.Y.Offset }
     end
     writefile(b32(), b:JSONEncode({
@@ -535,7 +535,7 @@ end
 local b151 = Instance.new("Frame", b150)
 b151.Name              = "MainFrame"
 b151.Size              = UDim2.new(0, 0, 0, 0)
-b151.Position          = UDim2.new(0.5, 0, 0.5, 0)
+b151.Position          = UDim2.new(0, 0, 0, 0)
 b151.BackgroundColor3  = Color3.fromRGB(25, 25, 30)
 b151.BorderSizePixel   = 0
 b151.Active            = true
@@ -607,7 +607,7 @@ b157.ClipsDescendants     = true
 local b158 = Instance.new("ImageButton", b150)
 b158.Name             = "ReopenButton"
 b158.Size             = UDim2.new(0, 0, 0, 0)
-b158.Position         = UDim2.new(0.5, 0, 0, 30)
+b158.Position         = UDim2.new(0, 0, 0, 0)
 b158.BackgroundColor3 = Color3.fromRGB(100, 150, 255)
 b158.BorderSizePixel  = 0
 b158.Visible          = false
@@ -640,7 +640,7 @@ b158.InputBegan:Connect(function(b166)
             if (b167.UserInputType == Enum.UserInputType.MouseMovement or b167.UserInputType == Enum.UserInputType.Touch) and b160 then
                 local b168 = b167.Position - b161
                 if math.abs(b168.X) > 5 or math.abs(b168.Y) > 5 then b164 = true end
-                b158.Position = UDim2.new(b162.X.Scale, b162.X.Offset + b168.X, 0, b162.Y.Offset + b168.Y)
+                b158.Position = UDim2.new(0, b162.X.Offset + b168.X, 0, b162.Y.Offset + b168.Y)
             end
         end)
         b166.Changed:Connect(function()
@@ -648,7 +648,10 @@ b158.InputBegan:Connect(function(b166)
                 b160 = false
                 if b163 then b163:Disconnect(); b163 = nil end
                 task.wait(0.1)
-                if b164 then b33() end
+                if b164 then
+                    b21.SavedReopenPosition = { X = b158.Position.X.Offset, Y = b158.Position.Y.Offset }
+                    b33()
+                end
                 b164 = false
             end
         end)
@@ -1785,9 +1788,6 @@ local function b416(b417)
     if not b56 then return end
     b43(b56, b39.Smooth, { Scale = b417 })
     b57 = b417
-    if b158.Visible and b21.SavedReopenPosition then
-        b158.Position = UDim2.new(0, b21.SavedReopenPosition.X, 0, b21.SavedReopenPosition.Y)
-    end
     b159.TextSize = math.floor(24 * b417)
 end
 
@@ -1814,7 +1814,7 @@ local function b420()
                 local _, b426, b427 = b414(b422, b57)
                 b424, b425 = b426, b427
             end
-            b158.Size = UDim2.new(0, 0, 0, 0)
+            b158.Size = UDim2.new(0, b423, 0, b423)
             b158.Position = UDim2.new(0, b424, 0, b425)
             b158.ImageTransparency = 1; b159.TextTransparency = 1
             b158.Rotation = -180; b158.Visible = true
@@ -2115,7 +2115,7 @@ b151.Size  = UDim2.new(0, b55.Width, 0, b55.Height)
 b56.Scale  = 0
 
 local b469, b470
-if b21.SavedUIPosition then
+if b21.SavedUIPosition and b21.SavedUIPosition.X and b21.SavedUIPosition.Y then
     b469 = b21.SavedUIPosition.X
     b470 = b21.SavedUIPosition.Y
 else
@@ -2124,10 +2124,10 @@ end
 b151.Position = UDim2.new(0, b469, 0, b470)
 
 local b471, b472, b473
-if b21.SavedReopenPosition then
+if b21.SavedReopenPosition and b21.SavedReopenPosition.X and b21.SavedReopenPosition.Y then
+    b471 = math.floor(60 * b57)
     b472 = b21.SavedReopenPosition.X
     b473 = b21.SavedReopenPosition.Y
-    b471 = math.floor(60 * b57)
 else
     b471, b472, b473 = b414(b467, b57)
 end
@@ -2145,6 +2145,7 @@ else
     b151.Visible = false
     b158.Visible = true
     b158.Size    = UDim2.new(0, b471, 0, b471)
+    b158.Position = UDim2.new(0, b472, 0, b473)
 end
 
 b395("Home")
