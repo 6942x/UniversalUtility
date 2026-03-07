@@ -181,6 +181,9 @@ local function a33()
     if a37 then
         _G.UU.LastSaveTime = tick()
         _G.UU.SavePending = false
+        if _G.UU.Loaded and a203 and a203.AddSettingsLog then
+            a203.AddSettingsLog("Config saved to disk.", Color3.fromRGB(100, 200, 255))
+        end
     end
 end
 _G.UU.SaveCFG = a33
@@ -544,6 +547,112 @@ local function a160(a159, a149)
     a48(a159.knob, a44.Fast, { Position = UDim2.new(0, a149 and a159.onX or a159.offX, 0.5, 0) })
 end
 
+local function a498(a498_btn, a498_idle, a498_hover, a498_press)
+    a498_btn.MouseEnter:Connect(function()
+        a48(a498_btn, a44.Fast, a498_hover)
+    end)
+    a498_btn.MouseLeave:Connect(function()
+        a48(a498_btn, a44.Fast, a498_idle)
+    end)
+    a498_btn.MouseButton1Down:Connect(function()
+        a48(a498_btn, a44.Fast, a498_press)
+    end)
+    a498_btn.MouseButton1Up:Connect(function()
+        a48(a498_btn, a44.Fast, a498_hover)
+    end)
+end
+
+local function a499(a499_parent, a499_size, a499_pos, a499_barColor)
+    local a499_outer = Instance.new("Frame", a499_parent)
+    a499_outer.Size             = a499_size
+    a499_outer.Position         = a499_pos
+    a499_outer.BackgroundColor3 = Color3.fromRGB(20, 20, 24)
+    a499_outer.BorderSizePixel  = 0
+    a65(a499_outer, 8)
+    Instance.new("UIStroke", a499_outer).Color = Color3.fromRGB(50, 50, 60)
+
+    local a499_scroll = Instance.new("ScrollingFrame", a499_outer)
+    a499_scroll.Size                     = UDim2.new(1, -4, 1, -4)
+    a499_scroll.Position                 = UDim2.new(0, 2, 0, 2)
+    a499_scroll.BackgroundTransparency   = 1
+    a499_scroll.BorderSizePixel          = 0
+    a499_scroll.ScrollBarThickness       = 3
+    a499_scroll.ScrollBarImageColor3     = a499_barColor or Color3.fromRGB(100, 150, 255)
+    a499_scroll.ScrollBarImageTransparency = 0.5
+    a499_scroll.CanvasSize               = UDim2.new(0, 0, 0, 0)
+    a499_scroll.AutomaticCanvasSize      = Enum.AutomaticSize.Y
+
+    local a499_layout = Instance.new("UIListLayout", a499_scroll)
+    a499_layout.SortOrder = Enum.SortOrder.LayoutOrder
+    a499_layout.Padding   = UDim.new(0, 2)
+
+    local a499_pad = Instance.new("UIPadding", a499_scroll)
+    a499_pad.PaddingLeft   = UDim.new(0, 6)
+    a499_pad.PaddingRight  = UDim.new(0, 6)
+    a499_pad.PaddingTop    = UDim.new(0, 4)
+    a499_pad.PaddingBottom = UDim.new(0, 4)
+
+    local a499_empty = Instance.new("TextLabel", a499_scroll)
+    a499_empty.Size                  = UDim2.new(1, 0, 0, 20)
+    a499_empty.BackgroundTransparency = 1
+    a499_empty.Font                  = Enum.Font.Code
+    a499_empty.TextSize              = 11
+    a499_empty.TextColor3            = Color3.fromRGB(90, 90, 100)
+    a499_empty.TextXAlignment        = Enum.TextXAlignment.Left
+    a499_empty.LayoutOrder           = 1
+
+    local a499_count = 1
+
+    local function a499_add(a499_msg, a499_col)
+        a499_empty.Visible = false
+        a499_count = a499_count + 1
+        local a499_ts  = os.date and os.date("%H:%M:%S") or "—"
+        local a499_line = Instance.new("TextLabel", a499_scroll)
+        a499_line.Size                  = UDim2.new(1, 0, 0, 0)
+        a499_line.AutomaticSize         = Enum.AutomaticSize.Y
+        a499_line.BackgroundTransparency = 1
+        a499_line.Text                  = "["..a499_ts.."] "..a499_msg
+        a499_line.Font                  = Enum.Font.Code
+        a499_line.TextSize              = 11
+        a499_line.TextColor3            = a499_col or Color3.fromRGB(220, 220, 220)
+        a499_line.TextXAlignment        = Enum.TextXAlignment.Left
+        a499_line.TextYAlignment        = Enum.TextYAlignment.Top
+        a499_line.TextWrapped           = true
+        a499_line.RichText              = false
+        a499_line.LayoutOrder           = a499_count
+        task.defer(function() a499_scroll.CanvasPosition = Vector2.new(0, math.huge) end)
+        return a499_line
+    end
+
+    local a499_clear = Instance.new("TextButton", a499_parent)
+    a499_clear.Size             = UDim2.new(0, 50, 0, 18)
+    a499_clear.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+    a499_clear.Text             = "Clear"
+    a499_clear.Font             = Enum.Font.Gotham
+    a499_clear.TextSize         = 11
+    a499_clear.TextColor3       = Color3.fromRGB(180, 180, 180)
+    a499_clear.BorderSizePixel  = 0
+    a499_clear.AutoButtonColor  = false
+    a65(a499_clear, 4)
+    a498(a499_clear,
+        { BackgroundColor3 = Color3.fromRGB(60,  60,  70),  Size = UDim2.new(0, 50, 0, 18) },
+        { BackgroundColor3 = Color3.fromRGB(80,  80,  90),  Size = UDim2.new(0, 55, 0, 21) },
+        { BackgroundColor3 = Color3.fromRGB(100, 100, 110), Size = UDim2.new(0, 45, 0, 15) }
+    )
+
+    a499_clear.MouseButton1Click:Connect(function()
+        for _, a499_ch in ipairs(a499_scroll:GetChildren()) do
+            if a499_ch:IsA("TextLabel") and a499_ch ~= a499_empty then
+                a499_ch:Destroy()
+            end
+        end
+        a499_count = 1
+        a499_empty.Visible = true
+    end)
+
+    return a499_outer, a499_scroll, a499_empty, a499_add, a499_clear
+end
+
 local a161 = a6:FindFirstChild("UniversalUtility") or (gethui and gethui():FindFirstChild("UniversalUtility"))
 if a161 then a161:Destroy() end
 
@@ -587,26 +696,26 @@ a164.ScaleType              = Enum.ScaleType.Slice
 a164.SliceCenter            = Rect.new(49, 49, 450, 450)
 
 local a165 = Instance.new("Frame", a163)
-a165.Size             = UDim2.new(1, 0, 0, 40)
-a165.Position         = UDim2.new(0, 0, 0, 5)
+a165.Size             = UDim2.new(1, 0, 0, 46)
+a165.Position         = UDim2.new(0, 0, 0, 0)
 a165.BackgroundColor3 = Color3.fromRGB(35, 35, 42)
 a165.BorderSizePixel  = 0
 a65(a165, 16)
-a69(a165, Color3.fromRGB(35, 35, 42), Color3.fromRGB(30, 30, 37), 90)
+a69(a165, Color3.fromRGB(38, 38, 46), Color3.fromRGB(30, 30, 37), 90)
 
 local a166 = Instance.new("TextLabel", a165)
 a166.Size              = UDim2.new(1, -60, 1, 0)
-a166.Position          = UDim2.new(0, 15, 0, 0)
+a166.Position          = UDim2.new(0, 14, 0, 0)
 a166.BackgroundTransparency = 1
 a166.Text              = "⚡ Universal Utility"
 a166.Font              = Enum.Font.GothamBold
-a166.TextSize          = 24
+a166.TextSize          = 22
 a166.TextColor3        = Color3.fromRGB(255, 255, 255)
 a166.TextXAlignment    = Enum.TextXAlignment.Left
 
 local a167 = Instance.new("ImageButton", a165)
-a167.Size               = UDim2.new(0, 30, 0, 30)
-a167.Position           = UDim2.new(1, -12.5, 0.5, 0)
+a167.Size               = UDim2.new(0, 28, 0, 28)
+a167.Position           = UDim2.new(1, -14, 0.5, 0)
 a167.AnchorPoint        = Vector2.new(1, 0.5)
 a167.BackgroundColor3   = Color3.fromRGB(220, 50, 50)
 a167.BorderSizePixel    = 0
@@ -617,16 +726,16 @@ a167.ImageColor3        = Color3.fromRGB(255, 255, 255)
 a65(a167, 8)
 
 local a168 = Instance.new("Frame", a163)
-a168.Size             = UDim2.new(0, 180, 1, -57)
-a168.Position         = UDim2.new(0, 2.5, 0, 50)
+a168.Size             = UDim2.new(0, 178, 1, -52)
+a168.Position         = UDim2.new(0, 5, 0, 52)
 a168.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
 a168.BorderSizePixel  = 0
-a65(a168, 12)
+a65(a168, 10)
 a69(a168, Color3.fromRGB(30, 30, 35), Color3.fromRGB(25, 25, 30), 90)
 
 local a169 = Instance.new("Frame", a163)
-a169.Size                 = UDim2.new(1, -185, 1, -40)
-a169.Position             = UDim2.new(0, 183, 0, 50)
+a169.Size                 = UDim2.new(1, -193, 1, -57)
+a169.Position             = UDim2.new(0, 188, 0, 52)
 a169.BackgroundTransparency = 1
 a169.BorderSizePixel      = 0
 a169.ClipsDescendants     = true
@@ -655,6 +764,28 @@ a171.TextTransparency    = 1
 
 local a172, a173, a174, a175, a176 = false, nil, nil, nil, false
 local a177 = nil
+local a177_spinActive = false
+
+local function a177_stopSpin()
+    if a177 then
+        a177:Disconnect()
+        a177 = nil
+    end
+    a177_spinActive = false
+end
+
+local function a177_startSpin()
+    if a177_spinActive then return end
+    a177_spinActive = true
+    if a177 then a177:Disconnect() end
+    a177 = a5.RenderStepped:Connect(function(a457)
+        if a170.Visible then
+            a170.Rotation = (a170.Rotation + (a457 * 180)) % 360
+        else
+            a177_stopSpin()
+        end
+    end)
+end
 
 a170.InputBegan:Connect(function(a178)
     if a178.UserInputType == Enum.UserInputType.MouseButton1 or a178.UserInputType == Enum.UserInputType.Touch then
@@ -662,6 +793,7 @@ a170.InputBegan:Connect(function(a178)
         a176 = false
         a173 = a178.Position
         a174 = a170.Position
+        a177_startSpin()
         if a175 then a175:Disconnect() end
         a175 = a3.InputChanged:Connect(function(a179)
             if (a179.UserInputType == Enum.UserInputType.MouseMovement or a179.UserInputType == Enum.UserInputType.Touch) and a172 then
@@ -674,6 +806,18 @@ a170.InputBegan:Connect(function(a178)
             if a178.UserInputState == Enum.UserInputState.End then
                 a172 = false
                 if a175 then a175:Disconnect(); a175 = nil end
+                local a456_inner = math.floor(60 * a62)
+                local mousePos = a3:GetMouseLocation()
+                local btnPos = a170.AbsolutePosition
+                local btnSize = a170.AbsoluteSize
+                local isHovered = mousePos.X >= btnPos.X and mousePos.X <= btnPos.X + btnSize.X
+                    and mousePos.Y >= btnPos.Y and mousePos.Y <= btnPos.Y + btnSize.Y
+                if isHovered then
+                    a48(a170, a44.Medium, { Size = UDim2.new(0, math.floor(a456_inner * 1.17), 0, math.floor(a456_inner * 1.17)) })
+                    a177_startSpin()
+                else
+                    a48(a170, a44.Medium, { Size = UDim2.new(0, a456_inner, 0, a456_inner), Rotation = 0 })
+                end
                 task.wait(0.1)
                 if a176 then
                     a21.SavedReopenPosition = { X = a170.Position.X.Offset, Y = a170.Position.Y.Offset }
@@ -682,6 +826,36 @@ a170.InputBegan:Connect(function(a178)
                 a176 = false
             end
         end)
+    end
+end)
+
+a170.MouseEnter:Connect(function()
+    if not a172 then
+        local a456 = math.floor(60 * a62)
+        a48(a170, a44.Medium, { Size = UDim2.new(0, math.floor(a456 * 1.17), 0, math.floor(a456 * 1.17)) })
+        a177_startSpin()
+    end
+end)
+
+a170.MouseLeave:Connect(function()
+    if not a172 then
+        a177_stopSpin()
+        local a456 = math.floor(60 * a62)
+        a48(a170, a44.Medium, { Size = UDim2.new(0, a456, 0, a456), Rotation = 0 })
+    end
+end)
+
+a170.MouseButton1Down:Connect(function()
+    if not a172 then
+        local a456 = math.floor(60 * a62)
+        a48(a170, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Size = UDim2.new(0, math.floor(a456 * 0.92), 0, math.floor(a456 * 0.92)) })
+    end
+end)
+
+a170.MouseButton1Up:Connect(function()
+    if not a172 then
+        local a456 = math.floor(60 * a62)
+        a48(a170, a44.Fast, { Size = UDim2.new(0, a456, 0, a456) })
     end
 end)
 
@@ -709,8 +883,8 @@ _G.UU.UI = {
 local function a184(a185, a186, a187)
     local a188 = Instance.new("TextButton", a168)
     a188.Name              = a185.."Tab"
-    a188.Size              = UDim2.new(1, -10, 0, 55)
-    a188.Position          = UDim2.new(0.5, 0, 0, 32.5 + ((a187 - 1) * 60))
+    a188.Size              = UDim2.new(1, -10, 0, 50)
+    a188.Position          = UDim2.new(0.5, 0, 0, 8 + ((a187 - 1) * 55) + 27)
     a188.AnchorPoint       = Vector2.new(0.5, 0.5)
     a188.BackgroundColor3  = Color3.fromRGB(35, 35, 42)
     a188.BorderSizePixel   = 0
@@ -740,23 +914,23 @@ local function a184(a185, a186, a187)
     a188.MouseEnter:Connect(function()
         local a188_isSelected = a21.CurrentTab == a185
         if a188_isSelected then
-            a48(a188, a44.Fast, { Size = UDim2.new(1, -4, 0, 59) })
-            a48(a189, a44.Fast, { TextSize = 22 })
-            a48(a190, a44.Fast, { TextSize = 15 })
+            a48(a188, a44.Fast, { Size = UDim2.new(1, -4, 0, 54) })
+            a48(a189, a44.Fast, { TextSize = 21 })
+            a48(a190, a44.Fast, { TextSize = 14 })
         else
-            a48(a188, a44.Fast, { BackgroundColor3 = Color3.fromRGB(45, 45, 52), Size = UDim2.new(1, -4, 0, 59) })
-            a48(a189, a44.Fast, { TextColor3 = Color3.fromRGB(200, 200, 200), TextSize = 22 })
-            a48(a190, a44.Fast, { TextColor3 = Color3.fromRGB(200, 200, 200), TextSize = 15 })
+            a48(a188, a44.Fast, { BackgroundColor3 = Color3.fromRGB(45, 45, 52), Size = UDim2.new(1, -4, 0, 54) })
+            a48(a189, a44.Fast, { TextColor3 = Color3.fromRGB(200, 200, 200), TextSize = 21 })
+            a48(a190, a44.Fast, { TextColor3 = Color3.fromRGB(200, 200, 200), TextSize = 14 })
         end
     end)
     a188.MouseLeave:Connect(function()
         local a188_isSelected = a21.CurrentTab == a185
         if a188_isSelected then
-            a48(a188, a44.Fast, { Size = UDim2.new(1, -10, 0, 55) })
-            a48(a189, a44.Fast, { TextSize = 20 })
+            a48(a188, a44.Fast, { Size = UDim2.new(1, -10, 0, 50) })
+            a48(a189, a44.Fast, { TextSize = 19 })
             a48(a190, a44.Fast, { TextSize = 13 })
         else
-            a48(a188, a44.Fast, { BackgroundColor3 = Color3.fromRGB(35, 35, 42), Size = UDim2.new(1, -10, 0, 55) })
+            a48(a188, a44.Fast, { BackgroundColor3 = Color3.fromRGB(35, 35, 42), Size = UDim2.new(1, -10, 0, 50) })
             a48(a189, a44.Fast, { TextColor3 = Color3.fromRGB(180, 180, 180), TextSize = 18 })
             a48(a190, a44.Fast, { TextColor3 = Color3.fromRGB(180, 180, 180), TextSize = 13 })
         end
@@ -764,21 +938,21 @@ local function a184(a185, a186, a187)
     a188.MouseButton1Down:Connect(function()
         local a188_isSelected = a21.CurrentTab == a185
         if a188_isSelected then
-            a48(a188, a44.Fast, { Size = UDim2.new(1, -14, 0, 51) })
+            a48(a188, a44.Fast, { Size = UDim2.new(1, -14, 0, 46) })
             a48(a189, a44.Fast, { TextSize = 16 })
         else
-            a48(a188, a44.Fast, { BackgroundColor3 = Color3.fromRGB(55, 55, 62), Size = UDim2.new(1, -14, 0, 51) })
+            a48(a188, a44.Fast, { BackgroundColor3 = Color3.fromRGB(55, 55, 62), Size = UDim2.new(1, -14, 0, 46) })
             a48(a189, a44.Fast, { TextSize = 16 })
         end
     end)
     a188.MouseButton1Up:Connect(function()
         local a188_isSelected = a21.CurrentTab == a185
         if a188_isSelected then
-            a48(a188, a44.Fast, { Size = UDim2.new(1, -4, 0, 59) })
-            a48(a189, a44.Fast, { TextSize = 22 })
+            a48(a188, a44.Fast, { Size = UDim2.new(1, -4, 0, 54) })
+            a48(a189, a44.Fast, { TextSize = 21 })
         else
-            a48(a188, a44.Fast, { BackgroundColor3 = Color3.fromRGB(45, 45, 52), Size = UDim2.new(1, -4, 0, 59) })
-            a48(a189, a44.Fast, { TextSize = 22 })
+            a48(a188, a44.Fast, { BackgroundColor3 = Color3.fromRGB(45, 45, 52), Size = UDim2.new(1, -4, 0, 54) })
+            a48(a189, a44.Fast, { TextSize = 21 })
         end
     end)
     return a188
@@ -981,32 +1155,26 @@ do
         a239.BorderSizePixel  = 0
         a239.AutoButtonColor  = false
         a65(a239, 8)
+        local function a239_getSelected()
+            return a21.ClickType == (a237 == 0.2 and "Current" or a237 == 0.5 and "Center" or "Random")
+        end
         a239.MouseEnter:Connect(function()
-            local a239_selected = a21.ClickType == (a237 == 0.2 and "Current" or a237 == 0.5 and "Center" or "Random")
-            if a239_selected then
-                a48(a239, a44.Fast, { BackgroundColor3 = Color3.fromRGB(120, 170, 255), Size = UDim2.new(0, 91, 0, 34) })
-            else
-                a48(a239, a44.Fast, { BackgroundColor3 = Color3.fromRGB(60, 60, 70), Size = UDim2.new(0, 91, 0, 34) })
-            end
+            a48(a239, a44.Fast, a239_getSelected()
+                and { BackgroundColor3 = Color3.fromRGB(120, 170, 255), Size = UDim2.new(0, 91, 0, 34) }
+                or  { BackgroundColor3 = Color3.fromRGB(60,  60,  70),  Size = UDim2.new(0, 91, 0, 34) })
         end)
         a239.MouseLeave:Connect(function()
-            local a239_selected = a21.ClickType == (a237 == 0.2 and "Current" or a237 == 0.5 and "Center" or "Random")
-            if a239_selected then
-                a48(a239, a44.Fast, { BackgroundColor3 = Color3.fromRGB(100, 150, 255), Size = UDim2.new(0, 85, 0, 30) })
-            else
-                a48(a239, a44.Fast, { BackgroundColor3 = Color3.fromRGB(45, 45, 52), Size = UDim2.new(0, 85, 0, 30) })
-            end
+            a48(a239, a44.Fast, a239_getSelected()
+                and { BackgroundColor3 = Color3.fromRGB(100, 150, 255), Size = UDim2.new(0, 85, 0, 30) }
+                or  { BackgroundColor3 = Color3.fromRGB(45,  45,  52),  Size = UDim2.new(0, 85, 0, 30) })
         end)
         a239.MouseButton1Down:Connect(function()
             a48(a239, a44.Fast, { BackgroundColor3 = Color3.fromRGB(80, 130, 220), Size = UDim2.new(0, 79, 0, 26) })
         end)
         a239.MouseButton1Up:Connect(function()
-            local a239_selected = a21.ClickType == (a237 == 0.2 and "Current" or a237 == 0.5 and "Center" or "Random")
-            if a239_selected then
-                a48(a239, a44.Fast, { BackgroundColor3 = Color3.fromRGB(120, 170, 255), Size = UDim2.new(0, 91, 0, 34) })
-            else
-                a48(a239, a44.Fast, { BackgroundColor3 = Color3.fromRGB(60, 60, 70), Size = UDim2.new(0, 91, 0, 34) })
-            end
+            a48(a239, a44.Fast, a239_getSelected()
+                and { BackgroundColor3 = Color3.fromRGB(120, 170, 255), Size = UDim2.new(0, 91, 0, 34) }
+                or  { BackgroundColor3 = Color3.fromRGB(60,  60,  70),  Size = UDim2.new(0, 91, 0, 34) })
         end)
         return a239
     end
@@ -1293,10 +1461,11 @@ do
     a322.BorderSizePixel  = 0
     a322.AutoButtonColor  = false
     a65(a322, 8)
-    a322.MouseEnter:Connect(function() a48(a322, a44.Fast, { BackgroundColor3 = Color3.fromRGB(120, 170, 255), Size = UDim2.new(0.5, -8, 0, 40) }) end)
-    a322.MouseLeave:Connect(function() a48(a322, a44.Fast, { BackgroundColor3 = Color3.fromRGB(100, 150, 255), Size = UDim2.new(0.5, -15, 0, 36) }) end)
-    a322.MouseButton1Down:Connect(function() a48(a322, a44.Fast, { BackgroundColor3 = Color3.fromRGB(80, 130, 225), Size = UDim2.new(0.5, -22, 0, 32) }) end)
-    a322.MouseButton1Up:Connect(function() a48(a322, a44.Fast, { BackgroundColor3 = Color3.fromRGB(120, 170, 255), Size = UDim2.new(0.5, -8, 0, 40) }) end)
+    a498(a322,
+        { BackgroundColor3 = Color3.fromRGB(100, 150, 255), Size = UDim2.new(0.5, -15, 0, 36) },
+        { BackgroundColor3 = Color3.fromRGB(120, 170, 255), Size = UDim2.new(0.5,  -8, 0, 40) },
+        { BackgroundColor3 = Color3.fromRGB(80,  130, 225), Size = UDim2.new(0.5, -22, 0, 32) }
+    )
 
     local a323, _ = a143(a314, "Auto Load", 300)
     a323.Size = UDim2.new(0.5, -15, 0, 36); a323.Position = UDim2.new(0.5, 5, 0, 300)
@@ -1328,95 +1497,14 @@ do
     a128(a314, 430)
     a131(a314, "Output", 442)
 
-    local a328 = Instance.new("TextButton", a314)
-    a328.Size             = UDim2.new(0, 50, 0, 18)
-    a328.Position         = UDim2.new(1, -60, 0, 449)
-    a328.AnchorPoint      = Vector2.new(0.5, 0.5)
-    a328.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
-    a328.Text             = "Clear"
-    a328.Font             = Enum.Font.Gotham
-    a328.TextSize         = 11
-    a328.TextColor3       = Color3.fromRGB(180, 180, 180)
-    a328.BorderSizePixel  = 0
-    a328.AutoButtonColor  = false
-    a65(a328, 4)
-    a328.MouseEnter:Connect(function() a48(a328, a44.Fast, { BackgroundColor3 = Color3.fromRGB(80, 80, 90), Size = UDim2.new(0, 55, 0, 21) }) end)
-    a328.MouseLeave:Connect(function() a48(a328, a44.Fast, { BackgroundColor3 = Color3.fromRGB(60, 60, 70), Size = UDim2.new(0, 50, 0, 18) }) end)
-    a328.MouseButton1Down:Connect(function() a48(a328, a44.Fast, { BackgroundColor3 = Color3.fromRGB(100, 100, 110), Size = UDim2.new(0, 45, 0, 15) }) end)
-    a328.MouseButton1Up:Connect(function() a48(a328, a44.Fast, { BackgroundColor3 = Color3.fromRGB(80, 80, 90), Size = UDim2.new(0, 55, 0, 21) }) end)
-
-    local a329 = Instance.new("Frame", a314)
-    a329.Size             = UDim2.new(1, -20, 0, 140)
-    a329.Position         = UDim2.new(0, 10, 0, 465)
-    a329.BackgroundColor3 = Color3.fromRGB(20, 20, 24)
-    a329.BorderSizePixel  = 0
-    a65(a329, 8)
-    Instance.new("UIStroke", a329).Color = Color3.fromRGB(50, 50, 60)
-
-    local a330 = Instance.new("ScrollingFrame", a329)
-    a330.Size                   = UDim2.new(1, -4, 1, -4)
-    a330.Position               = UDim2.new(0, 2, 0, 2)
-    a330.BackgroundTransparency = 1
-    a330.BorderSizePixel        = 0
-    a330.ScrollBarThickness     = 3
-    a330.ScrollBarImageColor3   = Color3.fromRGB(100, 150, 255)
-    a330.ScrollBarImageTransparency = 0.5
-    a330.CanvasSize             = UDim2.new(0, 0, 0, 0)
-    a330.AutomaticCanvasSize    = Enum.AutomaticSize.Y
-
-    local a331 = Instance.new("UIListLayout", a330)
-    a331.SortOrder  = Enum.SortOrder.LayoutOrder
-    a331.Padding    = UDim.new(0, 2)
-
-    local a332 = Instance.new("UIPadding", a330)
-    a332.PaddingLeft   = UDim.new(0, 6)
-    a332.PaddingRight  = UDim.new(0, 6)
-    a332.PaddingTop    = UDim.new(0, 4)
-    a332.PaddingBottom = UDim.new(0, 4)
-
-    local a333 = Instance.new("TextLabel", a330)
-    a333.Size                = UDim2.new(1, 0, 0, 20)
-    a333.BackgroundTransparency = 1
-    a333.Text                = "No output yet."
-    a333.Font                = Enum.Font.Code
-    a333.TextSize            = 11
-    a333.TextColor3          = Color3.fromRGB(90, 90, 100)
-    a333.TextXAlignment      = Enum.TextXAlignment.Left
-    a333.LayoutOrder         = 1
-
-    local a334 = 1
-
-    local function a335(a336, a337)
-        a333.Visible = false
-        a334 = a334 + 1
-        local a338 = Instance.new("TextLabel", a330)
-        a338.Size                = UDim2.new(1, 0, 0, 0)
-        a338.AutomaticSize       = Enum.AutomaticSize.Y
-        a338.BackgroundTransparency = 1
-        a338.Text                = a336
-        a338.Font                = Enum.Font.Code
-        a338.TextSize            = 11
-        a338.TextColor3          = a337 or Color3.fromRGB(220, 220, 220)
-        a338.TextXAlignment      = Enum.TextXAlignment.Left
-        a338.TextYAlignment      = Enum.TextYAlignment.Top
-        a338.TextWrapped         = true
-        a338.RichText            = false
-        a338.LayoutOrder         = a334
-        task.defer(function()
-            a330.CanvasPosition = Vector2.new(0, math.huge)
-        end)
-        return a338
-    end
-
-    a328.MouseButton1Click:Connect(function()
-        for _, a339 in ipairs(a330:GetChildren()) do
-            if a339:IsA("TextLabel") and a339 ~= a333 then
-                a339:Destroy()
-            end
-        end
-        a334 = 1
-        a333.Visible = true
-    end)
+    local a329_log, a330, a333, a335, a328 = a499(a314,
+        UDim2.new(1, -20, 0, 140),
+        UDim2.new(0, 10, 0, 465),
+        Color3.fromRGB(100, 150, 255)
+    )
+    a328.Position  = UDim2.new(1, -35, 0, 450)
+    a328.AnchorPoint = Vector2.new(0.5, 0.5)
+    a333.Text = "No output yet."
 
     local a340 = Instance.new("TextLabel", a314)
     a340.Size = UDim2.new(1, -20, 0, 30); a340.Position = UDim2.new(0, 10, 0, 618)
@@ -1443,7 +1531,7 @@ end
 
 do
     local a341 = a182["Settings"]
-    local a342 = a134(a341, 270, 1)
+    local a342 = a134(a341, 560, 1)
     a183["Settings_Card"] = a342
 
     local a343 = a141(a342, "⚙️ UI Configuration", 8)
@@ -1465,10 +1553,11 @@ do
     a345.BorderSizePixel  = 0
     a345.AutoButtonColor  = false
     a65(a345, 8)
-    a345.MouseEnter:Connect(function() a48(a345, a44.Fast, { BackgroundColor3 = Color3.fromRGB(55, 55, 65), Size = UDim2.new(1, -15, 0, 44) }) end)
-    a345.MouseLeave:Connect(function() a48(a345, a44.Fast, { BackgroundColor3 = Color3.fromRGB(45, 45, 52), Size = UDim2.new(1, -20, 0, 40) }) end)
-    a345.MouseButton1Down:Connect(function() a48(a345, a44.Fast, { BackgroundColor3 = Color3.fromRGB(70, 70, 80), Size = UDim2.new(1, -25, 0, 36) }) end)
-    a345.MouseButton1Up:Connect(function() a48(a345, a44.Fast, { BackgroundColor3 = Color3.fromRGB(55, 55, 65), Size = UDim2.new(1, -15, 0, 44) }) end)
+    a498(a345,
+        { BackgroundColor3 = Color3.fromRGB(45, 45, 52), Size = UDim2.new(1, -20, 0, 40) },
+        { BackgroundColor3 = Color3.fromRGB(55, 55, 65), Size = UDim2.new(1, -15, 0, 44) },
+        { BackgroundColor3 = Color3.fromRGB(70, 70, 80), Size = UDim2.new(1, -25, 0, 36) }
+    )
 
     a128(a342, 135)
 
@@ -1478,11 +1567,26 @@ do
     local _, a351 = a123(a342, UDim2.new(1, -20, 0, 60), UDim2.new(0, 10, 0, 200), "")
     a351.TextColor3 = Color3.fromRGB(150, 150, 150)
 
+    a128(a342, 278)
+
+    local a351b_header = a131(a342, "Activity Log", 290)
+    a351b_header.TextColor3 = Color3.fromRGB(200, 200, 200)
+
+    local a351b_outer, a351b_scroll, a351b_empty, a351b_add, a351b_clear = a499(a342,
+        UDim2.new(1, -20, 0, 200),
+        UDim2.new(0, 10, 0, 312),
+        Color3.fromRGB(255, 180, 100)
+    )
+    a351b_clear.Position   = UDim2.new(1, -35, 0, 297.5)
+    a351b_clear.AnchorPoint = Vector2.new(0.5, 0.5)
+    a351b_empty.Text = "No activity yet."
+
     a203 = {
         KeybindButton        = a345,
         AutoHideToggleBtn    = a347,
         AutoHideToggleState  = a349,
         Status               = a351,
+        AddSettingsLog       = a351b_add,
     }
 end
 
@@ -1584,10 +1688,10 @@ local function a373()
 end
 
 local a376 = false
-local a377 = nil
+local a377b = nil
 
 local function a378()
-    if a377 then pcall(function() a377:Disconnect() end); a377 = nil end
+    if a377b then pcall(function() a377b:Disconnect() end); a377b = nil end
     if not a21.AutoRejoinEnabled then return end
     task.spawn(function()
         local a379 = a6:FindFirstChild("RobloxPromptGui")
@@ -1612,7 +1716,7 @@ local function a378()
             end
             a382 = a384
         end
-        a377 = a382.ChildAdded:Connect(function(a385)
+        a377b = a382.ChildAdded:Connect(function(a385)
             if a385.Name == "ErrorPrompt" and a21.AutoRejoinEnabled and not a376 then
                 a376 = true
                 _G.UU.Threads.Rejoin = task.spawn(function()
@@ -1804,7 +1908,7 @@ a201.AutoRejoinToggleBtn.MouseButton1Click:Connect(function()
         a378()
     else
         a376 = false; a56("Rejoin")
-        if a377 then pcall(function() a377:Disconnect() end); a377 = nil end
+        if a377b then pcall(function() a377b:Disconnect() end); a377b = nil end
         a201.Status.Text = "Status: Disabled\n\nWhen enabled, automatically rejoins the current server when disconnected."
         a48(a201.Status, a44.Fast, { TextColor3 = Color3.fromRGB(180, 180, 180) })
     end
@@ -1882,6 +1986,7 @@ a203.KeybindButton.MouseButton1Click:Connect(function()
     a203.KeybindButton.Text   = "Press any key..."
     a203.Status.Text          = "Waiting for input..."
     a48(a203.Status, a44.Fast, { TextColor3 = Color3.fromRGB(255, 200, 100) })
+    a203.AddSettingsLog("Keybind: waiting for key press...", Color3.fromRGB(255, 200, 100))
     a203.KeybindButton.Active = false
     local a411
     local a412 = task.delay(5, function()
@@ -1892,6 +1997,7 @@ a203.KeybindButton.MouseButton1Click:Connect(function()
         a203.KeybindButton.Text  = "Current Key: "..(a22[a21.Keybind] or a21.Keybind.Name)
         a203.Status.Text         = "Timed out."
         a48(a203.Status, a44.Fast, { TextColor3 = Color3.fromRGB(255, 100, 100) })
+        a203.AddSettingsLog("Keybind: input timed out — no change.", Color3.fromRGB(255, 100, 100))
         task.wait(2)
         if a203.Status.Text == "Timed out." then
             a203.Status.Text      = a21.AutoHideEnabled and "Auto Hide enabled — UI starts hidden on next execution." or "Auto Hide disabled — UI shows normally on start."
@@ -1910,6 +2016,7 @@ a203.KeybindButton.MouseButton1Click:Connect(function()
             a203.KeybindButton.Text  = "Current Key: "..a415
             a203.Status.Text         = "Keybind changed!"
             a48(a203.Status, a44.Fast, { TextColor3 = Color3.fromRGB(50, 220, 100) })
+            a203.AddSettingsLog("Keybind changed → "..a415, Color3.fromRGB(50, 220, 100))
             a39()
             a203.KeybindButton.Active = true
             a411:Disconnect()
@@ -1930,9 +2037,11 @@ a203.AutoHideToggleBtn.MouseButton1Click:Connect(function()
     if a21.AutoHideEnabled then
         a203.Status.Text = "Auto Hide enabled — UI starts hidden on next execution."
         a48(a203.Status, a44.Fast, { TextColor3 = Color3.fromRGB(50, 220, 100) })
+        a203.AddSettingsLog("Auto Hide → Enabled (UI hidden on start)", Color3.fromRGB(50, 220, 100))
     else
         a203.Status.Text = "Auto Hide disabled — UI shows normally on start."
         a48(a203.Status, a44.Fast, { TextColor3 = Color3.fromRGB(180, 180, 180) })
+        a203.AddSettingsLog("Auto Hide → Disabled (UI shows on start)", Color3.fromRGB(180, 180, 180))
     end
     a39()
 end)
@@ -1952,8 +2061,8 @@ local function a416(a417)
     end
     for a418, a420 in pairs(a181) do
         local a421 = a418 == a417
-        a48(a420.Button, a44.Fast, { BackgroundColor3 = a421 and Color3.fromRGB(100, 150, 255) or Color3.fromRGB(35, 35, 42) })
-        a48(a420.Icon,   a44.Fast, { TextColor3 = a421 and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(180, 180, 180), TextSize = a421 and 20 or 18 })
+        a48(a420.Button, a44.Fast, { BackgroundColor3 = a421 and Color3.fromRGB(100, 150, 255) or Color3.fromRGB(35, 35, 42), Size = a421 and UDim2.new(1, -4, 0, 54) or UDim2.new(1, -10, 0, 50) })
+        a48(a420.Icon,   a44.Fast, { TextColor3 = a421 and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(180, 180, 180), TextSize = a421 and 19 or 18 })
         a48(a420.Label,  a44.Fast, { TextColor3 = a421 and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(180, 180, 180) })
     end
 end
@@ -2013,9 +2122,11 @@ local function a441()
         if a163.Visible then
             a21.SavedUIPosition = { X = a163.Position.X.Offset, Y = a163.Position.Y.Offset }
             a163.Size = UDim2.new(0, a60.Width, 0, a60.Height)
-            local a442 = a48(a61, a440, { Scale = 0 })
-            a442.Completed:Wait()
-            a163.Visible = false; a61.Scale = 0; a39()
+            local a442sc = a48(a61, a440, { Scale = 0 })
+            local a442fd = a2:Create(a163, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { BackgroundTransparency = 1 })
+            a442fd:Play()
+            a442sc.Completed:Wait()
+            a163.Visible = false; a163.BackgroundTransparency = 0; a61.Scale = 0; a39()
 
             local a443 = a59()
             local a444 = math.floor(60 * a62)
@@ -2039,7 +2150,7 @@ local function a441()
             local a450 = a2:Create(a171, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { TextTransparency = 0 })
             a449:Play(); task.delay(0.15, function() a450:Play() end); a449.Completed:Wait()
         else
-            if a177 then a177:Disconnect(); a177 = nil end
+            a177_stopSpin()
             a21.SavedReopenPosition = { X = a170.Position.X.Offset, Y = a170.Position.Y.Offset }
             local a451 = a2:Create(a170, TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
                 Size = UDim2.new(0, 0, 0, 0),
@@ -2049,61 +2160,36 @@ local function a441()
             local a452 = a2:Create(a171, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.In), { TextTransparency = 1 })
             a452:Play(); a451:Play(); a451.Completed:Wait()
             a170.Visible = false; a170.Rotation = 0; a170.ImageTransparency = 0; a171.TextTransparency = 0; a39()
-            a163.Visible = true; a163.Size = UDim2.new(0, a60.Width, 0, a60.Height); a61.Scale = 0
             local a453, a454
             if a21.SavedUIPosition then
                 a453 = a21.SavedUIPosition.X; a454 = a21.SavedUIPosition.Y
             else
                 a453, a454 = a430(a59(), a62)
             end
-            a163.Position = UDim2.new(0, a453, 0, a454)
+            a163.Visible                = true
+            a163.Size                   = UDim2.new(0, a60.Width, 0, a60.Height)
+            a163.Position               = UDim2.new(0, a453, 0, a454 + 18)
+            a163.BackgroundTransparency = 1
+            a61.Scale                   = 0
+            local a455pos = a2:Create(a163, TweenInfo.new(0.45, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                Position               = UDim2.new(0, a453, 0, a454),
+                BackgroundTransparency = 0,
+            })
             local a455 = a48(a61, a439, { Scale = a62 })
+            a455pos:Play()
             a455.Completed:Wait()
+            a163.BackgroundTransparency = 0
         end
     end)
 end
 
 a167.MouseButton1Click:Connect(a441)
-a167.MouseEnter:Connect(function()    a48(a167, a44.Fast, { BackgroundColor3 = Color3.fromRGB(240, 70, 70),  Size = UDim2.new(0, 34, 0, 34), Rotation = 90 }) end)
-a167.MouseLeave:Connect(function()    a48(a167, a44.Fast, { BackgroundColor3 = Color3.fromRGB(220, 50, 50),  Size = UDim2.new(0, 30, 0, 30), Rotation = 0  }) end)
-a167.MouseButton1Down:Connect(function() a48(a167, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Size = UDim2.new(0, 28, 0, 28) }) end)
-a167.MouseButton1Up:Connect(function()   a48(a167, a44.Fast, { Size = UDim2.new(0, 30, 0, 30) }) end)
+a167.MouseEnter:Connect(function()    a48(a167, a44.Fast, { BackgroundColor3 = Color3.fromRGB(240, 70, 70),  Size = UDim2.new(0, 32, 0, 32), Rotation = 90 }) end)
+a167.MouseLeave:Connect(function()    a48(a167, a44.Fast, { BackgroundColor3 = Color3.fromRGB(220, 50, 50),  Size = UDim2.new(0, 28, 0, 28), Rotation = 0  }) end)
+a167.MouseButton1Down:Connect(function() a48(a167, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Size = UDim2.new(0, 24, 0, 24) }) end)
+a167.MouseButton1Up:Connect(function()   a48(a167, a44.Fast, { Size = UDim2.new(0, 28, 0, 28) }) end)
 
 a170.MouseButton1Click:Connect(function() if not a176 then a441() end end)
-
-a170.MouseEnter:Connect(function()
-    if not a172 then
-        local a456 = math.floor(60 * a62)
-        a48(a170, a44.Medium, { Size = UDim2.new(0, math.floor(a456 * 1.17), 0, math.floor(a456 * 1.17)) })
-        if a177 then a177:Disconnect() end
-        a177 = a5.RenderStepped:Connect(function(a457)
-            if a170.Visible then
-                a170.Rotation = (a170.Rotation + (a457 * 180)) % 360
-            else
-                if a177 then a177:Disconnect(); a177 = nil end
-            end
-        end)
-    end
-end)
-a170.MouseLeave:Connect(function()
-    if a177 then a177:Disconnect(); a177 = nil end
-    if not a172 then
-        local a456 = math.floor(60 * a62)
-        a48(a170, a44.Medium, { Size = UDim2.new(0, a456, 0, a456), Rotation = 0 })
-    end
-end)
-a170.MouseButton1Down:Connect(function()
-    if not a172 then
-        local a456 = math.floor(60 * a62)
-        a48(a170, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Size = UDim2.new(0, math.floor(a456 * 0.92), 0, math.floor(a456 * 0.92)) })
-    end
-end)
-a170.MouseButton1Up:Connect(function()
-    if not a172 then
-        local a456 = math.floor(60 * a62)
-        a48(a170, a44.Fast, { Size = UDim2.new(0, a456, 0, a456) })
-    end
-end)
 
 table.insert(_G.UU.Connections, a3.InputBegan:Connect(function(a458, a459)
     if not a459 and a458.KeyCode == a21.Keybind and not a21.IsChangingKeybind then
@@ -2262,6 +2348,16 @@ if a483 then
     end
 
     a361()
+    task.defer(function()
+        a203.AddSettingsLog("Config loaded for "..a12.." (ID: "..a13..")", Color3.fromRGB(100, 200, 255))
+        a203.AddSettingsLog("Keybind: "..(a22[a21.Keybind] or a21.Keybind.Name), Color3.fromRGB(220, 220, 220))
+        a203.AddSettingsLog("Auto Hide: "..(a21.AutoHideEnabled and "Enabled" or "Disabled"), a21.AutoHideEnabled and Color3.fromRGB(50, 220, 100) or Color3.fromRGB(180, 180, 180))
+        if a21.FPSUnlockEnabled then a203.AddSettingsLog("FPS Unlock: Active ("..a21.TargetFPS.." FPS)", Color3.fromRGB(100, 255, 150)) end
+        if a21.AutoRejoinEnabled then a203.AddSettingsLog("Auto Rejoin: Enabled", Color3.fromRGB(150, 200, 255)) end
+        if a21.AutoSpamEnabled   then a203.AddSettingsLog("Key Spam: Active ("..a21.SpamKey..")", Color3.fromRGB(255, 200, 100)) end
+        if a21.JumpEnabled       then a203.AddSettingsLog("Auto Jump: Active", Color3.fromRGB(100, 200, 255)) end
+        if a21.ClickEnabled      then a203.AddSettingsLog("Auto Click: Active", Color3.fromRGB(255, 200, 100)) end
+    end)
 else
     a393(0.2); a395(0.22); a396(0.01); a397(0.13)
     a364()
@@ -2276,6 +2372,10 @@ else
     a203.Status.Text          = "Auto Hide disabled — UI shows normally on start."
     a203.Status.TextColor3    = Color3.fromRGB(180, 180, 180)
     a361()
+    task.defer(function()
+        a203.AddSettingsLog("Fresh start — no saved config found.", Color3.fromRGB(255, 200, 100))
+        a203.AddSettingsLog("Using defaults. Keybind: G | Auto Hide: Off", Color3.fromRGB(150, 150, 150))
+    end)
 end
 
 task.spawn(function()
@@ -2297,14 +2397,14 @@ a102(a202.LoadStringBox, a202.LineNumbers, a202.LoadStringScrollFrame, a202.Line
 
 a162.Destroying:Connect(function()
     a33()
+    a177_stopSpin()
     for a485, a15 in pairs(_G.UU.Threads) do
         if a15 and typeof(a15) == "thread" and coroutine.status(a15) ~= "dead" then
             pcall(task.cancel, a15)
         end
         _G.UU.Threads[a485] = nil
     end
-    if a377 then pcall(function() a377:Disconnect() end); a377 = nil end
-    if a177 then pcall(function() a177:Disconnect() end); a177 = nil end
+    if a377b then pcall(function() a377b:Disconnect() end); a377b = nil end
 end)
 
 for a486, a487 in pairs(a182) do a487.Visible = false end
@@ -2325,9 +2425,6 @@ local a489 = not a21.AutoHideEnabled
 a488 = a59()
 a62 = a63(a488)
 
-a163.Size  = UDim2.new(0, a60.Width, 0, a60.Height)
-a61.Scale  = 0
-
 local a490, a491
 if a21.SavedUIPosition and a21.SavedUIPosition.X and a21.SavedUIPosition.Y then
     a490 = a21.SavedUIPosition.X
@@ -2335,7 +2432,6 @@ if a21.SavedUIPosition and a21.SavedUIPosition.X and a21.SavedUIPosition.Y then
 else
     a490, a491 = a430(a488, a62)
 end
-a163.Position = UDim2.new(0, a490, 0, a491)
 
 local a492, a493, a494
 if a21.SavedReopenPosition and a21.SavedReopenPosition.X and a21.SavedReopenPosition.Y then
@@ -2345,25 +2441,46 @@ if a21.SavedReopenPosition and a21.SavedReopenPosition.X and a21.SavedReopenPosi
 else
     a492, a493, a494 = a435(a488, a62)
 end
-a170.Size             = UDim2.new(0, a492, 0, a492)
-a170.Position         = UDim2.new(0, a493, 0, a494)
-a170.ImageTransparency = 0
-a171.TextTransparency  = 0
-
-if a489 then
-    a163.Visible = true
-    local a495 = a48(a61, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = a62 })
-    a495.Completed:Wait()
-    a170.Visible = false
-else
-    a163.Visible = false
-    a170.Visible = true
-    a170.Size    = UDim2.new(0, a492, 0, a492)
-    a170.Position = UDim2.new(0, a493, 0, a494)
-end
 
 a416("Home")
 a33()
+
+if a489 then
+    a163.Visible                = true
+    a163.Size                   = UDim2.new(0, a60.Width, 0, a60.Height)
+    a163.Position               = UDim2.new(0, a490, 0, a491 + 24)
+    a163.BackgroundTransparency = 1
+    a61.Scale                   = 0
+    a170.Visible                = false
+
+    local a495pos = a2:Create(a163, TweenInfo.new(0.55, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+        Position            = UDim2.new(0, a490, 0, a491),
+        BackgroundTransparency = 0,
+    })
+    local a495sc = a48(a61, TweenInfo.new(0.65, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = a62 })
+    a495pos:Play()
+    a495sc.Completed:Wait()
+    a163.BackgroundTransparency = 0
+else
+    a163.Visible               = false
+    a170.Size                  = UDim2.new(0, 0, 0, 0)
+    a170.Position              = UDim2.new(0, a493 + a492 / 2, 0, a494 + a492 / 2)
+    a170.ImageTransparency     = 1
+    a171.TextTransparency      = 1
+    a170.Rotation              = -270
+    a170.Visible               = true
+
+    local a495sym = a2:Create(a170, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+        Size              = UDim2.new(0, a492, 0, a492),
+        Position          = UDim2.new(0, a493, 0, a494),
+        ImageTransparency = 0,
+        Rotation          = 0,
+    })
+    local a495txt = a2:Create(a171, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { TextTransparency = 0 })
+    a495sym:Play()
+    task.delay(0.2, function() a495txt:Play() end)
+    a495sym.Completed:Wait()
+end
 
 if queue_on_teleport and not _G.UU.TeleportQueued then
     _G.UU.TeleportQueued = true
