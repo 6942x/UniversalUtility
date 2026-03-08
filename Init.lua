@@ -41,17 +41,8 @@ if _G.UU.Loaded then
     _G.UU.TeleportQueued = false
     local a18 = a6:FindFirstChild("UniversalUtility") or (gethui and gethui():FindFirstChild("UniversalUtility"))
     if a18 then a18:Destroy() end
-    _G.UU.Loaded = false
-    _G.UU.LoadLock = false
-    _G.UU.CFG = nil
-    _G.UU.KCN = nil
-    _G.UU.KCM = nil
-    _G.UU.ButtonStates = nil
-    _G.UU.Debounces = nil
-    _G.UU.UI = nil
-    _G.UU.SaveCFG = nil
-    _G.UU.SavePending = nil
-    _G.UU.LastSaveTime = nil
+    _G.UU.Loaded    = false
+    _G.UU.LoadLock  = false
 elseif _G.UU.LoadLock == true then
     repeat task.wait(0.1) until _G.UU.LoadLock ~= true
     return _G.UU
@@ -192,14 +183,22 @@ local function a33()
     if a37 then
         _G.UU.LastSaveTime = tick()
         _G.UU.SavePending = false
+    else
+        if _G.UU.AddActivityLog then
+            _G.UU.AddActivityLog("Save error: " .. tostring(a38), Color3.fromRGB(220, 80, 80))
+        end
     end
     return a37
 end
 _G.UU.SaveCFG = a33
 
+local _pendingLogs = {}
+
 local function a33_log(a33_msg, a33_col)
     if _G.UU.AddActivityLog then
         _G.UU.AddActivityLog(a33_msg, a33_col)
+    else
+        table.insert(_pendingLogs, { msg = a33_msg, col = a33_col })
     end
 end
 
@@ -376,7 +375,7 @@ local function a74(a66, a75, a76, a77, a78, a79_min, a80_max, a81_label)
 end
 
 local function a91(a92, a93, a94, a95, a96, a97)
-    a2:Create(a92, a44.Fast, { Size = UDim2.new((a94 - a95) / (a96 - a95), 0, 1, 0) }):Play()
+    a48(a92, a44.Fast, { Size = UDim2.new((a94 - a95) / (a96 - a95), 0, 1, 0) })
     a93.Text = string.format(a97, a94)
 end
 
@@ -386,22 +385,24 @@ local function a91_instant(a92, a93, a94, a95, a96, a97)
 end
 
 local function a98(a99, a100)
-    a100 = a100 or 0.95
-    local a101 = a99.Size
-    a48(a99, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-        Size = UDim2.new(a101.X.Scale * a100, a101.X.Offset * a100, a101.Y.Scale * a100, a101.Y.Offset * a100)
-    })
-    task.wait(0.1)
-    a48(a99, a44.Back, { Size = a101 })
+    task.spawn(function()
+        a100 = a100 or 0.95
+        local a101 = a99.Size
+        a48(a99, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+            Size = UDim2.new(a101.X.Scale * a100, a101.X.Offset * a100, a101.Y.Scale * a100, a101.Y.Offset * a100)
+        })
+        task.wait(0.1)
+        a48(a99, a44.Back, { Size = a101 })
+    end)
 end
 
 local function a102(a103, a104, a105, a106)
     local a107 = a103.Text
     local a108 = 1
     for _ in a107:gmatch("\n") do a108 = a108 + 1 end
-    local a109 = ""
-    for a110 = 1, a108 do a109 = a109..a110.."\n" end
-    a104.Text = a109
+    local a109_parts = {}
+    for a110 = 1, a108 do a109_parts[a110] = tostring(a110) end
+    a104.Text = table.concat(a109_parts, "\n") .. "\n"
     local a111 = a9:GetTextSize(a103.Text, a103.TextSize, a103.Font, Vector2.new(a103.AbsoluteSize.X - 10, math.huge))
     local a112 = math.max(200, a111.Y + 20)
     a103.Size = UDim2.new(1, -10, 0, a112)
@@ -734,15 +735,17 @@ a165.BorderSizePixel  = 0
 a65(a165, 16)
 a69(a165, Color3.fromRGB(38, 38, 46), Color3.fromRGB(30, 30, 37), 90)
 
-local a166 = Instance.new("TextLabel", a165)
-a166.Size              = UDim2.new(1, -60, 1, 0)
-a166.Position          = UDim2.new(0, 14, 0, 0)
-a166.BackgroundTransparency = 1
-a166.Text              = "⚡ Universal Utility"
-a166.Font              = Enum.Font.GothamBold
-a166.TextSize          = 22
-a166.TextColor3        = Color3.fromRGB(255, 255, 255)
-a166.TextXAlignment    = Enum.TextXAlignment.Left
+do
+    local a166 = Instance.new("TextLabel", a165)
+    a166.Size              = UDim2.new(1, -60, 1, 0)
+    a166.Position          = UDim2.new(0, 14, 0, 0)
+    a166.BackgroundTransparency = 1
+    a166.Text              = "⚡ Universal Utility"
+    a166.Font              = Enum.Font.GothamBold
+    a166.TextSize          = 22
+    a166.TextColor3        = Color3.fromRGB(255, 255, 255)
+    a166.TextXAlignment    = Enum.TextXAlignment.Left
+end
 
 local a167 = Instance.new("ImageButton", a165)
 a167.Size               = UDim2.new(0, 28, 0, 28)
@@ -834,7 +837,7 @@ a170.InputBegan:Connect(function(a178)
             end
         end)
         a178.Changed:Connect(function()
-            if a178.UserInputState == Enum.UserInputState.End then
+            if a178.UserInputState == Enum.UserInputState.End or a178.UserInputState == Enum.UserInputState.Cancel then
                 a172 = false
                 if a175 then a175:Disconnect(); a175 = nil end
                 local a456_inner = math.floor(60 * a62)
@@ -1527,7 +1530,7 @@ do
     a128(a314, 430)
     a131(a314, "Output", 442)
 
-    local a329_log, a330, a333, a335, a328 = a499(a314,
+    local _, a330, a333, a335, a328 = a499(a314,
         UDim2.new(1, -20, 0, 140),
         UDim2.new(0, 10, 0, 465),
         Color3.fromRGB(100, 150, 255)
@@ -1619,12 +1622,16 @@ do
         AddSettingsLog       = a351b_add,
     }
     _G.UU.AddActivityLog = a351b_add
+    for _, a351b_pending in ipairs(_pendingLogs) do
+        _G.UU.AddActivityLog(a351b_pending.msg, a351b_pending.col)
+    end
+    _pendingLogs = {}
 end
 
 local a352 = typeof(setfpscap) == "function"
 if a352 then
-    local a353 = pcall(setfpscap, 60)
-    if not a353 then a352 = false end
+    local a352_ok = pcall(setfpscap, 60)
+    if not a352_ok then a352 = false end
 end
 
 local a354, a355, a356 = {}, {}, 60
@@ -1721,8 +1728,15 @@ end
 local a376 = false
 local a377b = nil
 
+local function a377b_disconnect()
+    if a377b then
+        pcall(function() a377b:Disconnect() end)
+        a377b = nil
+    end
+end
+
 local function a378()
-    if a377b then pcall(function() a377b:Disconnect() end); a377b = nil end
+    a377b_disconnect()
     if not a21.AutoRejoinEnabled then return end
     task.spawn(function()
         local a379 = a6:FindFirstChild("RobloxPromptGui")
@@ -1760,6 +1774,7 @@ local function a378()
                 end)
             end
         end)
+        table.insert(_G.UU.Connections, a377b)
     end)
 end
 
@@ -1776,53 +1791,48 @@ end
 
 local a392 = { jump = false, click = false, spam = false, fps = false }
 
-local function a393(a394)
-    a21.JumpDelay = 5 + (a394 * 25)
-    a91_instant(a198.JumpSliderFill, a198.JumpDelayBox, a21.JumpDelay, 5, 30, "%.1f")
-end
-local function a393_log(a394)
-    a21.JumpDelay = 5 + (a394 * 25)
-    a91(a198.JumpSliderFill, a198.JumpDelayBox, a21.JumpDelay, 5, 30, "%.1f")
-    a33_save_log(string.format("Jump Interval → %.1fs", a21.JumpDelay))
-end
-
-local function a395(a394)
-    a21.ClickDelay = 1 + (a394 * 9)
-    a91_instant(a198.ClickSliderFill, a198.ClickDelayBox, a21.ClickDelay, 1, 10, "%.1f")
-end
-local function a395_log(a394)
-    a21.ClickDelay = 1 + (a394 * 9)
-    a91(a198.ClickSliderFill, a198.ClickDelayBox, a21.ClickDelay, 1, 10, "%.1f")
-    a33_save_log(string.format("Click Interval → %.1fs", a21.ClickDelay))
-end
-
-local function a396(a394)
-    a21.SpamDelay = 0.05 + (a394 * 4.95)
-    a91_instant(a199.SpamSliderFill, a199.SpamDelayBox, a21.SpamDelay, 0.05, 5, "%.2f")
-end
-local function a396_log(a394)
-    a21.SpamDelay = 0.05 + (a394 * 4.95)
-    a91(a199.SpamSliderFill, a199.SpamDelayBox, a21.SpamDelay, 0.05, 5, "%.2f")
-    a33_save_log(string.format("Spam Interval → %.2fs", a21.SpamDelay))
-end
-
-local function a397(a394)
-    a21.TargetFPS = math.floor(15 + (a394 * 345))
-    a91_instant(a200.FPSFill, a200.FPSValueBox, a21.TargetFPS, 15, 360, "%d")
-    if a21.FPSUnlockEnabled and a352 then
-        pcall(setfpscap, a21.TargetFPS)
-        a200.FPSUnlockStatus.Text = "Your target: "..a21.TargetFPS.." FPS"
+local function a391_makeSlider(a391_cfgKey, a391_base, a391_range, a391_fill, a391_box, a391_min, a391_max, a391_fmt, a391_label, a391_sideEffect)
+    local function a391_instant(a394)
+        a21[a391_cfgKey] = a391_base + (a394 * a391_range)
+        if a391_fmt == "%d" then a21[a391_cfgKey] = math.floor(a21[a391_cfgKey]) end
+        a91_instant(a391_fill(), a391_box(), a21[a391_cfgKey], a391_min, a391_max, a391_fmt)
+        if a391_sideEffect then a391_sideEffect() end
     end
-end
-local function a397_log(a394)
-    a21.TargetFPS = math.floor(15 + (a394 * 345))
-    a91(a200.FPSFill, a200.FPSValueBox, a21.TargetFPS, 15, 360, "%d")
-    if a21.FPSUnlockEnabled and a352 then
-        pcall(setfpscap, a21.TargetFPS)
-        a200.FPSUnlockStatus.Text = "Your target: "..a21.TargetFPS.." FPS"
+    local function a391_logged(a394)
+        a21[a391_cfgKey] = a391_base + (a394 * a391_range)
+        if a391_fmt == "%d" then a21[a391_cfgKey] = math.floor(a21[a391_cfgKey]) end
+        a91(a391_fill(), a391_box(), a21[a391_cfgKey], a391_min, a391_max, a391_fmt)
+        if a391_sideEffect then a391_sideEffect() end
+        a33_save_log(string.format(a391_label .. " → " .. a391_fmt, a21[a391_cfgKey]))
     end
-    a33_save_log("Target FPS → " .. a21.TargetFPS)
+    return a391_instant, a391_logged
 end
+
+local a393, a393_log = a391_makeSlider(
+    "JumpDelay", 5, 25,
+    function() return a198.JumpSliderFill end, function() return a198.JumpDelayBox end,
+    5, 30, "%.1f", "Jump Interval")
+
+local a395, a395_log = a391_makeSlider(
+    "ClickDelay", 1, 9,
+    function() return a198.ClickSliderFill end, function() return a198.ClickDelayBox end,
+    1, 10, "%.1f", "Click Interval")
+
+local a396, a396_log = a391_makeSlider(
+    "SpamDelay", 0.05, 4.95,
+    function() return a199.SpamSliderFill end, function() return a199.SpamDelayBox end,
+    0.05, 5, "%.2f", "Spam Interval")
+
+local a397, a397_log = a391_makeSlider(
+    "TargetFPS", 15, 345,
+    function() return a200.FPSFill end, function() return a200.FPSValueBox end,
+    15, 360, "%d", "Target FPS",
+    function()
+        if a21.FPSUnlockEnabled and a352 then
+            pcall(setfpscap, a21.TargetFPS)
+            a200.FPSUnlockStatus.Text = "Your target: "..a21.TargetFPS.." FPS"
+        end
+    end)
 
 a198.JumpSliderButton.MouseButton1Down:Connect(function() a392.jump = true; a98(a198.JumpSliderButton, 0.9) end)
 a198.ClickSliderButton.MouseButton1Down:Connect(function() a392.click = true; a98(a198.ClickSliderButton, 0.9) end)
@@ -1873,12 +1883,10 @@ a199.SpamInput.FocusLost:Connect(function()
     end
 end)
 
-local a400 = false
 local function a401(a402)
-    if a400 or a21.ClickType == a402 then return end
-    a400 = true; a21.ClickType = a402; a364()
+    if not a53("ClickType", 0.1) or a21.ClickType == a402 then return end
+    a21.ClickType = a402; a364()
     a33_save_log("Click Mode → " .. a402)
-    task.delay(0.1, function() a400 = false end)
 end
 
 a198.ClickTypeCurrent.MouseButton1Click:Connect(function() a401("Current") end)
@@ -1973,7 +1981,7 @@ a201.AutoRejoinToggleBtn.MouseButton1Click:Connect(function()
         a378()
     else
         a376 = false; a56("Rejoin")
-        if a377b then pcall(function() a377b:Disconnect() end); a377b = nil end
+        a377b_disconnect()
         a201.Status.Text = "Status: Disabled\n\nWhen enabled, automatically rejoins the current server when disconnected."
         a48(a201.Status, a44.Fast, { TextColor3 = Color3.fromRGB(180, 180, 180) })
     end
@@ -2047,18 +2055,12 @@ a202.LoadStringBox:GetPropertyChangedSignal("Text"):Connect(function()
         a202.Status.Text = "Saving..."
         a202.Status.TextColor3 = Color3.fromRGB(100, 200, 255)
         local a410_ok = a33()
-        local a410_code = a21.SavedCode
-        local a410_lines = 0
-        for _ in (a410_code.."\n"):gmatch("[^\n]*\n") do a410_lines = a410_lines + 1 end
-        local a410_chars = #a410_code
         if a410_ok then
             a202.Status.Text = "Saved"
             a202.Status.TextColor3 = Color3.fromRGB(80, 220, 120)
-            a33_log(string.format("Code edited → %d lines, %d chars — Saved ✓", a410_lines, a410_chars), Color3.fromRGB(80, 220, 120))
         else
             a202.Status.Text = "Save failed"
             a202.Status.TextColor3 = Color3.fromRGB(220, 80, 80)
-            a33_log(string.format("Code edited → %d lines, %d chars — Save failed ✗", a410_lines, a410_chars), Color3.fromRGB(220, 80, 80))
         end
         task.delay(1.5, function()
             if a202.Status.Text == "Saved" or a202.Status.Text == "Save failed" then
@@ -2418,6 +2420,7 @@ if a483 then
         pcall(setfpscap, a21.TargetFPS)
     else
         a160(a200.FPSToggleState, false)
+        if a352 then pcall(setfpscap, 60) end
     end
 
     a160(a198.JumpToggleState, a21.JumpEnabled)
@@ -2494,16 +2497,14 @@ for a486, a487 in pairs(a182) do a487.Visible = false end
 local a488 = a59()
 if a488.X < 100 or a488.Y < 100 then
     repeat task.wait() until workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize.X > 100
-    a488 = a59()
 end
-a460 = a488
-a62 = a63(a488)
 
 task.wait(0.1)
 
 local a489 = not a21.AutoHideEnabled
 
 a488 = a59()
+a460 = a488
 a62 = a63(a488)
 
 local a490, a491
