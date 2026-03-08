@@ -138,11 +138,22 @@ _G.UU.KCN = a22
 _G.UU.KCM = a23
 
 local function a32()
-    return "UniversalUtilityConfig-"..a13..".json"
+    return "UniversalUtility/Accounts/" .. a12 .. ".json"
+end
+
+local function a32_ensureFolders()
+    if not (makefolder and isfolder) then return end
+    if not isfolder("UniversalUtility") then
+        makefolder("UniversalUtility")
+    end
+    if not isfolder("UniversalUtility/Accounts") then
+        makefolder("UniversalUtility/Accounts")
+    end
 end
 
 local function a33()
     if not writefile then return end
+    a32_ensureFolders()
     local a34 = _G.UU.UI and _G.UU.UI.MainFrame
     local a35 = _G.UU.UI and _G.UU.UI.ReopenButton
     if a34 and a34.Visible then
@@ -181,21 +192,34 @@ local function a33()
     if a37 then
         _G.UU.LastSaveTime = tick()
         _G.UU.SavePending = false
-        if _G.UU.Loaded and a203 and a203.AddSettingsLog then
-            a203.AddSettingsLog("Config saved to disk.", Color3.fromRGB(100, 200, 255))
-        end
     end
+    return a37
 end
 _G.UU.SaveCFG = a33
+
+local function a33_log(a33_msg, a33_col)
+    if _G.UU.Loaded and a203 and a203.AddSettingsLog then
+        a203.AddSettingsLog(a33_msg, a33_col)
+    end
+end
+
+local function a33_save_log(a33_action)
+    local a33_ok = a33()
+    if a33_ok then
+        a33_log(a33_action .. " → Saved ✓", Color3.fromRGB(80, 220, 120))
+    else
+        a33_log(a33_action .. " → Save failed ✗", Color3.fromRGB(220, 80, 80))
+    end
+end
 
 local function a39()
     if _G.UU.SavePending then return end
     _G.UU.SavePending = true
     local a40 = tick() - _G.UU.LastSaveTime
-    if a40 >= 0.5 then
+    if a40 >= 0.1 then
         a33()
     else
-        task.delay(0.5 - a40, function()
+        task.delay(0.1 - a40, function()
             if _G.UU.SavePending then
                 a33()
             end
@@ -205,8 +229,10 @@ end
 _G.UU.DebouncedSave = a39
 
 local function a41()
-    if not (readfile and isfile and isfile(a32())) then return false end
-    local a42, a43 = pcall(function() return a:JSONDecode(readfile(a32())) end)
+    if not (readfile and isfile) then return false end
+    local a32_path = a32()
+    if not isfile(a32_path) then return false end
+    local a42, a43 = pcall(function() return a:JSONDecode(readfile(a32_path)) end)
     if not a42 or not a43 or a43.UserId ~= a13 then return false end
     a21.Keybind             = Enum.KeyCode[a43.Keybind] or Enum.KeyCode.G
     a21.ClickType           = a43.ClickType or "Current"
@@ -821,7 +847,7 @@ a170.InputBegan:Connect(function(a178)
                 task.wait(0.1)
                 if a176 then
                     a21.SavedReopenPosition = { X = a170.Position.X.Offset, Y = a170.Position.Y.Offset }
-                    a39()
+                    a33()
                 end
                 a176 = false
             end
@@ -1747,19 +1773,34 @@ local a392 = { jump = false, click = false, spam = false, fps = false }
 local function a393(a394)
     a21.JumpDelay = 5 + (a394 * 25)
     a91(a198.JumpSliderFill, a198.JumpDelayBox, a21.JumpDelay, 5, 30, "%.1f")
-    a39()
+    a33()
+end
+local function a393_log(a394)
+    a21.JumpDelay = 5 + (a394 * 25)
+    a91(a198.JumpSliderFill, a198.JumpDelayBox, a21.JumpDelay, 5, 30, "%.1f")
+    a33_save_log(string.format("Jump Interval → %.1fs", a21.JumpDelay))
 end
 
 local function a395(a394)
     a21.ClickDelay = 1 + (a394 * 9)
     a91(a198.ClickSliderFill, a198.ClickDelayBox, a21.ClickDelay, 1, 10, "%.1f")
-    a39()
+    a33()
+end
+local function a395_log(a394)
+    a21.ClickDelay = 1 + (a394 * 9)
+    a91(a198.ClickSliderFill, a198.ClickDelayBox, a21.ClickDelay, 1, 10, "%.1f")
+    a33_save_log(string.format("Click Interval → %.1fs", a21.ClickDelay))
 end
 
 local function a396(a394)
     a21.SpamDelay = 0.05 + (a394 * 4.95)
     a91(a199.SpamSliderFill, a199.SpamDelayBox, a21.SpamDelay, 0.05, 5, "%.2f")
-    a39()
+    a33()
+end
+local function a396_log(a394)
+    a21.SpamDelay = 0.05 + (a394 * 4.95)
+    a91(a199.SpamSliderFill, a199.SpamDelayBox, a21.SpamDelay, 0.05, 5, "%.2f")
+    a33_save_log(string.format("Spam Interval → %.2fs", a21.SpamDelay))
 end
 
 local function a397(a394)
@@ -1769,7 +1810,16 @@ local function a397(a394)
         pcall(setfpscap, a21.TargetFPS)
         a200.FPSUnlockStatus.Text = "Your target: "..a21.TargetFPS.." FPS"
     end
-    a39()
+    a33()
+end
+local function a397_log(a394)
+    a21.TargetFPS = math.floor(15 + (a394 * 345))
+    a91(a200.FPSFill, a200.FPSValueBox, a21.TargetFPS, 15, 360, "%d")
+    if a21.FPSUnlockEnabled and a352 then
+        pcall(setfpscap, a21.TargetFPS)
+        a200.FPSUnlockStatus.Text = "Your target: "..a21.TargetFPS.." FPS"
+    end
+    a33_save_log("Target FPS → " .. a21.TargetFPS)
 end
 
 a198.JumpSliderButton.MouseButton1Down:Connect(function() a392.jump = true; a98(a198.JumpSliderButton, 0.9) end)
@@ -1779,6 +1829,10 @@ a200.FPSButton.MouseButton1Down:Connect(function() a392.fps = true; a98(a200.FPS
 
 table.insert(_G.UU.Connections, a3.InputEnded:Connect(function(a398)
     if a398.UserInputType == Enum.UserInputType.MouseButton1 then
+        if a392.jump then a393_log((a21.JumpDelay - 5) / 25) end
+        if a392.click then a395_log((a21.ClickDelay - 1) / 9) end
+        if a392.spam then a396_log((a21.SpamDelay - 0.05) / 4.95) end
+        if a392.fps then a397_log((a21.TargetFPS - 15) / 345) end
         a392.jump = false; a392.click = false; a392.spam = false; a392.fps = false
     end
 end))
@@ -1798,26 +1852,30 @@ table.insert(_G.UU.Connections, a3.InputChanged:Connect(function(a398)
 end))
 
 a198.JumpDelayBox.FocusLost:Connect(function()
-    a393((math.clamp(tonumber(a198.JumpDelayBox.Text) or a21.JumpDelay, 5, 30) - 5) / 25)
+    a393_log((math.clamp(tonumber(a198.JumpDelayBox.Text) or a21.JumpDelay, 5, 30) - 5) / 25)
 end)
 a198.ClickDelayBox.FocusLost:Connect(function()
-    a395((math.clamp(tonumber(a198.ClickDelayBox.Text) or a21.ClickDelay, 1, 10) - 1) / 9)
+    a395_log((math.clamp(tonumber(a198.ClickDelayBox.Text) or a21.ClickDelay, 1, 10) - 1) / 9)
 end)
 a199.SpamDelayBox.FocusLost:Connect(function()
-    a396((math.clamp(tonumber(a199.SpamDelayBox.Text) or a21.SpamDelay, 0.05, 5) - 0.05) / 4.95)
+    a396_log((math.clamp(tonumber(a199.SpamDelayBox.Text) or a21.SpamDelay, 0.05, 5) - 0.05) / 4.95)
 end)
 a200.FPSValueBox.FocusLost:Connect(function()
-    a397((math.clamp(tonumber(a200.FPSValueBox.Text) or a21.TargetFPS, 15, 360) - 15) / 345)
+    a397_log((math.clamp(tonumber(a200.FPSValueBox.Text) or a21.TargetFPS, 15, 360) - 15) / 345)
 end)
 a199.SpamInput.FocusLost:Connect(function()
+    local a33_prev = a21.SpamKey
     a21.SpamKey = a199.SpamInput.Text:upper()
-    a39()
+    if a21.SpamKey ~= a33_prev then
+        a33_save_log("Spam Key → " .. a21.SpamKey)
+    end
 end)
 
 local a400 = false
 local function a401(a402)
     if a400 or a21.ClickType == a402 then return end
-    a400 = true; a21.ClickType = a402; a364(); a39()
+    a400 = true; a21.ClickType = a402; a364()
+    a33_save_log("Click Mode → " .. a402)
     task.delay(0.1, function() a400 = false end)
 end
 
@@ -1830,7 +1888,8 @@ a198.JumpToggleBtn.MouseButton1Click:Connect(function()
     a21.JumpEnabled = not a21.JumpEnabled
     a160(a198.JumpToggleState, a21.JumpEnabled)
     if a21.JumpEnabled then task.wait(0.05); a365() else a56("Jump") end
-    a361(); a39()
+    a361()
+    a33_save_log("Auto Jump → " .. (a21.JumpEnabled and "Enabled" or "Disabled"))
 end)
 
 a198.ClickToggleBtn.MouseButton1Click:Connect(function()
@@ -1838,7 +1897,8 @@ a198.ClickToggleBtn.MouseButton1Click:Connect(function()
     a21.ClickEnabled = not a21.ClickEnabled
     a160(a198.ClickToggleState, a21.ClickEnabled)
     if a21.ClickEnabled then task.wait(0.05); a368() else a56("Click") end
-    a361(); a39()
+    a361()
+    a33_save_log("Auto Click → " .. (a21.ClickEnabled and "Enabled" or "Disabled"))
 end)
 
 a199.AutoSpamToggleBtn.MouseButton1Click:Connect(function()
@@ -1852,7 +1912,8 @@ a199.AutoSpamToggleBtn.MouseButton1Click:Connect(function()
             a160(a199.AutoSpamToggleState, false)
             a199.Status.Text = "Status: Invalid key"
             a48(a199.Status, a44.Fast, { TextColor3 = Color3.fromRGB(220, 50, 50) })
-            a39()
+            a33_log("Key Spam → Invalid key '" .. a403 .. "'", Color3.fromRGB(220, 80, 80))
+            a33()
             return
         end
         if a404 == Enum.KeyCode.P or a404 == a21.Keybind then
@@ -1860,7 +1921,8 @@ a199.AutoSpamToggleBtn.MouseButton1Click:Connect(function()
             a160(a199.AutoSpamToggleState, false)
             a199.Status.Text = "Status: Key reserved"
             a48(a199.Status, a44.Fast, { TextColor3 = Color3.fromRGB(220, 50, 50) })
-            a39()
+            a33_log("Key Spam → Key '" .. a403 .. "' is reserved", Color3.fromRGB(220, 80, 80))
+            a33()
             return
         end
         a21.SpamKey = a403
@@ -1874,7 +1936,7 @@ a199.AutoSpamToggleBtn.MouseButton1Click:Connect(function()
         a48(a199.Status, a44.Fast, { TextColor3 = Color3.fromRGB(180, 180, 180) })
         a56("Spam")
     end
-    a39()
+    a33_save_log("Key Spam → " .. (a21.AutoSpamEnabled and ("Enabled (" .. a21.SpamKey .. ")") or "Disabled"))
 end)
 
 a200.FPSToggleBtn.MouseButton1Click:Connect(function()
@@ -1882,6 +1944,7 @@ a200.FPSToggleBtn.MouseButton1Click:Connect(function()
     if not a352 then
         a200.FPSUnlockStatus.Text = "FPS Unlock not supported"
         a48(a200.FPSUnlockStatus, a44.Fast, { TextColor3 = Color3.fromRGB(220, 50, 50) })
+        a33_log("FPS Unlock → Not supported by executor", Color3.fromRGB(220, 80, 80))
         return
     end
     a21.FPSUnlockEnabled = not a21.FPSUnlockEnabled
@@ -1895,7 +1958,7 @@ a200.FPSToggleBtn.MouseButton1Click:Connect(function()
         a200.FPSUnlockStatus.Text = "Current Limit: 60 FPS (Default)"
         a48(a200.FPSUnlockStatus, a44.Fast, { TextColor3 = Color3.fromRGB(180, 180, 180) })
     end
-    a39()
+    a33_save_log("FPS Unlock → " .. (a21.FPSUnlockEnabled and ("Enabled (" .. a21.TargetFPS .. " FPS)") or "Disabled"))
 end)
 
 a201.AutoRejoinToggleBtn.MouseButton1Click:Connect(function()
@@ -1912,7 +1975,7 @@ a201.AutoRejoinToggleBtn.MouseButton1Click:Connect(function()
         a201.Status.Text = "Status: Disabled\n\nWhen enabled, automatically rejoins the current server when disconnected."
         a48(a201.Status, a44.Fast, { TextColor3 = Color3.fromRGB(180, 180, 180) })
     end
-    a39()
+    a33_save_log("Auto Rejoin → " .. (a21.AutoRejoinEnabled and "Enabled" or "Disabled"))
 end)
 
 a202.ExecuteButton.MouseButton1Click:Connect(function()
@@ -1950,7 +2013,7 @@ a202.AutoLoadToggleBtn.MouseButton1Click:Connect(function()
     else
         a202.AddOutput("Auto-load disabled.", Color3.fromRGB(160, 160, 160))
     end
-    a39()
+    a33_save_log("Auto Load → " .. (a21.AutoLoadEnabled and "Enabled" or "Disabled"))
 end)
 
 local a408 = 0
@@ -1964,11 +2027,18 @@ a202.LoadStringBox:GetPropertyChangedSignal("Text"):Connect(function()
         a408 = a410
         a202.Status.Text = "Saving..."
         a202.Status.TextColor3 = Color3.fromRGB(100, 200, 255)
-        a33()
-        a202.Status.Text = "Saved"
-        a202.Status.TextColor3 = Color3.fromRGB(80, 220, 120)
+        local a410_ok = a33()
+        if a410_ok then
+            a202.Status.Text = "Saved"
+            a202.Status.TextColor3 = Color3.fromRGB(80, 220, 120)
+            a33_log("Script code updated → Saved ✓", Color3.fromRGB(80, 220, 120))
+        else
+            a202.Status.Text = "Save failed"
+            a202.Status.TextColor3 = Color3.fromRGB(220, 80, 80)
+            a33_log("Script code updated → Save failed ✗", Color3.fromRGB(220, 80, 80))
+        end
         task.delay(1.5, function()
-            if a202.Status.Text == "Saved" then
+            if a202.Status.Text == "Saved" or a202.Status.Text == "Save failed" then
                 a202.Status.Text = "Ready"
                 a202.Status.TextColor3 = Color3.fromRGB(180, 180, 180)
             end
@@ -2016,8 +2086,7 @@ a203.KeybindButton.MouseButton1Click:Connect(function()
             a203.KeybindButton.Text  = "Current Key: "..a415
             a203.Status.Text         = "Keybind changed!"
             a48(a203.Status, a44.Fast, { TextColor3 = Color3.fromRGB(50, 220, 100) })
-            a203.AddSettingsLog("Keybind changed → "..a415, Color3.fromRGB(50, 220, 100))
-            a39()
+            a33_save_log("Keybind → " .. a415)
             a203.KeybindButton.Active = true
             a411:Disconnect()
             task.delay(0.1, function() a21.IsChangingKeybind = false end)
@@ -2043,13 +2112,20 @@ a203.AutoHideToggleBtn.MouseButton1Click:Connect(function()
         a48(a203.Status, a44.Fast, { TextColor3 = Color3.fromRGB(180, 180, 180) })
         a203.AddSettingsLog("Auto Hide → Disabled (UI shows on start)", Color3.fromRGB(180, 180, 180))
     end
-    a39()
+    local a33_ok = a33()
+    if a33_ok then
+        a203.AddSettingsLog("Auto Hide change → Saved ✓", Color3.fromRGB(80, 220, 120))
+    else
+        a203.AddSettingsLog("Auto Hide change → Save failed ✗", Color3.fromRGB(220, 80, 80))
+    end
 end)
 
 local function a416(a417)
     if a21.CurrentTab == a417 then return end
     if not a53("Tab", 0.15) then return end
-    a21.CurrentTab = a417; a39()
+    a21.CurrentTab = a417
+    a33_log("Tab → " .. a417, Color3.fromRGB(150, 150, 180))
+    a33()
     for a418, a419 in pairs(a182) do
         if a418 == a417 then
             a419.Visible  = true
@@ -2126,7 +2202,7 @@ local function a441()
             local a442fd = a2:Create(a163, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { BackgroundTransparency = 1 })
             a442fd:Play()
             a442sc.Completed:Wait()
-            a163.Visible = false; a163.BackgroundTransparency = 0; a61.Scale = 0; a39()
+            a163.Visible = false; a163.BackgroundTransparency = 0; a61.Scale = 0; a33()
 
             local a443 = a59()
             local a444 = math.floor(60 * a62)
@@ -2159,7 +2235,7 @@ local function a441()
             })
             local a452 = a2:Create(a171, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.In), { TextTransparency = 1 })
             a452:Play(); a451:Play(); a451.Completed:Wait()
-            a170.Visible = false; a170.Rotation = 0; a170.ImageTransparency = 0; a171.TextTransparency = 0; a39()
+            a170.Visible = false; a170.Rotation = 0; a170.ImageTransparency = 0; a171.TextTransparency = 0; a33()
             local a453, a454
             if a21.SavedUIPosition then
                 a453 = a21.SavedUIPosition.X; a454 = a21.SavedUIPosition.Y
@@ -2221,7 +2297,7 @@ local function a462()
         a466 = math.max(0, math.min(30, a463.Y - a467))
         a170.Size     = UDim2.new(0, a467, 0, a467)
         a170.Position = UDim2.new(0, a465, 0, a466)
-        a39()
+        a33()
     end)
 end
 
