@@ -2076,9 +2076,7 @@ end)
 a203.KeybindButton.MouseButton1Click:Connect(function()
     if not a53("Keybind", 0.5) or a21.IsChangingKeybind then return end
     a21.IsChangingKeybind = true
-    a203.KeybindButton.Text   = "Press any key..."
-    a203.Status.Text          = "Waiting for input..."
-    a48(a203.Status, a44.Fast, { TextColor3 = Color3.fromRGB(255, 200, 100) })
+    a203.KeybindButton.Text = "Press any key..."
     a33_log("Keybind: waiting for key press...", Color3.fromRGB(255, 200, 100))
     a203.KeybindButton.Active = false
     local a411
@@ -2088,14 +2086,7 @@ a203.KeybindButton.MouseButton1Click:Connect(function()
         a21.IsChangingKeybind    = false
         a203.KeybindButton.Active = true
         a203.KeybindButton.Text  = "Current Key: "..(a22[a21.Keybind] or a21.Keybind.Name)
-        a203.Status.Text         = "Timed out."
-        a48(a203.Status, a44.Fast, { TextColor3 = Color3.fromRGB(255, 100, 100) })
         a33_log("Keybind: input timed out — no change.", Color3.fromRGB(255, 100, 100))
-        task.wait(2)
-        if a203.Status.Text == "Timed out." then
-            a203.Status.Text      = a21.AutoHideEnabled and "Auto Hide enabled — UI starts hidden on next execution." or "Auto Hide disabled — UI shows normally on start."
-            a48(a203.Status, a44.Fast, { TextColor3 = a21.AutoHideEnabled and Color3.fromRGB(50, 220, 100) or Color3.fromRGB(180, 180, 180) })
-        end
     end)
     _G.UU.Threads.KeybindTimeout = a412
     a411 = a3.InputBegan:Connect(function(a413, a414)
@@ -2107,17 +2098,10 @@ a203.KeybindButton.MouseButton1Click:Connect(function()
             a21.Keybind              = a413.KeyCode
             local a415              = a22[a413.KeyCode] or a413.KeyCode.Name
             a203.KeybindButton.Text  = "Current Key: "..a415
-            a203.Status.Text         = "Keybind changed!"
-            a48(a203.Status, a44.Fast, { TextColor3 = Color3.fromRGB(50, 220, 100) })
             a33_save_log("Keybind → " .. a415)
             a203.KeybindButton.Active = true
             a411:Disconnect()
             task.delay(0.1, function() a21.IsChangingKeybind = false end)
-            task.wait(1.5)
-            if a203.Status.Text == "Keybind changed!" then
-                a203.Status.Text      = a21.AutoHideEnabled and "Auto Hide enabled — UI starts hidden on next execution." or "Auto Hide disabled — UI shows normally on start."
-                a48(a203.Status, a44.Fast, { TextColor3 = a21.AutoHideEnabled and Color3.fromRGB(50, 220, 100) or Color3.fromRGB(180, 180, 180) })
-            end
         end
     end)
 end)
