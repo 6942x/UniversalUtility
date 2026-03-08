@@ -1030,6 +1030,22 @@ end
 local a197, a198, a199 = {}, {}, {}
 local a200, a201, a202, a203 = {}, {}, {}, {}
 
+local function a218_formatUptime(a218_up)
+    local a218_d = math.floor(a218_up / 86400)
+    local a218_h = math.floor((a218_up % 86400) / 3600)
+    local a218_m = math.floor((a218_up % 3600) / 60)
+    local a218_s = a218_up % 60
+    if a218_d > 0 then
+        return string.format("Server Uptime: %dd %dh %02dm %02ds", a218_d, a218_h, a218_m, a218_s)
+    elseif a218_h > 0 then
+        return string.format("Server Uptime: %dh %02dm %02ds", a218_h, a218_m, a218_s)
+    elseif a218_m > 0 then
+        return string.format("Server Uptime: %dm %02ds", a218_m, a218_s)
+    else
+        return "Server Uptime: " .. a218_s .. "s"
+    end
+end
+
 do
     local a204 = a182["Home"]
     local a205 = a134(a204, 200, 1)
@@ -1107,7 +1123,7 @@ do
     a217.Font = Enum.Font.Gotham; a217.TextSize = 12
     a217.TextColor3 = Color3.fromRGB(120, 120, 120); a217.TextXAlignment = Enum.TextXAlignment.Left
 
-    local a218 = a134(a204, 220, 2)
+    local a218 = a134(a204, 175, 2)
     a183["Home_Card2"] = a218
 
     local a219 = Instance.new("ImageLabel", a218)
@@ -1117,36 +1133,104 @@ do
     a65(a219, 10); Instance.new("UIStroke", a219).Color = Color3.fromRGB(100, 150, 255)
 
     local a220 = Instance.new("TextLabel", a218)
-    a220.Size = UDim2.new(1, -145, 0, 24); a220.Position = UDim2.new(0, 140, 0, 10)
+    a220.Size = UDim2.new(1, -145, 0, 24); a220.Position = UDim2.new(0, 140, 0, 5)
     a220.BackgroundTransparency = 1; a220.Text = "Loading game info..."
     a220.Font = Enum.Font.GothamBold; a220.TextSize = 24
     a220.TextColor3 = Color3.fromRGB(255, 255, 255); a220.TextXAlignment = Enum.TextXAlignment.Left
     a220.TextWrapped = true
 
     local a221 = Instance.new("TextLabel", a218)
-    a221.Size = UDim2.new(1, -145, 0, 18); a221.Position = UDim2.new(0, 140, 0, 50)
-    a221.BackgroundTransparency = 1; a221.Text = "Place ID: "..game.PlaceId
-    a221.Font = Enum.Font.Gotham; a221.TextSize = 18
+    a221.Size = UDim2.new(1, -145, 0, 16); a221.Position = UDim2.new(0, 140, 0, 30)
+    a221.BackgroundTransparency = 1; a221.Text = "Place Id: "..game.PlaceId
+    a221.Font = Enum.Font.Gotham; a221.TextSize = 16
     a221.TextColor3 = Color3.fromRGB(150, 180, 255); a221.TextXAlignment = Enum.TextXAlignment.Left
 
+    local a221b = Instance.new("TextLabel", a218)
+    a221b.Size = UDim2.new(1, -145, 0, 16); a221b.Position = UDim2.new(0, 140, 0, 45)
+    a221b.BackgroundTransparency = 1; a221b.Text = "Universe Id: "..game.GameId
+    a221b.Font = Enum.Font.Gotham; a221b.TextSize = 16
+    a221b.TextColor3 = Color3.fromRGB(200, 160, 255); a221b.TextXAlignment = Enum.TextXAlignment.Left
+
     local a222 = Instance.new("TextLabel", a218)
-    a222.Size = UDim2.new(1, -145, 0, 18); a222.Position = UDim2.new(0, 140, 0, 85)
-    a222.BackgroundTransparency = 1; a222.Text = "Server Players: "..#a1:GetPlayers()
-    a222.Font = Enum.Font.Gotham; a222.TextSize = 18
+    a222.Size = UDim2.new(1, -145, 0, 16); a222.Position = UDim2.new(0, 140, 0, 70)
+    a222.BackgroundTransparency = 1
+    a222.Text = "Server Players: "..#a1:GetPlayers().." / "..a1.MaxPlayers
+    a222.Font = Enum.Font.Gotham; a222.TextSize = 16
     a222.TextColor3 = Color3.fromRGB(150, 255, 180); a222.TextXAlignment = Enum.TextXAlignment.Left
 
+    local a223b = Instance.new("TextLabel", a218)
+    a223b.Size = UDim2.new(1, -145, 0, 16); a223b.Position = UDim2.new(0, 140, 0, 85)
+    a223b.BackgroundTransparency = 1; a223b.Text = "Server Uptime: 0s"
+    a223b.Font = Enum.Font.Gotham; a223b.TextSize = 16
+    a223b.TextColor3 = Color3.fromRGB(255, 220, 100); a223b.TextXAlignment = Enum.TextXAlignment.Left
+
+    local a218_regionVal = Instance.new("TextLabel", a218)
+    a218_regionVal.Size = UDim2.new(1, -145, 0, 16); a218_regionVal.Position = UDim2.new(0, 140, 0, 110)
+    a218_regionVal.BackgroundTransparency = 1; a218_regionVal.Text = "Server Region: Detecting..."
+    a218_regionVal.Font = Enum.Font.Gotham; a218_regionVal.TextSize = 16
+    a218_regionVal.TextColor3 = Color3.fromRGB(100, 220, 255); a218_regionVal.TextXAlignment = Enum.TextXAlignment.Left
+
     local a223 = Instance.new("TextLabel", a218)
-    a223.Size = UDim2.new(1, -145, 0, 16); a223.Position = UDim2.new(0, 140, 0, 130)
-    a223.BackgroundTransparency = 1; a223.Text = "JobId: "..(game.JobId ~= "" and game.JobId or "N/A")
-    a223.Font = Enum.Font.Gotham; a223.TextSize = 11
+    a223.Size = UDim2.new(1, -145, 0, 14); a223.Position = UDim2.new(0, 140, 0, 135)
+    a223.BackgroundTransparency = 1; a223.Text = "Job Id: "..(game.JobId ~= "" and game.JobId or "N/A")
+    a223.Font = Enum.Font.Gotham; a223.TextSize = 12
     a223.TextColor3 = Color3.fromRGB(255, 180, 180); a223.TextXAlignment = Enum.TextXAlignment.Left
     a223.TextTruncate = Enum.TextTruncate.AtEnd
 
-    local function a224()
-        a222.Text = "Players: "..#a1:GetPlayers()
-    end
-    table.insert(_G.UU.Connections, a1.PlayerAdded:Connect(a224))
-    table.insert(_G.UU.Connections, a1.PlayerRemoving:Connect(a224))
+    local a218_tickOffset = tick() - workspace.DistributedGameTime
+    a223b.Text = a218_formatUptime(math.floor(workspace.DistributedGameTime))
+
+    table.insert(_G.UU.Connections, a1.PlayerAdded:Connect(function()
+        a222.Text = "Players: "..#a1:GetPlayers().." / "..a1.MaxPlayers
+    end))
+    table.insert(_G.UU.Connections, a1.PlayerRemoving:Connect(function()
+        a222.Text = "Players: "..(#a1:GetPlayers() - 1).." / "..a1.MaxPlayers
+    end))
+
+    local a218_lastUp = -1
+    local a218_conn = a5.Heartbeat:Connect(function()
+        local a218_up = math.floor(tick() - a218_tickOffset)
+        if a218_up ~= a218_lastUp then
+            a218_lastUp = a218_up
+            a223b.Text = a218_formatUptime(a218_up)
+        end
+    end)
+    table.insert(_G.UU.Connections, a218_conn)
+
+    task.spawn(function()
+        local a218_region = "Unknown"
+        pcall(function()
+            local a218_raw = a:JSONDecode(game:HttpGet("https://ipinfo.io/json", true))
+            if a218_raw and a218_raw.country then
+                local a218_countryMap = {
+                    US="🇺🇸 North America (US)", CA="🇨🇦 North America (CA)",
+                    BR="🇧🇷 South America (BR)", AR="🇦🇷 South America (AR)",
+                    MX="🇲🇽 North America (MX)", CL="🇨🇱 South America (CL)",
+                    CO="🇨🇴 South America (CO)", PE="🇵🇪 South America (PE)",
+                    GB="🇬🇧 Europe (GB)", DE="🇩🇪 Europe (DE)",
+                    FR="🇫🇷 Europe (FR)", ES="🇪🇸 Europe (ES)",
+                    IT="🇮🇹 Europe (IT)", NL="🇳🇱 Europe (NL)",
+                    PL="🇵🇱 Europe (PL)", RU="🇷🇺 Europe (RU)",
+                    SE="🇸🇪 Europe (SE)", NO="🇳🇴 Europe (NO)",
+                    FI="🇫🇮 Europe (FI)", PT="🇵🇹 Europe (PT)",
+                    TR="🇹🇷 Middle East / EU (TR)", SA="🇸🇦 Middle East (SA)",
+                    AE="🇦🇪 Middle East (AE)", EG="🇪🇬 Africa (EG)",
+                    ZA="🇿🇦 Africa (ZA)", NG="🇳🇬 Africa (NG)",
+                    JP="🇯🇵 Asia (JP)", KR="🇰🇷 Asia (KR)",
+                    CN="🇨🇳 Asia (CN)", TW="🇹🇼 Asia (TW)",
+                    SG="🇸🇬 Asia (SG)", IN="🇮🇳 Asia (IN)",
+                    ID="🇮🇩 Asia (ID)", PH="🇵🇭 Asia (PH)",
+                    TH="🇹🇭 Asia (TH)", VN="🇻🇳 Asia (VN)",
+                    MY="🇲🇾 Asia (MY)", AU="🇦🇺 Oceania (AU)",
+                    NZ="🇳🇿 Oceania (NZ)",
+                }
+                local a218_cc = a218_raw.country:upper()
+                a218_region = a218_countryMap[a218_cc]
+                    or ("🌐 " .. a218_cc .. (a218_raw.region and (" / " .. a218_raw.region) or ""))
+            end
+        end)
+        a218_regionVal.Text = "Server Region: "..a218_region
+    end)
 
     _G.UU.UI.PlayerImage  = a206
     _G.UU.UI.GameName     = a220
@@ -2441,7 +2525,7 @@ if a483 then
 
     a361()
     task.defer(function()
-        a33_log("Config loaded for "..a12.." (ID: "..a13..")", Color3.fromRGB(100, 200, 255))
+        a33_log("Config loaded for "..a12.." (Id: "..a13..")", Color3.fromRGB(100, 200, 255))
     end)
 else
     a393(0.2); a395(0.22); a396(0.01); a397(0.13)
