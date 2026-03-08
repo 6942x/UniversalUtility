@@ -1123,11 +1123,11 @@ do
     a217.Font = Enum.Font.Gotham; a217.TextSize = 12
     a217.TextColor3 = Color3.fromRGB(120, 120, 120); a217.TextXAlignment = Enum.TextXAlignment.Left
 
-    local a218 = a134(a204, 175, 2)
+    local a218 = a134(a204, 160, 2)
     a183["Home_Card2"] = a218
 
     local a219 = Instance.new("ImageLabel", a218)
-    a219.Size = UDim2.new(0, 120, 0, 140); a219.Position = UDim2.new(0, 10, 0, 10)
+    a219.Size = UDim2.new(0, 120, 0, 125); a219.Position = UDim2.new(0, 10, 0, 10)
     a219.BackgroundColor3 = Color3.fromRGB(45, 45, 52); a219.BorderSizePixel = 0
     a219.Image = "rbxasset://textures/ui/GuiImagePlaceholder.png"
     a65(a219, 10); Instance.new("UIStroke", a219).Color = Color3.fromRGB(100, 150, 255)
@@ -1164,14 +1164,8 @@ do
     a223b.Font = Enum.Font.Gotham; a223b.TextSize = 16
     a223b.TextColor3 = Color3.fromRGB(255, 220, 100); a223b.TextXAlignment = Enum.TextXAlignment.Left
 
-    local a218_regionVal = Instance.new("TextLabel", a218)
-    a218_regionVal.Size = UDim2.new(1, -145, 0, 16); a218_regionVal.Position = UDim2.new(0, 140, 0, 110)
-    a218_regionVal.BackgroundTransparency = 1; a218_regionVal.Text = "Server Region: Detecting..."
-    a218_regionVal.Font = Enum.Font.Gotham; a218_regionVal.TextSize = 16
-    a218_regionVal.TextColor3 = Color3.fromRGB(100, 220, 255); a218_regionVal.TextXAlignment = Enum.TextXAlignment.Left
-
     local a223 = Instance.new("TextLabel", a218)
-    a223.Size = UDim2.new(1, -145, 0, 14); a223.Position = UDim2.new(0, 140, 0, 135)
+    a223.Size = UDim2.new(1, -145, 0, 14); a223.Position = UDim2.new(0, 140, 0, 120)
     a223.BackgroundTransparency = 1; a223.Text = "Job Id: "..(game.JobId ~= "" and game.JobId or "N/A")
     a223.Font = Enum.Font.Gotham; a223.TextSize = 12
     a223.TextColor3 = Color3.fromRGB(255, 180, 180); a223.TextXAlignment = Enum.TextXAlignment.Left
@@ -1196,41 +1190,6 @@ do
         end
     end)
     table.insert(_G.UU.Connections, a218_conn)
-
-    task.spawn(function()
-        local a218_region = "Unknown"
-        pcall(function()
-            local a218_raw = a:JSONDecode(game:HttpGet("https://ipinfo.io/json", true))
-            if a218_raw and a218_raw.country then
-                local a218_countryMap = {
-                    US="🇺🇸 North America (US)", CA="🇨🇦 North America (CA)",
-                    BR="🇧🇷 South America (BR)", AR="🇦🇷 South America (AR)",
-                    MX="🇲🇽 North America (MX)", CL="🇨🇱 South America (CL)",
-                    CO="🇨🇴 South America (CO)", PE="🇵🇪 South America (PE)",
-                    GB="🇬🇧 Europe (GB)", DE="🇩🇪 Europe (DE)",
-                    FR="🇫🇷 Europe (FR)", ES="🇪🇸 Europe (ES)",
-                    IT="🇮🇹 Europe (IT)", NL="🇳🇱 Europe (NL)",
-                    PL="🇵🇱 Europe (PL)", RU="🇷🇺 Europe (RU)",
-                    SE="🇸🇪 Europe (SE)", NO="🇳🇴 Europe (NO)",
-                    FI="🇫🇮 Europe (FI)", PT="🇵🇹 Europe (PT)",
-                    TR="🇹🇷 Middle East / EU (TR)", SA="🇸🇦 Middle East (SA)",
-                    AE="🇦🇪 Middle East (AE)", EG="🇪🇬 Africa (EG)",
-                    ZA="🇿🇦 Africa (ZA)", NG="🇳🇬 Africa (NG)",
-                    JP="🇯🇵 Asia (JP)", KR="🇰🇷 Asia (KR)",
-                    CN="🇨🇳 Asia (CN)", TW="🇹🇼 Asia (TW)",
-                    SG="🇸🇬 Asia (SG)", IN="🇮🇳 Asia (IN)",
-                    ID="🇮🇩 Asia (ID)", PH="🇵🇭 Asia (PH)",
-                    TH="🇹🇭 Asia (TH)", VN="🇻🇳 Asia (VN)",
-                    MY="🇲🇾 Asia (MY)", AU="🇦🇺 Oceania (AU)",
-                    NZ="🇳🇿 Oceania (NZ)",
-                }
-                local a218_cc = a218_raw.country:upper()
-                a218_region = a218_countryMap[a218_cc]
-                    or ("🌐 " .. a218_cc .. (a218_raw.region and (" / " .. a218_raw.region) or ""))
-            end
-        end)
-        a218_regionVal.Text = "Server Region: "..a218_region
-    end)
 
     _G.UU.UI.PlayerImage  = a206
     _G.UU.UI.GameName     = a220
