@@ -942,9 +942,10 @@ local function a184(a185, a186, a187)
     a190.TextXAlignment    = Enum.TextXAlignment.Left
     a181[a185] = { Button = a188, Icon = a189, Label = a190 }
     a183["Tab_"..a185] = a188
+
     a188.MouseEnter:Connect(function()
-        local a188_isSelected = a21.CurrentTab == a185
-        if a188_isSelected then
+        local sel = a21.CurrentTab == a185
+        if sel then
             a48(a188, a44.Fast, { Size = UDim2.new(1, -4, 0, 54) })
             a48(a189, a44.Fast, { TextSize = 21 })
             a48(a190, a44.Fast, { TextSize = 14 })
@@ -955,11 +956,11 @@ local function a184(a185, a186, a187)
         end
     end)
     a188.MouseLeave:Connect(function()
-        local a188_isSelected = a21.CurrentTab == a185
-        if a188_isSelected then
-            a48(a188, a44.Fast, { Size = UDim2.new(1, -10, 0, 50) })
-            a48(a189, a44.Fast, { TextSize = 19 })
-            a48(a190, a44.Fast, { TextSize = 13 })
+        local sel = a21.CurrentTab == a185
+        if sel then
+            a48(a188, a44.Fast, { BackgroundColor3 = Color3.fromRGB(100, 150, 255), Size = UDim2.new(1, -10, 0, 50) })
+            a48(a189, a44.Fast, { TextColor3 = Color3.fromRGB(255, 255, 255), TextSize = 18 })
+            a48(a190, a44.Fast, { TextColor3 = Color3.fromRGB(255, 255, 255), TextSize = 13 })
         else
             a48(a188, a44.Fast, { BackgroundColor3 = Color3.fromRGB(35, 35, 42), Size = UDim2.new(1, -10, 0, 50) })
             a48(a189, a44.Fast, { TextColor3 = Color3.fromRGB(180, 180, 180), TextSize = 18 })
@@ -967,24 +968,22 @@ local function a184(a185, a186, a187)
         end
     end)
     a188.MouseButton1Down:Connect(function()
-        local a188_isSelected = a21.CurrentTab == a185
-        if a188_isSelected then
+        local sel = a21.CurrentTab == a185
+        if sel then
             a48(a188, a44.Fast, { Size = UDim2.new(1, -14, 0, 46) })
-            a48(a189, a44.Fast, { TextSize = 16 })
         else
             a48(a188, a44.Fast, { BackgroundColor3 = Color3.fromRGB(55, 55, 62), Size = UDim2.new(1, -14, 0, 46) })
-            a48(a189, a44.Fast, { TextSize = 16 })
         end
+        a48(a189, a44.Fast, { TextSize = 16 })
     end)
     a188.MouseButton1Up:Connect(function()
-        local a188_isSelected = a21.CurrentTab == a185
-        if a188_isSelected then
-            a48(a188, a44.Fast, { Size = UDim2.new(1, -4, 0, 54) })
-            a48(a189, a44.Fast, { TextSize = 21 })
+        local sel = a21.CurrentTab == a185
+        if sel then
+            a48(a188, a44.Fast, { BackgroundColor3 = Color3.fromRGB(100, 150, 255), Size = UDim2.new(1, -4, 0, 54) })
         else
             a48(a188, a44.Fast, { BackgroundColor3 = Color3.fromRGB(45, 45, 52), Size = UDim2.new(1, -4, 0, 54) })
-            a48(a189, a44.Fast, { TextSize = 21 })
         end
+        a48(a189, a44.Fast, { TextSize = 21 })
     end)
     return a188
 end
@@ -2144,11 +2143,22 @@ a203.AutoHideToggleBtn.MouseButton1Click:Connect(function()
     end
 end)
 
+local function a416_applyVisuals(a417)
+    for a418, a420 in pairs(a181) do
+        local a421 = a418 == a417
+        a46(a420.Button); a46(a420.Icon); a46(a420.Label)
+        a420.Button.BackgroundColor3 = a421 and Color3.fromRGB(100, 150, 255) or Color3.fromRGB(35, 35, 42)
+        a420.Button.Size             = a421 and UDim2.new(1, -4, 0, 54)       or UDim2.new(1, -10, 0, 50)
+        a420.Icon.TextColor3         = a421 and Color3.fromRGB(255, 255, 255)  or Color3.fromRGB(180, 180, 180)
+        a420.Icon.TextSize           = a421 and 19 or 18
+        a420.Label.TextColor3        = a421 and Color3.fromRGB(255, 255, 255)  or Color3.fromRGB(180, 180, 180)
+    end
+end
+
 local function a416(a417)
-    if a21.CurrentTab == a417 then return end
+    if a21.CurrentTab == a417 and _G.UU.Debounces["Tab"] then return end
     if not a53("Tab", 0.15) then return end
     a21.CurrentTab = a417
-    a33_log("Tab → " .. a417, Color3.fromRGB(150, 150, 180))
     a33()
     for a418, a419 in pairs(a182) do
         if a418 == a417 then
@@ -2159,12 +2169,7 @@ local function a416(a417)
             a419.Visible = false
         end
     end
-    for a418, a420 in pairs(a181) do
-        local a421 = a418 == a417
-        a48(a420.Button, a44.Fast, { BackgroundColor3 = a421 and Color3.fromRGB(100, 150, 255) or Color3.fromRGB(35, 35, 42), Size = a421 and UDim2.new(1, -4, 0, 54) or UDim2.new(1, -10, 0, 50) })
-        a48(a420.Icon,   a44.Fast, { TextColor3 = a421 and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(180, 180, 180), TextSize = a421 and 19 or 18 })
-        a48(a420.Label,  a44.Fast, { TextColor3 = a421 and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(180, 180, 180) })
-    end
+    a416_applyVisuals(a417)
 end
 
 for a422, a423 in ipairs(a194) do
@@ -2220,7 +2225,6 @@ local function a441()
     if not a53("UI", 0.6) then return end
     a429(function()
         if a163.Visible then
-            a33_log("UI minimized", Color3.fromRGB(150, 150, 180))
             a21.SavedUIPosition = { X = a163.Position.X.Offset, Y = a163.Position.Y.Offset }
             a163.Size = UDim2.new(0, a60.Width, 0, a60.Height)
             local a442sc = a48(a61, a440, { Scale = 0 })
@@ -2261,7 +2265,6 @@ local function a441()
             local a452 = a2:Create(a171, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.In), { TextTransparency = 1 })
             a452:Play(); a451:Play(); a451.Completed:Wait()
             a170.Visible = false; a170.Rotation = 0; a170.ImageTransparency = 0; a171.TextTransparency = 0; a33()
-            a33_log("UI opened", Color3.fromRGB(150, 150, 180))
             local a453, a454
             if a21.SavedUIPosition then
                 a453 = a21.SavedUIPosition.X; a454 = a21.SavedUIPosition.Y
@@ -2295,7 +2298,6 @@ a170.MouseButton1Click:Connect(function() if not a176 then a441() end end)
 
 table.insert(_G.UU.Connections, a3.InputBegan:Connect(function(a458, a459)
     if not a459 and a458.KeyCode == a21.Keybind and not a21.IsChangingKeybind then
-        a33_log("Keybind pressed → UI toggled", Color3.fromRGB(150, 150, 180))
         a441()
     end
 end))
@@ -2504,7 +2506,6 @@ a162.Destroying:Connect(function()
 end)
 
 for a486, a487 in pairs(a182) do a487.Visible = false end
-a21.CurrentTab = nil
 
 local a488 = a59()
 if a488.X < 100 or a488.Y < 100 then
@@ -2538,7 +2539,12 @@ else
     a492, a493, a494 = a435(a488, a62)
 end
 
-a416("Home")
+local a416_startTab = a21.CurrentTab or "Home"
+for a418, a419 in pairs(a182) do
+    a419.Visible = (a418 == a416_startTab)
+end
+a416_applyVisuals(a416_startTab)
+a21.CurrentTab = a416_startTab
 a33()
 
 if a489 then
