@@ -2426,13 +2426,6 @@ if a483 then
     a361()
     task.defer(function()
         a203.AddSettingsLog("Config loaded for "..a12.." (ID: "..a13..")", Color3.fromRGB(100, 200, 255))
-        a203.AddSettingsLog("Keybind: "..(a22[a21.Keybind] or a21.Keybind.Name), Color3.fromRGB(220, 220, 220))
-        a203.AddSettingsLog("Auto Hide: "..(a21.AutoHideEnabled and "Enabled" or "Disabled"), a21.AutoHideEnabled and Color3.fromRGB(50, 220, 100) or Color3.fromRGB(180, 180, 180))
-        if a21.FPSUnlockEnabled then a203.AddSettingsLog("FPS Unlock: Active ("..a21.TargetFPS.." FPS)", Color3.fromRGB(100, 255, 150)) end
-        if a21.AutoRejoinEnabled then a203.AddSettingsLog("Auto Rejoin: Enabled", Color3.fromRGB(150, 200, 255)) end
-        if a21.AutoSpamEnabled   then a203.AddSettingsLog("Key Spam: Active ("..a21.SpamKey..")", Color3.fromRGB(255, 200, 100)) end
-        if a21.JumpEnabled       then a203.AddSettingsLog("Auto Jump: Active", Color3.fromRGB(100, 200, 255)) end
-        if a21.ClickEnabled      then a203.AddSettingsLog("Auto Click: Active", Color3.fromRGB(255, 200, 100)) end
     end)
 else
     a393(0.2); a395(0.22); a396(0.01); a397(0.13)
