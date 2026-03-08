@@ -198,8 +198,8 @@ end
 _G.UU.SaveCFG = a33
 
 local function a33_log(a33_msg, a33_col)
-    if _G.UU.Loaded and a203 and a203.AddSettingsLog then
-        a203.AddSettingsLog(a33_msg, a33_col)
+    if _G.UU.AddActivityLog then
+        _G.UU.AddActivityLog(a33_msg, a33_col)
     end
 end
 
@@ -1619,6 +1619,7 @@ do
         Status               = a351,
         AddSettingsLog       = a351b_add,
     }
+    _G.UU.AddActivityLog = a351b_add
 end
 
 local a352 = typeof(setfpscap) == "function"
@@ -1750,6 +1751,7 @@ local function a378()
         a377b = a382.ChildAdded:Connect(function(a385)
             if a385.Name == "ErrorPrompt" and a21.AutoRejoinEnabled and not a376 then
                 a376 = true
+                a33_log("Disconnected detected → rejoining...", Color3.fromRGB(255, 200, 100))
                 _G.UU.Threads.Rejoin = task.spawn(function()
                     while a21.AutoRejoinEnabled and a376 do
                         a7:Teleport(game.PlaceId, a11)
@@ -1982,16 +1984,20 @@ end)
 a202.ExecuteButton.MouseButton1Click:Connect(function()
     if not a53("Execute", 0.5) then return end
     local a405 = a202.LoadStringBox.Text
+    local a405_lines = 0
+    for _ in (a405.."\n"):gmatch("[^\n]*\n") do a405_lines = a405_lines + 1 end
     a202.Status.Text = "Executing..."
     a202.Status.TextColor3 = Color3.fromRGB(255, 200, 100)
     a48(a202.ExecuteButton, a44.Medium, { BackgroundColor3 = Color3.fromRGB(255, 200, 100) })
     local a406, _, a407err = a386(a405)
     if a406 then
         a202.AddOutput("Script executed successfully.", Color3.fromRGB(80, 220, 120))
+        a33_log(string.format("Script executed ✓ (%d lines)", a405_lines), Color3.fromRGB(80, 220, 120))
         a48(a202.ExecuteButton, a44.Medium, { BackgroundColor3 = Color3.fromRGB(50, 180, 80) })
     else
         if a407err then
             a202.AddOutput(a407err, Color3.fromRGB(255, 100, 100))
+            a33_log("Script error: " .. tostring(a407err):sub(1, 80), Color3.fromRGB(255, 100, 100))
         end
         a48(a202.ExecuteButton, a44.Medium, { BackgroundColor3 = Color3.fromRGB(180, 50, 50) })
     end
@@ -2008,13 +2014,19 @@ a202.AutoLoadToggleBtn.MouseButton1Click:Connect(function()
     if a21.AutoLoadEnabled then
         if a21.SavedCode and a21.SavedCode ~= "" then
             a202.AddOutput("Auto-load enabled — will execute saved code on rejoin.", Color3.fromRGB(80, 220, 120))
+            a33_log("Auto Load → Enabled (code ready)", Color3.fromRGB(80, 220, 120))
         else
             a202.AddOutput("Auto-load enabled — but no code is saved yet.", Color3.fromRGB(255, 200, 100))
+            a33_log("Auto Load → Enabled (no code saved yet)", Color3.fromRGB(255, 200, 100))
         end
     else
         a202.AddOutput("Auto-load disabled.", Color3.fromRGB(160, 160, 160))
+        a33_log("Auto Load → Disabled", Color3.fromRGB(160, 160, 160))
     end
-    a33_save_log("Auto Load → " .. (a21.AutoLoadEnabled and "Enabled" or "Disabled"))
+    local a33_autoload_ok = a33()
+    if not a33_autoload_ok then
+        a33_log("Auto Load change → Save failed ✗", Color3.fromRGB(220, 80, 80))
+    end
 end)
 
 local a408 = 0
@@ -2036,14 +2048,18 @@ a202.LoadStringBox:GetPropertyChangedSignal("Text"):Connect(function()
         a202.Status.Text = "Saving..."
         a202.Status.TextColor3 = Color3.fromRGB(100, 200, 255)
         local a410_ok = a33()
+        local a410_code = a21.SavedCode
+        local a410_lines = 0
+        for _ in (a410_code.."\n"):gmatch("[^\n]*\n") do a410_lines = a410_lines + 1 end
+        local a410_chars = #a410_code
         if a410_ok then
             a202.Status.Text = "Saved"
             a202.Status.TextColor3 = Color3.fromRGB(80, 220, 120)
-            a33_log("Script code updated → Saved ✓", Color3.fromRGB(80, 220, 120))
+            a33_log(string.format("Code edited → %d lines, %d chars — Saved ✓", a410_lines, a410_chars), Color3.fromRGB(80, 220, 120))
         else
             a202.Status.Text = "Save failed"
             a202.Status.TextColor3 = Color3.fromRGB(220, 80, 80)
-            a33_log("Script code updated → Save failed ✗", Color3.fromRGB(220, 80, 80))
+            a33_log(string.format("Code edited → %d lines, %d chars — Save failed ✗", a410_lines, a410_chars), Color3.fromRGB(220, 80, 80))
         end
         task.delay(1.5, function()
             if a202.Status.Text == "Saved" or a202.Status.Text == "Save failed" then
@@ -2064,7 +2080,7 @@ a203.KeybindButton.MouseButton1Click:Connect(function()
     a203.KeybindButton.Text   = "Press any key..."
     a203.Status.Text          = "Waiting for input..."
     a48(a203.Status, a44.Fast, { TextColor3 = Color3.fromRGB(255, 200, 100) })
-    a203.AddSettingsLog("Keybind: waiting for key press...", Color3.fromRGB(255, 200, 100))
+    a33_log("Keybind: waiting for key press...", Color3.fromRGB(255, 200, 100))
     a203.KeybindButton.Active = false
     local a411
     local a412 = task.delay(5, function()
@@ -2075,7 +2091,7 @@ a203.KeybindButton.MouseButton1Click:Connect(function()
         a203.KeybindButton.Text  = "Current Key: "..(a22[a21.Keybind] or a21.Keybind.Name)
         a203.Status.Text         = "Timed out."
         a48(a203.Status, a44.Fast, { TextColor3 = Color3.fromRGB(255, 100, 100) })
-        a203.AddSettingsLog("Keybind: input timed out — no change.", Color3.fromRGB(255, 100, 100))
+        a33_log("Keybind: input timed out — no change.", Color3.fromRGB(255, 100, 100))
         task.wait(2)
         if a203.Status.Text == "Timed out." then
             a203.Status.Text      = a21.AutoHideEnabled and "Auto Hide enabled — UI starts hidden on next execution." or "Auto Hide disabled — UI shows normally on start."
@@ -2114,17 +2130,17 @@ a203.AutoHideToggleBtn.MouseButton1Click:Connect(function()
     if a21.AutoHideEnabled then
         a203.Status.Text = "Auto Hide enabled — UI starts hidden on next execution."
         a48(a203.Status, a44.Fast, { TextColor3 = Color3.fromRGB(50, 220, 100) })
-        a203.AddSettingsLog("Auto Hide → Enabled (UI hidden on start)", Color3.fromRGB(50, 220, 100))
+        a33_log("Auto Hide → Enabled (UI hidden on start)", Color3.fromRGB(50, 220, 100))
     else
         a203.Status.Text = "Auto Hide disabled — UI shows normally on start."
         a48(a203.Status, a44.Fast, { TextColor3 = Color3.fromRGB(180, 180, 180) })
-        a203.AddSettingsLog("Auto Hide → Disabled (UI shows on start)", Color3.fromRGB(180, 180, 180))
+        a33_log("Auto Hide → Disabled (UI shows on start)", Color3.fromRGB(180, 180, 180))
     end
     local a33_ok = a33()
     if a33_ok then
-        a203.AddSettingsLog("Auto Hide change → Saved ✓", Color3.fromRGB(80, 220, 120))
+        a33_log("Auto Hide change → Saved ✓", Color3.fromRGB(80, 220, 120))
     else
-        a203.AddSettingsLog("Auto Hide change → Save failed ✗", Color3.fromRGB(220, 80, 80))
+        a33_log("Auto Hide change → Save failed ✗", Color3.fromRGB(220, 80, 80))
     end
 end)
 
@@ -2204,6 +2220,7 @@ local function a441()
     if not a53("UI", 0.6) then return end
     a429(function()
         if a163.Visible then
+            a33_log("UI minimized", Color3.fromRGB(150, 150, 180))
             a21.SavedUIPosition = { X = a163.Position.X.Offset, Y = a163.Position.Y.Offset }
             a163.Size = UDim2.new(0, a60.Width, 0, a60.Height)
             local a442sc = a48(a61, a440, { Scale = 0 })
@@ -2244,6 +2261,7 @@ local function a441()
             local a452 = a2:Create(a171, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.In), { TextTransparency = 1 })
             a452:Play(); a451:Play(); a451.Completed:Wait()
             a170.Visible = false; a170.Rotation = 0; a170.ImageTransparency = 0; a171.TextTransparency = 0; a33()
+            a33_log("UI opened", Color3.fromRGB(150, 150, 180))
             local a453, a454
             if a21.SavedUIPosition then
                 a453 = a21.SavedUIPosition.X; a454 = a21.SavedUIPosition.Y
@@ -2277,6 +2295,7 @@ a170.MouseButton1Click:Connect(function() if not a176 then a441() end end)
 
 table.insert(_G.UU.Connections, a3.InputBegan:Connect(function(a458, a459)
     if not a459 and a458.KeyCode == a21.Keybind and not a21.IsChangingKeybind then
+        a33_log("Keybind pressed → UI toggled", Color3.fromRGB(150, 150, 180))
         a441()
     end
 end))
@@ -2433,7 +2452,7 @@ if a483 then
 
     a361()
     task.defer(function()
-        a203.AddSettingsLog("Config loaded for "..a12.." (ID: "..a13..")", Color3.fromRGB(100, 200, 255))
+        a33_log("Config loaded for "..a12.." (ID: "..a13..")", Color3.fromRGB(100, 200, 255))
     end)
 else
     a393(0.2); a395(0.22); a396(0.01); a397(0.13)
@@ -2450,8 +2469,8 @@ else
     a203.Status.TextColor3    = Color3.fromRGB(180, 180, 180)
     a361()
     task.defer(function()
-        a203.AddSettingsLog("Fresh start — no saved config found.", Color3.fromRGB(255, 200, 100))
-        a203.AddSettingsLog("Using defaults. Keybind: G | Auto Hide: Off", Color3.fromRGB(150, 150, 150))
+        a33_log("Fresh start — no saved config found.", Color3.fromRGB(255, 200, 100))
+        a33_log("Using defaults. Keybind: G | Auto Hide: Off", Color3.fromRGB(150, 150, 150))
     end)
 end
 
@@ -2573,12 +2592,15 @@ task.defer(function()
     if a483 and a21.AutoLoadEnabled and a21.SavedCode and a21.SavedCode ~= "" then
         a202.Status.Text = "Executing..."
         a202.Status.TextColor3 = Color3.fromRGB(255, 200, 100)
+        a33_log("Auto Load → executing saved script on start...", Color3.fromRGB(255, 200, 100))
         local a496, _, a497err = a386(a21.SavedCode)
         if a496 then
             a202.AddOutput("Auto-load executed successfully.", Color3.fromRGB(80, 220, 120))
+            a33_log("Auto Load → script executed ✓", Color3.fromRGB(80, 220, 120))
         else
             if a497err then
                 a202.AddOutput(a497err, Color3.fromRGB(255, 100, 100))
+                a33_log("Auto Load error: " .. tostring(a497err):sub(1, 80), Color3.fromRGB(255, 100, 100))
             end
         end
         a202.Status.Text = "Ready"
