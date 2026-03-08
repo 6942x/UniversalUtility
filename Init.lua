@@ -380,6 +380,11 @@ local function a91(a92, a93, a94, a95, a96, a97)
     a93.Text = string.format(a97, a94)
 end
 
+local function a91_instant(a92, a93, a94, a95, a96, a97)
+    a92.Size = UDim2.new((a94 - a95) / (a96 - a95), 0, 1, 0)
+    a93.Text = string.format(a97, a94)
+end
+
 local function a98(a99, a100)
     a100 = a100 or 0.95
     local a101 = a99.Size
@@ -1772,8 +1777,7 @@ local a392 = { jump = false, click = false, spam = false, fps = false }
 
 local function a393(a394)
     a21.JumpDelay = 5 + (a394 * 25)
-    a91(a198.JumpSliderFill, a198.JumpDelayBox, a21.JumpDelay, 5, 30, "%.1f")
-    a33()
+    a91_instant(a198.JumpSliderFill, a198.JumpDelayBox, a21.JumpDelay, 5, 30, "%.1f")
 end
 local function a393_log(a394)
     a21.JumpDelay = 5 + (a394 * 25)
@@ -1783,8 +1787,7 @@ end
 
 local function a395(a394)
     a21.ClickDelay = 1 + (a394 * 9)
-    a91(a198.ClickSliderFill, a198.ClickDelayBox, a21.ClickDelay, 1, 10, "%.1f")
-    a33()
+    a91_instant(a198.ClickSliderFill, a198.ClickDelayBox, a21.ClickDelay, 1, 10, "%.1f")
 end
 local function a395_log(a394)
     a21.ClickDelay = 1 + (a394 * 9)
@@ -1794,8 +1797,7 @@ end
 
 local function a396(a394)
     a21.SpamDelay = 0.05 + (a394 * 4.95)
-    a91(a199.SpamSliderFill, a199.SpamDelayBox, a21.SpamDelay, 0.05, 5, "%.2f")
-    a33()
+    a91_instant(a199.SpamSliderFill, a199.SpamDelayBox, a21.SpamDelay, 0.05, 5, "%.2f")
 end
 local function a396_log(a394)
     a21.SpamDelay = 0.05 + (a394 * 4.95)
@@ -1805,12 +1807,11 @@ end
 
 local function a397(a394)
     a21.TargetFPS = math.floor(15 + (a394 * 345))
-    a91(a200.FPSFill, a200.FPSValueBox, a21.TargetFPS, 15, 360, "%d")
+    a91_instant(a200.FPSFill, a200.FPSValueBox, a21.TargetFPS, 15, 360, "%d")
     if a21.FPSUnlockEnabled and a352 then
         pcall(setfpscap, a21.TargetFPS)
         a200.FPSUnlockStatus.Text = "Your target: "..a21.TargetFPS.." FPS"
     end
-    a33()
 end
 local function a397_log(a394)
     a21.TargetFPS = math.floor(15 + (a394 * 345))
@@ -2018,10 +2019,17 @@ end)
 
 local a408 = 0
 local a409 = 0.3
+local a408_lineUpdatePending = false
 
 a202.LoadStringBox:GetPropertyChangedSignal("Text"):Connect(function()
     a21.SavedCode = a202.LoadStringBox.Text
-    a102(a202.LoadStringBox, a202.LineNumbers, a202.LoadStringScrollFrame, a202.LineNumbersScrollFrame)
+    if not a408_lineUpdatePending then
+        a408_lineUpdatePending = true
+        task.defer(function()
+            a408_lineUpdatePending = false
+            a102(a202.LoadStringBox, a202.LineNumbers, a202.LoadStringScrollFrame, a202.LineNumbersScrollFrame)
+        end)
+    end
     local a410 = tick()
     if a410 - a408 >= a409 then
         a408 = a410
