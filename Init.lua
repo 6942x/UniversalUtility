@@ -1046,6 +1046,115 @@ local function a218_formatUptime(a218_up)
     end
 end
 
+local a218_awsRegions = {
+    ["us-east-1"]      = "🇺🇸 US East (N. Virginia)",
+    ["us-east-2"]      = "🇺🇸 US East (Ohio)",
+    ["us-west-1"]      = "🇺🇸 US West (N. California)",
+    ["us-west-2"]      = "🇺🇸 US West (Oregon)",
+    ["eu-west-1"]      = "🇮🇪 EU West (Ireland)",
+    ["eu-west-2"]      = "🇬🇧 EU West (London)",
+    ["eu-west-3"]      = "🇫🇷 EU West (Paris)",
+    ["eu-central-1"]   = "🇩🇪 EU Central (Frankfurt)",
+    ["eu-central-2"]   = "🇨🇭 EU Central (Zurich)",
+    ["eu-north-1"]     = "🇸🇪 EU North (Stockholm)",
+    ["eu-south-1"]     = "🇮🇹 EU South (Milan)",
+    ["eu-south-2"]     = "🇪🇸 EU South (Spain)",
+    ["ap-southeast-1"] = "🇸🇬 AP Southeast (Singapore)",
+    ["ap-southeast-2"] = "🇦🇺 AP Southeast (Sydney)",
+    ["ap-southeast-3"] = "🇮🇩 AP Southeast (Jakarta)",
+    ["ap-southeast-4"] = "🇦🇺 AP Southeast (Melbourne)",
+    ["ap-northeast-1"] = "🇯🇵 AP Northeast (Tokyo)",
+    ["ap-northeast-2"] = "🇰🇷 AP Northeast (Seoul)",
+    ["ap-northeast-3"] = "🇯🇵 AP Northeast (Osaka)",
+    ["ap-south-1"]     = "🇮🇳 AP South (Mumbai)",
+    ["ap-south-2"]     = "🇮🇳 AP South (Hyderabad)",
+    ["ap-east-1"]      = "🇭🇰 AP East (Hong Kong)",
+    ["sa-east-1"]      = "🇧🇷 SA East (São Paulo)",
+    ["ca-central-1"]   = "🇨🇦 CA Central (Montreal)",
+    ["ca-west-1"]      = "🇨🇦 CA West (Calgary)",
+    ["me-south-1"]     = "🇧🇭 ME South (Bahrain)",
+    ["me-central-1"]   = "🇦🇪 ME Central (UAE)",
+    ["af-south-1"]     = "🇿🇦 AF South (Cape Town)",
+    ["il-central-1"]   = "🇮🇱 IL Central (Tel Aviv)",
+    ["mx-central-1"]   = "🇲🇽 MX Central (Mexico City)",
+}
+
+local a218_countryFlags = {
+    AF="🇦🇫", AL="🇦🇱", DZ="🇩🇿", AD="🇦🇩", AO="🇦🇴", AG="🇦🇬", AR="🇦🇷", AM="🇦🇲",
+    AU="🇦🇺", AT="🇦🇹", AZ="🇦🇿", BS="🇧🇸", BH="🇧🇭", BD="🇧🇩", BB="🇧🇧", BY="🇧🇾",
+    BE="🇧🇪", BZ="🇧🇿", BJ="🇧🇯", BT="🇧🇹", BO="🇧🇴", BA="🇧🇦", BW="🇧🇼", BR="🇧🇷",
+    BN="🇧🇳", BG="🇧🇬", BF="🇧🇫", BI="🇧🇮", CV="🇨🇻", KH="🇰🇭", CM="🇨🇲", CA="🇨🇦",
+    CF="🇨🇫", TD="🇹🇩", CL="🇨🇱", CN="🇨🇳", CO="🇨🇴", KM="🇰🇲", CG="🇨🇬", CD="🇨🇩",
+    CR="🇨🇷", HR="🇭🇷", CU="🇨🇺", CY="🇨🇾", CZ="🇨🇿", DK="🇩🇰", DJ="🇩🇯", DM="🇩🇲",
+    DO="🇩🇴", EC="🇪🇨", EG="🇪🇬", SV="🇸🇻", GQ="🇬🇶", ER="🇪🇷", EE="🇪🇪", SZ="🇸🇿",
+    ET="🇪🇹", FJ="🇫🇯", FI="🇫🇮", FR="🇫🇷", GA="🇬🇦", GM="🇬🇲", GE="🇬🇪", DE="🇩🇪",
+    GH="🇬🇭", GR="🇬🇷", GD="🇬🇩", GT="🇬🇹", GN="🇬🇳", GW="🇬🇼", GY="🇬🇾", HT="🇭🇹",
+    HN="🇭🇳", HU="🇭🇺", IS="🇮🇸", IN="🇮🇳", ID="🇮🇩", IR="🇮🇷", IQ="🇮🇶", IE="🇮🇪",
+    IL="🇮🇱", IT="🇮🇹", JM="🇯🇲", JP="🇯🇵", JO="🇯🇴", KZ="🇰🇿", KE="🇰🇪", KI="🇰🇮",
+    KP="🇰🇵", KR="🇰🇷", KW="🇰🇼", KG="🇰🇬", LA="🇱🇦", LV="🇱🇻", LB="🇱🇧", LS="🇱🇸",
+    LR="🇱🇷", LY="🇱🇾", LI="🇱🇮", LT="🇱🇹", LU="🇱🇺", MG="🇲🇬", MW="🇲🇼", MY="🇲🇾",
+    MV="🇲🇻", ML="🇲🇱", MT="🇲🇹", MH="🇲🇭", MR="🇲🇷", MU="🇲🇺", MX="🇲🇽", FM="🇫🇲",
+    MD="🇲🇩", MC="🇲🇨", MN="🇲🇳", ME="🇲🇪", MA="🇲🇦", MZ="🇲🇿", MM="🇲🇲", NA="🇳🇦",
+    NR="🇳🇷", NP="🇳🇵", NL="🇳🇱", NZ="🇳🇿", NI="🇳🇮", NE="🇳🇪", NG="🇳🇬", NO="🇳🇴",
+    OM="🇴🇲", PK="🇵🇰", PW="🇵🇼", PA="🇵🇦", PG="🇵🇬", PY="🇵🇾", PE="🇵🇪", PH="🇵🇭",
+    PL="🇵🇱", PT="🇵🇹", QA="🇶🇦", RO="🇷🇴", RU="🇷🇺", RW="🇷🇼", KN="🇰🇳", LC="🇱🇨",
+    VC="🇻🇨", WS="🇼🇸", SM="🇸🇲", ST="🇸🇹", SA="🇸🇦", SN="🇸🇳", RS="🇷🇸", SC="🇸🇨",
+    SL="🇸🇱", SG="🇸🇬", SK="🇸🇰", SI="🇸🇮", SB="🇸🇧", SO="🇸🇴", ZA="🇿🇦", SS="🇸🇸",
+    ES="🇪🇸", LK="🇱🇰", SD="🇸🇩", SR="🇸🇷", SE="🇸🇪", CH="🇨🇭", SY="🇸🇾", TW="🇹🇼",
+    TJ="🇹🇯", TZ="🇹🇿", TH="🇹🇭", TL="🇹🇱", TG="🇹🇬", TO="🇹🇴", TT="🇹🇹", TN="🇹🇳",
+    TR="🇹🇷", TM="🇹🇲", TV="🇹🇻", UG="🇺🇬", UA="🇺🇦", AE="🇦🇪", GB="🇬🇧", US="🇺🇸",
+    UY="🇺🇾", UZ="🇺🇿", VU="🇻🇺", VE="🇻🇪", VN="🇻🇳", YE="🇾🇪", ZM="🇿🇲", ZW="🇿🇼",
+    HK="🇭🇰", MO="🇲🇴", TF="🇹🇫", EU="🇪🇺",
+}
+
+local function a218_flagForCountry(a218_code)
+    if not a218_code then return "🌐" end
+    return a218_countryFlags[a218_code:upper()] or "🌐"
+end
+
+local function a218_detectRegionAsync(a218_label)
+    task.spawn(function()
+        local a218_detected = nil
+        local a218_jobId = game.JobId
+        if a218_jobId and a218_jobId ~= "" then
+            for a218_code, a218_name in pairs(a218_awsRegions) do
+                if a218_jobId:lower():find(a218_code, 1, true) then
+                    a218_detected = a218_name
+                    break
+                end
+            end
+        end
+        if not a218_detected then
+            local a218_ok, a218_res = pcall(function()
+                local a218_httpOk, a218_data = pcall(function()
+                    return a:JSONDecode(game:HttpGet("https://ipinfo.io/json", true))
+                end)
+                if a218_httpOk and a218_data and a218_data.country then
+                    local a218_flag = a218_flagForCountry(a218_data.country)
+                    local a218_str = a218_flag .. " " .. a218_data.country
+                    if a218_data.region and a218_data.region ~= "" then
+                        a218_str = a218_str .. " - " .. a218_data.region
+                    end
+                    if a218_data.city and a218_data.city ~= "" then
+                        a218_str = a218_str .. ", " .. a218_data.city
+                    end
+                    return a218_str
+                end
+                return nil
+            end)
+            if a218_ok and a218_res then
+                a218_detected = a218_res
+            end
+        end
+        if not a218_detected then
+            a218_detected = "🌐 Unknown"
+        end
+        if a218_label and a218_label.Parent then
+            a218_label.Text = "Server Region: " .. a218_detected
+        end
+    end)
+end
+
 do
     local a204 = a182["Home"]
     local a205 = a134(a204, 200, 1)
@@ -1123,7 +1232,7 @@ do
     a217.Font = Enum.Font.Gotham; a217.TextSize = 12
     a217.TextColor3 = Color3.fromRGB(120, 120, 120); a217.TextXAlignment = Enum.TextXAlignment.Left
 
-    local a218 = a134(a204, 160, 2)
+    local a218 = a134(a204, 178, 2)
     a183["Home_Card2"] = a218
 
     local a219 = Instance.new("ImageLabel", a218)
@@ -1164,6 +1273,12 @@ do
     a223b.Font = Enum.Font.Gotham; a223b.TextSize = 16
     a223b.TextColor3 = Color3.fromRGB(255, 220, 100); a223b.TextXAlignment = Enum.TextXAlignment.Left
 
+    local a223c = Instance.new("TextLabel", a218)
+    a223c.Size = UDim2.new(1, -145, 0, 16); a223c.Position = UDim2.new(0, 140, 0, 100)
+    a223c.BackgroundTransparency = 1; a223c.Text = "Server Region: Detecting..."
+    a223c.Font = Enum.Font.Gotham; a223c.TextSize = 12
+    a223c.TextColor3 = Color3.fromRGB(130, 220, 255); a223c.TextXAlignment = Enum.TextXAlignment.Left
+
     local a223 = Instance.new("TextLabel", a218)
     a223.Size = UDim2.new(1, -145, 0, 14); a223.Position = UDim2.new(0, 140, 0, 120)
     a223.BackgroundTransparency = 1; a223.Text = "Job Id: "..(game.JobId ~= "" and game.JobId or "N/A")
@@ -1173,6 +1288,8 @@ do
 
     local a218_tickOffset = tick() - workspace.DistributedGameTime
     a223b.Text = a218_formatUptime(math.floor(workspace.DistributedGameTime))
+
+    a218_detectRegionAsync(a223c)
 
     table.insert(_G.UU.Connections, a1.PlayerAdded:Connect(function()
         a222.Text = "Players: "..#a1:GetPlayers().." / "..a1.MaxPlayers
