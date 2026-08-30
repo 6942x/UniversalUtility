@@ -15,22 +15,22 @@ end
 _G.UU = _G.UU or {}
 if _G.UU.Loaded then
     if _G.UU.Threads then
-        for w14, w15 in pairs(_G.UU.Threads) do
-            if w15 and typeof(w15) == "thread" and coroutine.status(w15) ~= "dead" then
-                pcall(task.cancel, w15)
+        for wa1, wa2 in pairs(_G.UU.Threads) do
+            if wa2 and typeof(wa2) == "thread" and coroutine.status(wa2) ~= "dead" then
+                pcall(task.cancel, wa2)
             end
-            _G.UU.Threads[w14] = nil
+            _G.UU.Threads[wa1] = nil
         end
     end
     if _G.UU.Connections then
-        for w16, w17 in pairs(_G.UU.Connections) do
-            pcall(function() w17:Disconnect() end)
+        for wa3, wa4 in pairs(_G.UU.Connections) do
+            pcall(function() wa4:Disconnect() end)
         end
         _G.UU.Connections = {}
     end
     _G.UU.TeleportQueued = false
-    local w18 = w6:FindFirstChild("UniversalUtility") or (gethui and gethui():FindFirstChild("UniversalUtility"))
-    if w18 then w18:Destroy() end
+    local wa5 = w6:FindFirstChild("UniversalUtility") or (gethui and gethui():FindFirstChild("UniversalUtility"))
+    if wa5 then wa5:Destroy() end
     _G.UU.Loaded = false
     _G.UU.LoadLock = false
 elseif _G.UU.LoadLock == true then
@@ -51,9 +51,9 @@ local function w19()
     if w3.TouchEnabled and not w3.KeyboardEnabled and not w3.MouseEnabled then return "Mobile"
     elseif w3.GamepadEnabled and not w3.KeyboardEnabled then return "Console"
     elseif w3.KeyboardEnabled and w3.MouseEnabled then return "PC" end
-    local w20 = w3:GetLastInputType()
-    if w20 == Enum.UserInputType.Touch then return "Mobile"
-    elseif w20 == Enum.UserInputType.Gamepad1 or w20 == Enum.UserInputType.Gamepad2 then return "Console" end
+    local wa1 = w3:GetLastInputType()
+    if wa1 == Enum.UserInputType.Touch then return "Mobile"
+    elseif wa1 == Enum.UserInputType.Gamepad1 or wa1 == Enum.UserInputType.Gamepad2 then return "Console" end
     return "PC"
 end
 
@@ -84,25 +84,25 @@ local w21 = {
 _G.UU.CFG = w21
 
 local w22, w23 = {}, {}
-for w24 = 65, 90 do
-    local w25 = string.char(w24)
-    w22[Enum.KeyCode[w25]] = w25
-    w23[w25] = Enum.KeyCode[w25]
+for wa1 = 65, 90 do
+    local wa2 = string.char(wa1)
+    w22[Enum.KeyCode[wa2]] = wa2
+    w23[wa2] = Enum.KeyCode[wa2]
 end
 
-local w26 = { "One","Two","Three","Four","Five","Six","Seven","Eight","Nine" }
-for w27 = 0, 9 do
-    local w28 = w27 == 0 and "Zero" or w26[w27]
-    w22[Enum.KeyCode[w28]] = tostring(w27)
-    w23[tostring(w27)] = Enum.KeyCode[w28]
+local wa3 = { "One","Two","Three","Four","Five","Six","Seven","Eight","Nine" }
+for wa4 = 0, 9 do
+    local wa5 = wa4 == 0 and "Zero" or wa3[wa4]
+    w22[Enum.KeyCode[wa5]] = tostring(wa4)
+    w23[tostring(wa4)] = Enum.KeyCode[wa5]
 end
 
-for w29 = 1, 12 do
-    w22[Enum.KeyCode["F"..w29]] = "F"..w29
-    w23["F"..w29] = Enum.KeyCode["F"..w29]
+for wa6 = 1, 12 do
+    w22[Enum.KeyCode["F"..wa6]] = "F"..wa6
+    w23["F"..wa6] = Enum.KeyCode["F"..wa6]
 end
 
-for w30, w31 in pairs({
+for wa7, wa8 in pairs({
     LeftControl="Left Ctrl", RightControl="Right Ctrl",
     LeftShift="Left Shift", RightShift="Right Shift",
     LeftAlt="Left Alt", RightAlt="Right Alt",
@@ -112,7 +112,7 @@ for w30, w31 in pairs({
     Insert="Insert", Home="Home",
     End="End", PageUp="Page Up",
     PageDown="Page Down",
-}) do w22[Enum.KeyCode[w30]] = w31 end
+}) do w22[Enum.KeyCode[wa7]] = wa8 end
 _G.UU.KCN = w22
 _G.UU.KCM = w23
 
@@ -120,7 +120,7 @@ local function w32()
     return "UniversalUtility/Accounts/" .. w12 .. ".json"
 end
 
-local function w32EF()
+local function w14()
     if not (makefolder and isfolder) then return end
     if not isfolder("UniversalUtility") then
         makefolder("UniversalUtility")
@@ -132,15 +132,15 @@ end
 
 local function w33()
     if not writefile then return end
-    w32EF()
-    local w34, w35 = _G.UU.UI and _G.UU.UI.MainFrame, _G.UU.UI and _G.UU.UI.ReopenButton
-    if w34 and w34.Visible then
-        w21.SavedUIPosition = { X = w34.Position.X.Offset, Y = w34.Position.Y.Offset }
+    w14()
+    local wa1, wa2 = _G.UU.UI and _G.UU.UI.MainFrame, _G.UU.UI and _G.UU.UI.ReopenButton
+    if wa1 and wa1.Visible then
+        w21.SavedUIPosition = { X = wa1.Position.X.Offset, Y = wa1.Position.Y.Offset }
     end
-    if w35 and w35.Visible then
-        w21.SavedReopenPosition = { X = w35.Position.X.Offset, Y = w35.Position.Y.Offset }
+    if wa2 and wa2.Visible then
+        w21.SavedReopenPosition = { X = wa2.Position.X.Offset, Y = wa2.Position.Y.Offset }
     end
-    local w36 = {
+    local wa3 = {
         UserId = w13,
         Username = w12,
         Keybind = w21.Keybind.Name,
@@ -165,48 +165,48 @@ local function w33()
         SavedUIPosition = w21.SavedUIPosition,
         SavedReopenPosition = w21.SavedReopenPosition,
     }
-    local w37, w38 = pcall(function()
-        writefile(w32(), w:JSONEncode(w36))
+    local wa4, wa5 = pcall(function()
+        writefile(w32(), w:JSONEncode(wa3))
     end)
-    if w37 then
+    if wa4 then
         _G.UU.LastSaveTime = tick()
         _G.UU.SavePending = false
     else
         if _G.UU.AddActivityLog then
-            _G.UU.AddActivityLog("Save error: " .. tostring(w38), Color3.fromRGB(220, 80, 80))
+            _G.UU.AddActivityLog("Save error: " .. tostring(wa5), Color3.fromRGB(220, 80, 80))
         end
     end
-    return w37
+    return wa4
 end
 
 _G.UU.SaveCFG = w33
 
-local wPL = {}
-local function w33L(w33Mg, w33Co)
+local w15 = {}
+local function w16(wa1, wa2)
     if _G.UU.AddActivityLog then
-        _G.UU.AddActivityLog(w33Mg, w33Co)
+        _G.UU.AddActivityLog(wa1, wa2)
     else
-        table.insert(wPL, { msg = w33Mg, col = w33Co })
+        table.insert(w15, { msg = wa1, col = wa2 })
     end
 end
 
-local function w33SL(w33Ac)
-    local w33Ok = w33()
-    if w33Ok then
-        w33L(w33Ac .. " → Saved ✓", Color3.fromRGB(80, 220, 120))
+local function w17(wa1)
+    local wa2 = w33()
+    if wa2 then
+        w16(wa1 .. " → Saved ✓", Color3.fromRGB(80, 220, 120))
     else
-        w33L(w33Ac .. " → Save failed ✗", Color3.fromRGB(220, 80, 80))
+        w16(wa1 .. " → Save failed ✗", Color3.fromRGB(220, 80, 80))
     end
 end
 
 local function w39()
     if _G.UU.SavePending then return end
     _G.UU.SavePending = true
-    local w40 = tick() - _G.UU.LastSaveTime
-    if w40 >= 0.1 then
+    local wa1 = tick() - _G.UU.LastSaveTime
+    if wa1 >= 0.1 then
         w33()
     else
-        task.delay(0.1 - w40, function()
+        task.delay(0.1 - wa1, function()
             if _G.UU.SavePending then
                 w33()
             end
@@ -218,31 +218,31 @@ _G.UU.DebouncedSave = w39
 
 local function w41()
     if not (readfile and isfile) then return false end
-    local w32Pa = w32()
-    if not isfile(w32Pa) then return false end
-    local w42, w43 = pcall(function() return w:JSONDecode(readfile(w32Pa)) end)
-    if not w42 or not w43 or w43.UserId ~= w13 then return false end
-    w21.Keybind = Enum.KeyCode[w43.Keybind] or Enum.KeyCode.G
-    w21.MousePosEnabled = w43.MousePosEnabled or false
-    w21.MousePosSaved = w43.MousePosSaved or { X = 960, Y = 540 }
-    w21.JumpEnabled = w43.JumpEnabled or false
-    w21.ClickEnabled = w43.ClickEnabled or false
-    w21.AutoRejoinEnabled = w43.AutoRejoinEnabled or false
-    w21.FPSUnlockEnabled = w43.FPSUnlockEnabled or false
-    w21.AutoSpamEnabled = w43.AutoSpamEnabled or false
-    w21.AutoLoadEnabled = w43.AutoLoadEnabled or false
-    w21.AutoHideEnabled = w43.AutoHideEnabled or false
-    w21.TargetFPS = w43.TargetFPS or 60
-    w21.JumpDelay = w43.JumpDelay or 10.0
-    w21.ClickDelay = w43.ClickDelay or 3.0
-    w21.SpamDelay = w43.SpamDelay or 0.1
-    w21.SpamKey = w43.SpamKey or "Q"
-    w21.SavedCode = w43.SavedCode or ""
-    w21.CurrentTab = w43.CurrentTab or "Home"
-    w21.UIPosition = w43.UIPosition or { X = 0.5, Y = 0.5 }
-    w21.ReopenPosition = w43.ReopenPosition or { X = 0.5, Y = 30 }
-    w21.SavedUIPosition = w43.SavedUIPosition or nil
-    w21.SavedReopenPosition = w43.SavedReopenPosition or nil
+    local wa1 = w32()
+    if not isfile(wa1) then return false end
+    local wa2, wa3 = pcall(function() return w:JSONDecode(readfile(wa1)) end)
+    if not wa2 or not wa3 or wa3.UserId ~= w13 then return false end
+    w21.Keybind = Enum.KeyCode[wa3.Keybind] or Enum.KeyCode.G
+    w21.MousePosEnabled = wa3.MousePosEnabled or false
+    w21.MousePosSaved = wa3.MousePosSaved or { X = 960, Y = 540 }
+    w21.JumpEnabled = wa3.JumpEnabled or false
+    w21.ClickEnabled = wa3.ClickEnabled or false
+    w21.AutoRejoinEnabled = wa3.AutoRejoinEnabled or false
+    w21.FPSUnlockEnabled = wa3.FPSUnlockEnabled or false
+    w21.AutoSpamEnabled = wa3.AutoSpamEnabled or false
+    w21.AutoLoadEnabled = wa3.AutoLoadEnabled or false
+    w21.AutoHideEnabled = wa3.AutoHideEnabled or false
+    w21.TargetFPS = wa3.TargetFPS or 60
+    w21.JumpDelay = wa3.JumpDelay or 10.0
+    w21.ClickDelay = wa3.ClickDelay or 3.0
+    w21.SpamDelay = wa3.SpamDelay or 0.1
+    w21.SpamKey = wa3.SpamKey or "Q"
+    w21.SavedCode = wa3.SavedCode or ""
+    w21.CurrentTab = wa3.CurrentTab or "Home"
+    w21.UIPosition = wa3.UIPosition or { X = 0.5, Y = 0.5 }
+    w21.ReopenPosition = wa3.ReopenPosition or { X = 0.5, Y = 30 }
+    w21.SavedUIPosition = wa3.SavedUIPosition or nil
+    w21.SavedReopenPosition = wa3.SavedReopenPosition or nil
     return true
 end
 
@@ -257,34 +257,34 @@ local w44 = {
 }
 
 local w45 = {}
-local function w46(w47)
-    if w45[w47] then w45[w47]:Cancel(); w45[w47] = nil end
+local function w46(wa1)
+    if w45[wa1] then w45[wa1]:Cancel(); w45[wa1] = nil end
 end
 
-local function w48(w47, w49, w50)
-    w46(w47)
-    local w51 = w2:Create(w47, w49, w50)
-    w45[w47] = w51
-    w51:Play()
-    w51.Completed:Connect(function(w52)
-        if w52 == Enum.TweenStatus.Completed then w45[w47] = nil end
+local function w48(wa1, wa2, wa3)
+    w46(wa1)
+    local wa4 = w2:Create(wa1, wa2, wa3)
+    w45[wa1] = wa4
+    wa4:Play()
+    wa4.Completed:Connect(function(wa5)
+        if wa5 == Enum.TweenStatus.Completed then w45[wa1] = nil end
     end)
-    return w51
+    return wa4
 end
 
-local function w53(w54, w55)
-    if _G.UU.Debounces[w54] then return false end
-    _G.UU.Debounces[w54] = true
-    task.delay(w55 or 0.3, function() _G.UU.Debounces[w54] = false end)
+local function w53(wa1, wa2)
+    if _G.UU.Debounces[wa1] then return false end
+    _G.UU.Debounces[wa1] = true
+    task.delay(wa2 or 0.3, function() _G.UU.Debounces[wa1] = false end)
     return true
 end
 
-local function w56(w57)
-    if _G.UU.Threads[w57] then
-        local w58 = _G.UU.Threads[w57]
-        _G.UU.Threads[w57] = nil
-        if typeof(w58) == "thread" and coroutine.status(w58) ~= "dead" then
-            pcall(task.cancel, w58)
+local function w56(wa1)
+    if _G.UU.Threads[wa1] then
+        local wa2 = _G.UU.Threads[wa1]
+        _G.UU.Threads[wa1] = nil
+        if typeof(wa2) == "thread" and coroutine.status(wa2) ~= "dead" then
+            pcall(task.cancel, wa2)
         end
     end
 end
@@ -294,683 +294,683 @@ local function w59()
 end
 
 local w60, w61, w62 = { Width = 650, Height = 500 }, nil, 1
-local function w63(w64)
-    return math.clamp(math.min(w64.X / 1920, w64.Y / 1080), 0.75, 1.4)
+local function w63(wa1)
+    return math.clamp(math.min(wa1.X / 1920, wa1.Y / 1080), 0.75, 1.4)
 end
 
-local function w65(w66, w67)
-    local w68 = Instance.new("UICorner", w66)
-    w68.CornerRadius = UDim.new(0, w67 or 8)
-    return w68
+local function w65(wa1, wa2)
+    local wa3 = Instance.new("UICorner", wa1)
+    wa3.CornerRadius = UDim.new(0, wa2 or 8)
+    return wa3
 end
 
-local function w69(w66, w70, w71, w72)
-    local w73 = Instance.new("UIGradient", w66)
-    w73.Color = ColorSequence.new{
-        ColorSequenceKeypoint.new(0, w70),
-        ColorSequenceKeypoint.new(1, w71),
+local function w69(wa1, wa2, wa3, wa4)
+    local wa5 = Instance.new("UIGradient", wa1)
+    wa5.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, wa2),
+        ColorSequenceKeypoint.new(1, wa3),
     }
-    w73.Rotation = w72 or 90
-    return w73
+    wa5.Rotation = wa4 or 90
+    return wa5
 end
 
-local function w74(w66, w75, w76, w77, w78, w79M, w80M, w81Lb)
-    local w82 = Instance.new("Frame", w66)
-    w82.Size = w75
-    w82.Position = w76
-    w82.BackgroundTransparency = 1
-    local w83 = Instance.new("TextLabel", w82)
-    w83.Size = UDim2.new(1, 0, 0, 18)
-    w83.BackgroundTransparency = 1
-    w83.Text = w81Lb or w78
-    w83.Font = Enum.Font.Gotham
-    w83.TextSize = 12
-    w83.TextColor3 = Color3.fromRGB(180, 180, 180)
-    w83.TextXAlignment = Enum.TextXAlignment.Left
-    local w84 = Instance.new("Frame", w82)
-    w84.Size = UDim2.new(1, -60, 0, 6)
-    w84.Position = UDim2.new(0, 0, 0, 22)
-    w84.BackgroundColor3 = Color3.fromRGB(45, 45, 52)
-    w84.BorderSizePixel = 0
-    w65(w84, 3)
-    local w85, w86M = Instance.new("Frame", w84), w79M or 0
-    local w87M = (w80M or 1) - w86M
-    local w88I = (w77 - w86M) / math.max(w87M, 0.001)
-    w85.Size = UDim2.new(math.clamp(w88I, 0, 1), 0, 1, 0)
-    w85.BackgroundColor3 = Color3.fromRGB(100, 150, 255)
-    w85.BorderSizePixel = 0
-    w65(w85, 3)
-    local w89 = Instance.new("TextButton", w84)
-    w89.Size = UDim2.new(1, 0, 1, 0)
-    w89.BackgroundTransparency = 1
-    w89.Text = ""
-    local w90 = Instance.new("TextBox", w82)
-    w90.Size = UDim2.new(0, 50, 0, 24)
-    w90.Position = UDim2.new(1, -50, 0, 16)
-    w90.BackgroundColor3 = Color3.fromRGB(45, 45, 52)
-    w90.Text = tostring(w77)
-    w90.Font = Enum.Font.Gotham
-    w90.TextScaled = true
-    w90.TextColor3 = Color3.fromRGB(255, 255, 255)
-    w90.ClearTextOnFocus = false
-    w90.BorderSizePixel = 0
-    w65(w90, 5)
-    return w82, w84, w85, w89, w90
+local function w74(wa1, wa2, wa3, wa4, wa5, wa6, wa7, wa8)
+    local wa9 = Instance.new("Frame", wa1)
+    wa9.Size = wa2
+    wa9.Position = wa3
+    wa9.BackgroundTransparency = 1
+    local waa = Instance.new("TextLabel", wa9)
+    waa.Size = UDim2.new(1, 0, 0, 18)
+    waa.BackgroundTransparency = 1
+    waa.Text = wa8 or wa5
+    waa.Font = Enum.Font.Gotham
+    waa.TextSize = 12
+    waa.TextColor3 = Color3.fromRGB(180, 180, 180)
+    waa.TextXAlignment = Enum.TextXAlignment.Left
+    local wab = Instance.new("Frame", wa9)
+    wab.Size = UDim2.new(1, -60, 0, 6)
+    wab.Position = UDim2.new(0, 0, 0, 22)
+    wab.BackgroundColor3 = Color3.fromRGB(45, 45, 52)
+    wab.BorderSizePixel = 0
+    w65(wab, 3)
+    local wac, wad = Instance.new("Frame", wab), wa6 or 0
+    local wae = (wa7 or 1) - wad
+    local waf = (wa4 - wad) / math.max(wae, 0.001)
+    wac.Size = UDim2.new(math.clamp(waf, 0, 1), 0, 1, 0)
+    wac.BackgroundColor3 = Color3.fromRGB(100, 150, 255)
+    wac.BorderSizePixel = 0
+    w65(wac, 3)
+    local wag = Instance.new("TextButton", wab)
+    wag.Size = UDim2.new(1, 0, 1, 0)
+    wag.BackgroundTransparency = 1
+    wag.Text = ""
+    local wah = Instance.new("TextBox", wa9)
+    wah.Size = UDim2.new(0, 50, 0, 24)
+    wah.Position = UDim2.new(1, -50, 0, 16)
+    wah.BackgroundColor3 = Color3.fromRGB(45, 45, 52)
+    wah.Text = tostring(wa4)
+    wah.Font = Enum.Font.Gotham
+    wah.TextScaled = true
+    wah.TextColor3 = Color3.fromRGB(255, 255, 255)
+    wah.ClearTextOnFocus = false
+    wah.BorderSizePixel = 0
+    w65(wah, 5)
+    return wa9, wab, wac, wag, wah
 end
 
-local function w91(w92, w93, w94, w95, w96, w97)
-    w48(w92, w44.Fast, { Size = UDim2.new((w94 - w95) / (w96 - w95), 0, 1, 0) })
-    w93.Text = string.format(w97, w94)
+local function w91(wa1, wa2, wa3, wa4, wa5, wa6)
+    w48(wa1, w44.Fast, { Size = UDim2.new((wa3 - wa4) / (wa5 - wa4), 0, 1, 0) })
+    wa2.Text = string.format(wa6, wa3)
 end
 
-local function w91Si(w92, w93, w94, w95, w96, w97)
-    w92.Size = UDim2.new((w94 - w95) / (w96 - w95), 0, 1, 0)
-    w93.Text = string.format(w97, w94)
+local function w18(wa1, wa2, wa3, wa4, wa5, wa6)
+    wa1.Size = UDim2.new((wa3 - wa4) / (wa5 - wa4), 0, 1, 0)
+    wa2.Text = string.format(wa6, wa3)
 end
 
-local function w98(w99, w100)
+local function w98(wa1, wa2)
     task.spawn(function()
-        w100 = w100 or 0.95
-        local w101 = w99.Size
-        w48(w99, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-            Size = UDim2.new(w101.X.Scale * w100, w101.X.Offset * w100, w101.Y.Scale * w100, w101.Y.Offset * w100)
+        wa2 = wa2 or 0.95
+        local wa3 = wa1.Size
+        w48(wa1, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+            Size = UDim2.new(wa3.X.Scale * wa2, wa3.X.Offset * wa2, wa3.Y.Scale * wa2, wa3.Y.Offset * wa2)
         })
         task.wait(0.1)
-        w48(w99, w44.Back, { Size = w101 })
+        w48(wa1, w44.Back, { Size = wa3 })
     end)
 end
 
-local function w102(w103, w104, w105, w106)
-    local w107, w108 = w103.Text, 1
-    for _ in w107:gmatch("\n") do w108 = w108 + 1 end
-    local w109P = {}
-    for w110 = 1, w108 do w109P[w110] = tostring(w110) end
-    w104.Text = table.concat(w109P, "\n") .. "\n"
-    local w111 = w9:GetTextSize(w103.Text, w103.TextSize, w103.Font, Vector2.new(w103.AbsoluteSize.X - 10, math.huge))
-    local w112 = math.max(200, w111.Y + 20)
-    w103.Size = UDim2.new(1, -10, 0, w112)
-    w105.CanvasSize = UDim2.new(0, 0, 0, w112)
-    w106.CanvasSize = UDim2.new(0, 0, 0, w112)
-    w104.Size = UDim2.new(1, -5, 0, w112)
+local function w20(wa1, wa2, wa3, wa4)
+    local wa5, wa6 = wa1.Text, 1
+    for _ in wa5:gmatch("\n") do wa6 = wa6 + 1 end
+    local wa7 = {}
+    for wa8 = 1, wa6 do wa7[wa8] = tostring(wa8) end
+    wa2.Text = table.concat(wa7, "\n") .. "\n"
+    local wa9 = w9:GetTextSize(wa1.Text, wa1.TextSize, wa1.Font, Vector2.new(wa1.AbsoluteSize.X - 10, math.huge))
+    local waa = math.max(200, wa9.Y + 20)
+    wa1.Size = UDim2.new(1, -10, 0, waa)
+    wa3.CanvasSize = UDim2.new(0, 0, 0, waa)
+    wa4.CanvasSize = UDim2.new(0, 0, 0, waa)
+    wa2.Size = UDim2.new(1, -5, 0, waa)
 end
 
-local function w113(w114, w115)
-    local w116, w117, w118, w119 = false, nil, nil, nil
-    w114.InputBegan:Connect(function(w120)
-        if w120.UserInputType == Enum.UserInputType.MouseButton1 or w120.UserInputType == Enum.UserInputType.Touch then
-            w116 = true
-            w117 = w120.Position
-            w118 = w114.Position
-            if w119 then w119:Disconnect() end
-            w119 = w3.InputChanged:Connect(function(w121)
-                if (w121.UserInputType == Enum.UserInputType.MouseMovement or w121.UserInputType == Enum.UserInputType.Touch) and w116 then
-                    local w122 = w121.Position - w117
-                    w114.Position = UDim2.new(w118.X.Scale, w118.X.Offset + w122.X, w118.Y.Scale, w118.Y.Offset + w122.Y)
+local function w24(wa1, wa2)
+    local wa3, wa4, wa5, wa6 = false, nil, nil, nil
+    wa1.InputBegan:Connect(function(wa7)
+        if wa7.UserInputType == Enum.UserInputType.MouseButton1 or wa7.UserInputType == Enum.UserInputType.Touch then
+            wa3 = true
+            wa4 = wa7.Position
+            wa5 = wa1.Position
+            if wa6 then wa6:Disconnect() end
+            wa6 = w3.InputChanged:Connect(function(wa8)
+                if (wa8.UserInputType == Enum.UserInputType.MouseMovement or wa8.UserInputType == Enum.UserInputType.Touch) and wa3 then
+                    local wa9 = wa8.Position - wa4
+                    wa1.Position = UDim2.new(wa5.X.Scale, wa5.X.Offset + wa9.X, wa5.Y.Scale, wa5.Y.Offset + wa9.Y)
                 end
             end)
-            w120.Changed:Connect(function()
-                if w120.UserInputState == Enum.UserInputState.End then
-                    w116 = false
-                    if w119 then w119:Disconnect(); w119 = nil end
-                    if w115 then w115() end
+            wa7.Changed:Connect(function()
+                if wa7.UserInputState == Enum.UserInputState.End then
+                    wa3 = false
+                    if wa6 then wa6:Disconnect(); wa6 = nil end
+                    if wa2 then wa2() end
                 end
             end)
         end
     end)
 end
 
-local function w123(w114, w75, w124, w125)
-    local w126 = Instance.new("Frame", w114)
-    w126.Size = w75
-    w126.Position = w124
-    w126.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
-    w126.BorderSizePixel = 0
-    w65(w126, 8)
-    Instance.new("UIStroke", w126).Color = Color3.fromRGB(50, 50, 60)
-    local w127 = Instance.new("TextLabel", w126)
-    w127.Size = UDim2.new(1, -10, 1, -10)
-    w127.Position = UDim2.new(0, 5, 0, 5)
-    w127.BackgroundTransparency = 1
-    w127.Text = w125
-    w127.Font = Enum.Font.GothamBold
-    w127.TextSize = 14
-    w127.TextColor3 = Color3.fromRGB(180, 180, 180)
-    w127.TextXAlignment = Enum.TextXAlignment.Center
-    w127.TextWrapped = true
-    w127.TextYAlignment = Enum.TextYAlignment.Top
-    return w126, w127
+local function w47(wa1, wa2, wa3, wa4)
+    local wa5 = Instance.new("Frame", wa1)
+    wa5.Size = wa2
+    wa5.Position = wa3
+    wa5.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+    wa5.BorderSizePixel = 0
+    w65(wa5, 8)
+    Instance.new("UIStroke", wa5).Color = Color3.fromRGB(50, 50, 60)
+    local wa6 = Instance.new("TextLabel", wa5)
+    wa6.Size = UDim2.new(1, -10, 1, -10)
+    wa6.Position = UDim2.new(0, 5, 0, 5)
+    wa6.BackgroundTransparency = 1
+    wa6.Text = wa4
+    wa6.Font = Enum.Font.GothamBold
+    wa6.TextSize = 14
+    wa6.TextColor3 = Color3.fromRGB(180, 180, 180)
+    wa6.TextXAlignment = Enum.TextXAlignment.Center
+    wa6.TextWrapped = true
+    wa6.TextYAlignment = Enum.TextYAlignment.Top
+    return wa5, wa6
 end
 
-local function w128(w114, w129)
-    local w130 = Instance.new("Frame", w114)
-    w130.Size = UDim2.new(1, -20, 0, 1)
-    w130.Position = UDim2.new(0, 10, 0, w129)
-    w130.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
-    w130.BorderSizePixel = 0
-    return w130
+local function w49(wa1, wa2)
+    local wa3 = Instance.new("Frame", wa1)
+    wa3.Size = UDim2.new(1, -20, 0, 1)
+    wa3.Position = UDim2.new(0, 10, 0, wa2)
+    wa3.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
+    wa3.BorderSizePixel = 0
+    return wa3
 end
 
-local function w131(w114, w125, w129, w132)
-    local w133 = Instance.new("TextLabel", w114)
-    w133.Size = UDim2.new(1, -20, 0, 20)
-    w133.Position = UDim2.new(0, 10, 0, w129)
-    w133.BackgroundTransparency = 1
-    w133.Text = w125
-    w133.Font = Enum.Font.GothamBold
-    w133.TextSize = 13
-    w133.TextColor3 = w132 or Color3.fromRGB(200, 200, 200)
-    w133.TextXAlignment = Enum.TextXAlignment.Left
-    return w133
+local function w50(wa1, wa2, wa3, wa4)
+    local wa5 = Instance.new("TextLabel", wa1)
+    wa5.Size = UDim2.new(1, -20, 0, 20)
+    wa5.Position = UDim2.new(0, 10, 0, wa3)
+    wa5.BackgroundTransparency = 1
+    wa5.Text = wa2
+    wa5.Font = Enum.Font.GothamBold
+    wa5.TextSize = 13
+    wa5.TextColor3 = wa4 or Color3.fromRGB(200, 200, 200)
+    wa5.TextXAlignment = Enum.TextXAlignment.Left
+    return wa5
 end
 
-local function w134(w114, w135, w136)
-    local w137 = Instance.new("Frame", w114)
-    w137.Size = UDim2.new(1, 0, 0, w135)
-    w137.BackgroundColor3 = Color3.fromRGB(35, 35, 42)
-    w137.BorderSizePixel = 0
-    w137.LayoutOrder = w136 or 1
-    w65(w137, 10)
-    w69(w137, Color3.fromRGB(35, 35, 42), Color3.fromRGB(40, 40, 47), 90)
-    return w137
+local function w51(wa1, wa2, wa3)
+    local wa4 = Instance.new("Frame", wa1)
+    wa4.Size = UDim2.new(1, 0, 0, wa2)
+    wa4.BackgroundColor3 = Color3.fromRGB(35, 35, 42)
+    wa4.BorderSizePixel = 0
+    wa4.LayoutOrder = wa3 or 1
+    w65(wa4, 10)
+    w69(wa4, Color3.fromRGB(35, 35, 42), Color3.fromRGB(40, 40, 47), 90)
+    return wa4
 end
 
-local function w138(w114, w125, w139)
-    local w140 = Instance.new("TextLabel", w114)
-    w140.Size = UDim2.new(1, -20, 0, 16)
-    w140.Position = UDim2.new(0, 10, 0, w139)
-    w140.BackgroundTransparency = 1
-    w140.Text = w125
-    w140.Font = Enum.Font.Gotham
-    w140.TextSize = 12
-    w140.TextColor3 = Color3.fromRGB(150, 150, 150)
-    w140.TextXAlignment = Enum.TextXAlignment.Left
-    return w140
+local function w52(wa1, wa2, wa3)
+    local wa4 = Instance.new("TextLabel", wa1)
+    wa4.Size = UDim2.new(1, -20, 0, 16)
+    wa4.Position = UDim2.new(0, 10, 0, wa3)
+    wa4.BackgroundTransparency = 1
+    wa4.Text = wa2
+    wa4.Font = Enum.Font.Gotham
+    wa4.TextSize = 12
+    wa4.TextColor3 = Color3.fromRGB(150, 150, 150)
+    wa4.TextXAlignment = Enum.TextXAlignment.Left
+    return wa4
 end
 
-local function w141(w114, w125, w139)
-    local w142 = Instance.new("TextLabel", w114)
-    w142.Size = UDim2.new(1, -20, 0, 26)
-    w142.Position = UDim2.new(0, 10, 0, w139)
-    w142.BackgroundTransparency = 1
-    w142.Text = w125
-    w142.Font = Enum.Font.GothamBold
-    w142.TextSize = 18
-    w142.TextXAlignment = Enum.TextXAlignment.Left
-    return w142
+local function w54(wa1, wa2, wa3)
+    local wa4 = Instance.new("TextLabel", wa1)
+    wa4.Size = UDim2.new(1, -20, 0, 26)
+    wa4.Position = UDim2.new(0, 10, 0, wa3)
+    wa4.BackgroundTransparency = 1
+    wa4.Text = wa2
+    wa4.Font = Enum.Font.GothamBold
+    wa4.TextSize = 18
+    wa4.TextXAlignment = Enum.TextXAlignment.Left
+    return wa4
 end
 
-local function w143(w114, w125, w139)
-    local w144 = Instance.new("Frame", w114)
-    w144.Size = UDim2.new(1, -20, 0, 36)
-    w144.Position = UDim2.new(0, 10, 0, w139)
-    w144.BackgroundTransparency = 1
-    local w145 = Instance.new("TextLabel", w144)
-    w145.Size = UDim2.new(1, -70, 1, 0)
-    w145.BackgroundTransparency = 1
-    w145.Text = w125
-    w145.Font = Enum.Font.GothamBold
-    w145.TextSize = 14
-    w145.TextColor3 = Color3.fromRGB(200, 200, 200)
-    w145.TextXAlignment = Enum.TextXAlignment.Left
-    return w144, w145
+local function w55(wa1, wa2, wa3)
+    local wa4 = Instance.new("Frame", wa1)
+    wa4.Size = UDim2.new(1, -20, 0, 36)
+    wa4.Position = UDim2.new(0, 10, 0, wa3)
+    wa4.BackgroundTransparency = 1
+    local wa5 = Instance.new("TextLabel", wa4)
+    wa5.Size = UDim2.new(1, -70, 1, 0)
+    wa5.BackgroundTransparency = 1
+    wa5.Text = wa2
+    wa5.Font = Enum.Font.GothamBold
+    wa5.TextSize = 14
+    wa5.TextColor3 = Color3.fromRGB(200, 200, 200)
+    wa5.TextXAlignment = Enum.TextXAlignment.Left
+    return wa4, wa5
 end
 
-local w146 = {}
-local function w147(w114, w75, w148, w149, w150)
-    local w151, w152 = w75.X.Offset or 56, w75.Y.Offset or 28
-    local w153, w154 = w152 - 6, 3
-    local w155, w156 = w151 - w153 - 3, Instance.new("Frame", w114)
-    w156.Size = UDim2.new(0, w151, 0, w152)
-    w156.Position = w148
-    w156.AnchorPoint = Vector2.new(0.5, 0.5)
-    w156.BorderSizePixel = 0
-    w156.BackgroundColor3 = w149 and Color3.fromRGB(50, 220, 100) or Color3.fromRGB(60, 60, 70)
-    w65(w156, w152 / 2)
-    local w157 = Instance.new("Frame", w156)
-    w157.Size = UDim2.new(0, w153, 0, w153)
-    w157.Position = UDim2.new(0, w149 and w155 or w154, 0.5, 0)
-    w157.AnchorPoint = Vector2.new(0, 0.5)
-    w157.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    w157.BorderSizePixel = 0
-    w65(w157, w153 / 2)
-    local w158 = Instance.new("TextButton", w156)
-    w158.Size = UDim2.new(1, 0, 1, 0)
-    w158.BackgroundTransparency = 1
-    w158.Text = ""
-    w158.ZIndex = w156.ZIndex + 2
-    local w159 = { value = w149, track = w156, knob = w157, offX = w154, onX = w155 }
-    w146[w158] = w159
-    if w150 then
-        w158.MouseButton1Click:Connect(function()
-            w159.value = not w159.value
-            w48(w156, w44.Fast, { BackgroundColor3 = w159.value and Color3.fromRGB(50, 220, 100) or Color3.fromRGB(60, 60, 70) })
-            w48(w157, w44.Fast, { Position = UDim2.new(0, w159.value and w155 or w154, 0.5, 0) })
-            w150(w159.value)
+local w57 = {}
+local function w58(wa1, wa2, wa3, wa4, wa5)
+    local wa6, wa7 = wa2.X.Offset or 56, wa2.Y.Offset or 28
+    local wa8, wa9 = wa7 - 6, 3
+    local waa, wab = wa6 - wa8 - 3, Instance.new("Frame", wa1)
+    wab.Size = UDim2.new(0, wa6, 0, wa7)
+    wab.Position = wa3
+    wab.AnchorPoint = Vector2.new(0.5, 0.5)
+    wab.BorderSizePixel = 0
+    wab.BackgroundColor3 = wa4 and Color3.fromRGB(50, 220, 100) or Color3.fromRGB(60, 60, 70)
+    w65(wab, wa7 / 2)
+    local wac = Instance.new("Frame", wab)
+    wac.Size = UDim2.new(0, wa8, 0, wa8)
+    wac.Position = UDim2.new(0, wa4 and waa or wa9, 0.5, 0)
+    wac.AnchorPoint = Vector2.new(0, 0.5)
+    wac.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    wac.BorderSizePixel = 0
+    w65(wac, wa8 / 2)
+    local wad = Instance.new("TextButton", wab)
+    wad.Size = UDim2.new(1, 0, 1, 0)
+    wad.BackgroundTransparency = 1
+    wad.Text = ""
+    wad.ZIndex = wab.ZIndex + 2
+    local wae = { value = wa4, track = wab, knob = wac, offX = wa9, onX = waa }
+    w57[wad] = wae
+    if wa5 then
+        wad.MouseButton1Click:Connect(function()
+            wae.value = not wae.value
+            w48(wab, w44.Fast, { BackgroundColor3 = wae.value and Color3.fromRGB(50, 220, 100) or Color3.fromRGB(60, 60, 70) })
+            w48(wac, w44.Fast, { Position = UDim2.new(0, wae.value and waa or wa9, 0.5, 0) })
+            wa5(wae.value)
         end)
     end
-    return w158, w156, w157, w159
+    return wad, wab, wac, wae
 end
 
-local function w160(w159, w149)
-    if not w159 then return end
-    w159.value = w149
-    w48(w159.track, w44.Fast, { BackgroundColor3 = w149 and Color3.fromRGB(50, 220, 100) or Color3.fromRGB(60, 60, 70) })
-    w48(w159.knob, w44.Fast, { Position = UDim2.new(0, w149 and w159.onX or w159.offX, 0.5, 0) })
+local function w70(wa1, wa2)
+    if not wa1 then return end
+    wa1.value = wa2
+    w48(wa1.track, w44.Fast, { BackgroundColor3 = wa2 and Color3.fromRGB(50, 220, 100) or Color3.fromRGB(60, 60, 70) })
+    w48(wa1.knob, w44.Fast, { Position = UDim2.new(0, wa2 and wa1.onX or wa1.offX, 0.5, 0) })
 end
 
-local function w498(w498B, w498I, w498H, w498P)
-    w498B.MouseEnter:Connect(function()
-        w48(w498B, w44.Fast, w498H)
+local function w25(wa1, wa2, wa3, wa4)
+    wa1.MouseEnter:Connect(function()
+        w48(wa1, w44.Fast, wa3)
     end)
-    w498B.MouseLeave:Connect(function()
-        w48(w498B, w44.Fast, w498I)
+    wa1.MouseLeave:Connect(function()
+        w48(wa1, w44.Fast, wa2)
     end)
-    w498B.MouseButton1Down:Connect(function()
-        w48(w498B, w44.Fast, w498P)
+    wa1.MouseButton1Down:Connect(function()
+        w48(wa1, w44.Fast, wa4)
     end)
-    w498B.MouseButton1Up:Connect(function()
-        w48(w498B, w44.Fast, w498H)
+    wa1.MouseButton1Up:Connect(function()
+        w48(wa1, w44.Fast, wa3)
     end)
 end
 
-local function w499(w499Pa, w499Sz, w499Po, w499BC)
-    local w499Ot = Instance.new("Frame", w499Pa)
-    w499Ot.Size = w499Sz
-    w499Ot.Position = w499Po
-    w499Ot.BackgroundColor3 = Color3.fromRGB(20, 20, 24)
-    w499Ot.BorderSizePixel = 0
-    w65(w499Ot, 8)
-    Instance.new("UIStroke", w499Ot).Color = Color3.fromRGB(50, 50, 60)
-    local w499Sr = Instance.new("ScrollingFrame", w499Ot)
-    w499Sr.Size = UDim2.new(1, -4, 1, -4)
-    w499Sr.Position = UDim2.new(0, 2, 0, 2)
-    w499Sr.BackgroundTransparency = 1
-    w499Sr.BorderSizePixel = 0
-    w499Sr.ScrollBarThickness = 3
-    w499Sr.ScrollBarImageColor3 = w499BC or Color3.fromRGB(100, 150, 255)
-    w499Sr.ScrollBarImageTransparency = 0.5
-    w499Sr.CanvasSize = UDim2.new(0, 0, 0, 0)
-    w499Sr.AutomaticCanvasSize = Enum.AutomaticSize.Y
-    local w499L = Instance.new("UIListLayout", w499Sr)
-    w499L.SortOrder = Enum.SortOrder.LayoutOrder
-    w499L.Padding = UDim.new(0, 2)
-    local w499P = Instance.new("UIPadding", w499Sr)
-    w499P.PaddingLeft = UDim.new(0, 6)
-    w499P.PaddingRight = UDim.new(0, 6)
-    w499P.PaddingTop = UDim.new(0, 4)
-    w499P.PaddingBottom = UDim.new(0, 4)
-    local w499Em = Instance.new("TextLabel", w499Sr)
-    w499Em.Size = UDim2.new(1, 0, 0, 20)
-    w499Em.BackgroundTransparency = 1
-    w499Em.Font = Enum.Font.Code
-    w499Em.TextSize = 11
-    w499Em.TextColor3 = Color3.fromRGB(90, 90, 100)
-    w499Em.TextXAlignment = Enum.TextXAlignment.Left
-    w499Em.LayoutOrder = 1
-    local w499Ca = 1
-    local function w499Ad(w499Mg, w499Co)
-        w499Em.Visible = false
-        w499Ca = w499Ca + 1
-        local w499T, w499La = os.date and os.date("%H:%M:%S") or "—", Instance.new("TextLabel", w499Sr)
-        w499La.Size = UDim2.new(1, 0, 0, 0)
-        w499La.AutomaticSize = Enum.AutomaticSize.Y
-        w499La.BackgroundTransparency = 1
-        w499La.Text = "["..w499T.."] "..w499Mg
-        w499La.Font = Enum.Font.Code
-        w499La.TextSize = 11
-        w499La.TextColor3 = w499Co or Color3.fromRGB(220, 220, 220)
-        w499La.TextXAlignment = Enum.TextXAlignment.Left
-        w499La.TextYAlignment = Enum.TextYAlignment.Top
-        w499La.TextWrapped = true
-        w499La.RichText = false
-        w499La.LayoutOrder = w499Ca
-        task.defer(function() w499Sr.CanvasPosition = Vector2.new(0, math.huge) end)
-        return w499La
+local function w26(wa1, wa2, wa3, wa4)
+    local wa5 = Instance.new("Frame", wa1)
+    wa5.Size = wa2
+    wa5.Position = wa3
+    wa5.BackgroundColor3 = Color3.fromRGB(20, 20, 24)
+    wa5.BorderSizePixel = 0
+    w65(wa5, 8)
+    Instance.new("UIStroke", wa5).Color = Color3.fromRGB(50, 50, 60)
+    local wa6 = Instance.new("ScrollingFrame", wa5)
+    wa6.Size = UDim2.new(1, -4, 1, -4)
+    wa6.Position = UDim2.new(0, 2, 0, 2)
+    wa6.BackgroundTransparency = 1
+    wa6.BorderSizePixel = 0
+    wa6.ScrollBarThickness = 3
+    wa6.ScrollBarImageColor3 = wa4 or Color3.fromRGB(100, 150, 255)
+    wa6.ScrollBarImageTransparency = 0.5
+    wa6.CanvasSize = UDim2.new(0, 0, 0, 0)
+    wa6.AutomaticCanvasSize = Enum.AutomaticSize.Y
+    local wa7 = Instance.new("UIListLayout", wa6)
+    wa7.SortOrder = Enum.SortOrder.LayoutOrder
+    wa7.Padding = UDim.new(0, 2)
+    local wa8 = Instance.new("UIPadding", wa6)
+    wa8.PaddingLeft = UDim.new(0, 6)
+    wa8.PaddingRight = UDim.new(0, 6)
+    wa8.PaddingTop = UDim.new(0, 4)
+    wa8.PaddingBottom = UDim.new(0, 4)
+    local wa9 = Instance.new("TextLabel", wa6)
+    wa9.Size = UDim2.new(1, 0, 0, 20)
+    wa9.BackgroundTransparency = 1
+    wa9.Font = Enum.Font.Code
+    wa9.TextSize = 11
+    wa9.TextColor3 = Color3.fromRGB(90, 90, 100)
+    wa9.TextXAlignment = Enum.TextXAlignment.Left
+    wa9.LayoutOrder = 1
+    local waa = 1
+    local function wab(wac, wad)
+        wa9.Visible = false
+        waa = waa + 1
+        local wae, waf = os.date and os.date("%H:%M:%S") or "—", Instance.new("TextLabel", wa6)
+        waf.Size = UDim2.new(1, 0, 0, 0)
+        waf.AutomaticSize = Enum.AutomaticSize.Y
+        waf.BackgroundTransparency = 1
+        waf.Text = "["..wae.."] "..wac
+        waf.Font = Enum.Font.Code
+        waf.TextSize = 11
+        waf.TextColor3 = wad or Color3.fromRGB(220, 220, 220)
+        waf.TextXAlignment = Enum.TextXAlignment.Left
+        waf.TextYAlignment = Enum.TextYAlignment.Top
+        waf.TextWrapped = true
+        waf.RichText = false
+        waf.LayoutOrder = waa
+        task.defer(function() wa6.CanvasPosition = Vector2.new(0, math.huge) end)
+        return waf
     end
-    local w499Cl = Instance.new("TextButton", w499Pa)
-    w499Cl.Size = UDim2.new(0, 50, 0, 18)
-    w499Cl.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
-    w499Cl.Text = "Clear"
-    w499Cl.Font = Enum.Font.Gotham
-    w499Cl.TextSize = 11
-    w499Cl.TextColor3 = Color3.fromRGB(180, 180, 180)
-    w499Cl.BorderSizePixel = 0
-    w499Cl.AutoButtonColor = false
-    w65(w499Cl, 4)
-    w498(w499Cl,
+    local wag = Instance.new("TextButton", wa1)
+    wag.Size = UDim2.new(0, 50, 0, 18)
+    wag.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+    wag.Text = "Clear"
+    wag.Font = Enum.Font.Gotham
+    wag.TextSize = 11
+    wag.TextColor3 = Color3.fromRGB(180, 180, 180)
+    wag.BorderSizePixel = 0
+    wag.AutoButtonColor = false
+    w65(wag, 4)
+    w25(wag,
         { BackgroundColor3 = Color3.fromRGB(60, 60, 70), Size = UDim2.new(0, 50, 0, 18) },
         { BackgroundColor3 = Color3.fromRGB(80, 80, 90), Size = UDim2.new(0, 55, 0, 21) },
         { BackgroundColor3 = Color3.fromRGB(100, 100, 110), Size = UDim2.new(0, 45, 0, 15) }
     )
-    w499Cl.MouseButton1Click:Connect(function()
-        for _, w499C in ipairs(w499Sr:GetChildren()) do
-            if w499C:IsA("TextLabel") and w499C ~= w499Em then
-                w499C:Destroy()
+    wag.MouseButton1Click:Connect(function()
+        for _, wah in ipairs(wa6:GetChildren()) do
+            if wah:IsA("TextLabel") and wah ~= wa9 then
+                wah:Destroy()
             end
         end
-        w499Ca = 1
-        w499Em.Visible = true
+        waa = 1
+        wa9.Visible = true
     end)
-    return w499Ot, w499Sr, w499Em, w499Ad, w499Cl
+    return wa5, wa6, wa9, wab, wag
 end
 
-local w161 = w6:FindFirstChild("UniversalUtility") or (gethui and gethui():FindFirstChild("UniversalUtility"))
-if w161 then w161:Destroy() end
+local wa1 = w6:FindFirstChild("UniversalUtility") or (gethui and gethui():FindFirstChild("UniversalUtility"))
+if wa1 then wa1:Destroy() end
 
-local w162 = Instance.new("ScreenGui")
-w162.Name = "UniversalUtility"
-w162.ResetOnSpawn = false
-w162.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+local w71 = Instance.new("ScreenGui")
+w71.Name = "UniversalUtility"
+w71.ResetOnSpawn = false
+w71.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
 if syn and syn.protect_gui then
-    syn.protect_gui(w162); w162.Parent = w6
+    syn.protect_gui(w71); w71.Parent = w6
 elseif gethui then
-    w162.Parent = gethui()
+    w71.Parent = gethui()
 else
-    w162.Parent = w6
+    w71.Parent = w6
 end
 
-local w163 = Instance.new("Frame", w162)
-w163.Name = "MainFrame"
-w163.Size = UDim2.new(0, 0, 0, 0)
-w163.Position = UDim2.new(0, 0, 0, 0)
-w163.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
-w163.BorderSizePixel = 0
-w163.Active = true
-w163.ClipsDescendants = true
-w163.Visible = false
+local w72 = Instance.new("Frame", w71)
+w72.Name = "MainFrame"
+w72.Size = UDim2.new(0, 0, 0, 0)
+w72.Position = UDim2.new(0, 0, 0, 0)
+w72.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
+w72.BorderSizePixel = 0
+w72.Active = true
+w72.ClipsDescendants = true
+w72.Visible = false
 
-w65(w163, 16)
-w113(w163, w39)
+w65(w72, 16)
+w24(w72, w39)
 
-w61 = Instance.new("UIScale", w163)
+w61 = Instance.new("UIScale", w72)
 w61.Scale = 1
 
-local w164 = Instance.new("ImageLabel", w163)
-w164.BackgroundTransparency = 1
-w164.Position = UDim2.new(0, -15, 0, -15)
-w164.Size = UDim2.new(1, 30, 1, 30)
-w164.ZIndex = 0
-w164.Image = "rbxassetid://6014261993"
-w164.ImageColor3 = Color3.fromRGB(0, 0, 0)
-w164.ImageTransparency = 0.5
-w164.ScaleType = Enum.ScaleType.Slice
-w164.SliceCenter = Rect.new(49, 49, 450, 450)
+local w73 = Instance.new("ImageLabel", w72)
+w73.BackgroundTransparency = 1
+w73.Position = UDim2.new(0, -15, 0, -15)
+w73.Size = UDim2.new(1, 30, 1, 30)
+w73.ZIndex = 0
+w73.Image = "rbxassetid://6014261993"
+w73.ImageColor3 = Color3.fromRGB(0, 0, 0)
+w73.ImageTransparency = 0.5
+w73.ScaleType = Enum.ScaleType.Slice
+w73.SliceCenter = Rect.new(49, 49, 450, 450)
 
-local w165 = Instance.new("Frame", w163)
-w165.Size = UDim2.new(1, 0, 0, 46)
-w165.Position = UDim2.new(0, 0, 0, 0)
-w165.BackgroundColor3 = Color3.fromRGB(35, 35, 42)
-w165.BorderSizePixel = 0
+local w75 = Instance.new("Frame", w72)
+w75.Size = UDim2.new(1, 0, 0, 46)
+w75.Position = UDim2.new(0, 0, 0, 0)
+w75.BackgroundColor3 = Color3.fromRGB(35, 35, 42)
+w75.BorderSizePixel = 0
 
-w65(w165, 16)
-w69(w165, Color3.fromRGB(38, 38, 46), Color3.fromRGB(30, 30, 37), 90)
+w65(w75, 16)
+w69(w75, Color3.fromRGB(38, 38, 46), Color3.fromRGB(30, 30, 37), 90)
 
 do
-    local w166 = Instance.new("TextLabel", w165)
-    w166.Size = UDim2.new(1, -60, 1, 0)
-    w166.Position = UDim2.new(0, 14, 0, 0)
-    w166.BackgroundTransparency = 1
-    w166.Text = "⚡ Universal Utility"
-    w166.Font = Enum.Font.GothamBold
-    w166.TextSize = 22
-    w166.TextColor3 = Color3.fromRGB(255, 255, 255)
-    w166.TextXAlignment = Enum.TextXAlignment.Left
+    local wa1 = Instance.new("TextLabel", w75)
+    wa1.Size = UDim2.new(1, -60, 1, 0)
+    wa1.Position = UDim2.new(0, 14, 0, 0)
+    wa1.BackgroundTransparency = 1
+    wa1.Text = "⚡ Universal Utility"
+    wa1.Font = Enum.Font.GothamBold
+    wa1.TextSize = 22
+    wa1.TextColor3 = Color3.fromRGB(255, 255, 255)
+    wa1.TextXAlignment = Enum.TextXAlignment.Left
 end
 
-local w167 = Instance.new("ImageButton", w165)
-w167.Size = UDim2.new(0, 28, 0, 28)
-w167.Position = UDim2.new(1, -14, 0.5, 0)
-w167.AnchorPoint = Vector2.new(1, 0.5)
-w167.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
-w167.BorderSizePixel = 0
-w167.Image = "rbxassetid://3926305904"
-w167.ImageRectOffset = Vector2.new(284, 4)
-w167.ImageRectSize = Vector2.new(24, 24)
-w167.ImageColor3 = Color3.fromRGB(255, 255, 255)
-w65(w167, 8)
+local w76 = Instance.new("ImageButton", w75)
+w76.Size = UDim2.new(0, 28, 0, 28)
+w76.Position = UDim2.new(1, -14, 0.5, 0)
+w76.AnchorPoint = Vector2.new(1, 0.5)
+w76.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
+w76.BorderSizePixel = 0
+w76.Image = "rbxassetid://3926305904"
+w76.ImageRectOffset = Vector2.new(284, 4)
+w76.ImageRectSize = Vector2.new(24, 24)
+w76.ImageColor3 = Color3.fromRGB(255, 255, 255)
+w65(w76, 8)
 
-local w168 = Instance.new("Frame", w163)
-w168.Size = UDim2.new(0, 178, 1, -52)
-w168.Position = UDim2.new(0, 5, 0, 52)
-w168.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
-w168.BorderSizePixel = 0
-w65(w168, 10)
-w69(w168, Color3.fromRGB(30, 30, 35), Color3.fromRGB(25, 25, 30), 90)
+local w77 = Instance.new("Frame", w72)
+w77.Size = UDim2.new(0, 178, 1, -52)
+w77.Position = UDim2.new(0, 5, 0, 52)
+w77.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+w77.BorderSizePixel = 0
+w65(w77, 10)
+w69(w77, Color3.fromRGB(30, 30, 35), Color3.fromRGB(25, 25, 30), 90)
 
-local w169 = Instance.new("Frame", w163)
-w169.Size = UDim2.new(1, -193, 1, -57)
-w169.Position = UDim2.new(0, 188, 0, 52)
-w169.BackgroundTransparency = 1
-w169.BorderSizePixel = 0
-w169.ClipsDescendants = true
+local w82 = Instance.new("Frame", w72)
+w82.Size = UDim2.new(1, -193, 1, -57)
+w82.Position = UDim2.new(0, 188, 0, 52)
+w82.BackgroundTransparency = 1
+w82.BorderSizePixel = 0
+w82.ClipsDescendants = true
 
-local w170 = Instance.new("ImageButton", w162)
-w170.Name = "ReopenButton"
-w170.Size = UDim2.new(0, 0, 0, 0)
-w170.Position = UDim2.new(0, 0, 0, 0)
-w170.BackgroundColor3 = Color3.fromRGB(100, 150, 255)
-w170.BorderSizePixel = 0
-w170.Visible = false
-w170.ZIndex = 10
-w170.Active = true
-w170.ImageTransparency = 1
-w65(w170, 100)
-w69(w170, Color3.fromRGB(100, 150, 255), Color3.fromRGB(80, 130, 235), 45)
+local w83 = Instance.new("ImageButton", w71)
+w83.Name = "ReopenButton"
+w83.Size = UDim2.new(0, 0, 0, 0)
+w83.Position = UDim2.new(0, 0, 0, 0)
+w83.BackgroundColor3 = Color3.fromRGB(100, 150, 255)
+w83.BorderSizePixel = 0
+w83.Visible = false
+w83.ZIndex = 10
+w83.Active = true
+w83.ImageTransparency = 1
+w65(w83, 100)
+w69(w83, Color3.fromRGB(100, 150, 255), Color3.fromRGB(80, 130, 235), 45)
 
-local w171 = Instance.new("TextLabel", w170)
-w171.Size = UDim2.new(1, 0, 1, 0)
-w171.BackgroundTransparency = 1
-w171.Text = "⚡"
-w171.Font = Enum.Font.GothamBold
-w171.TextSize = 24
-w171.TextColor3 = Color3.fromRGB(255, 255, 255)
-w171.TextTransparency = 1
+local w84 = Instance.new("TextLabel", w83)
+w84.Size = UDim2.new(1, 0, 1, 0)
+w84.BackgroundTransparency = 1
+w84.Text = "⚡"
+w84.Font = Enum.Font.GothamBold
+w84.TextSize = 24
+w84.TextColor3 = Color3.fromRGB(255, 255, 255)
+w84.TextTransparency = 1
 
-local w172, w173, w174, w175, w176 = false, nil, nil, nil, false
-local w177, w177SA = nil, false
-local function w177SX()
-    if w177 then
-        w177:Disconnect()
-        w177 = nil
+local w85, w86, w87, w88, w89 = false, nil, nil, nil, false
+local w30, w27 = nil, false
+local function w28()
+    if w30 then
+        w30:Disconnect()
+        w30 = nil
     end
-    w177SA = false
+    w27 = false
 end
 
-local function w177SS()
-    if w177SA then return end
-    w177SA = true
-    if w177 then w177:Disconnect() end
-    w177 = w5.RenderStepped:Connect(function(w457)
-        if w170.Visible then
-            w170.Rotation = (w170.Rotation + (w457 * 180)) % 360
+local function w29()
+    if w27 then return end
+    w27 = true
+    if w30 then w30:Disconnect() end
+    w30 = w5.RenderStepped:Connect(function(wa1)
+        if w83.Visible then
+            w83.Rotation = (w83.Rotation + (wa1 * 180)) % 360
         else
-            w177SX()
+            w28()
         end
     end)
 end
 
-w170.InputBegan:Connect(function(w178)
-    if w178.UserInputType == Enum.UserInputType.MouseButton1 or w178.UserInputType == Enum.UserInputType.Touch then
-        w172 = true
-        w176 = false
-        w173 = w178.Position
-        w174 = w170.Position
-        w177SS()
-        if w175 then w175:Disconnect() end
-        w175 = w3.InputChanged:Connect(function(w179)
-            if (w179.UserInputType == Enum.UserInputType.MouseMovement or w179.UserInputType == Enum.UserInputType.Touch) and w172 then
-                local w180 = w179.Position - w173
-                if math.abs(w180.X) > 5 or math.abs(w180.Y) > 5 then w176 = true end
-                w170.Position = UDim2.new(0, w174.X.Offset + w180.X, 0, w174.Y.Offset + w180.Y)
+w83.InputBegan:Connect(function(wa1)
+    if wa1.UserInputType == Enum.UserInputType.MouseButton1 or wa1.UserInputType == Enum.UserInputType.Touch then
+        w85 = true
+        w89 = false
+        w86 = wa1.Position
+        w87 = w83.Position
+        w29()
+        if w88 then w88:Disconnect() end
+        w88 = w3.InputChanged:Connect(function(wa2)
+            if (wa2.UserInputType == Enum.UserInputType.MouseMovement or wa2.UserInputType == Enum.UserInputType.Touch) and w85 then
+                local wa3 = wa2.Position - w86
+                if math.abs(wa3.X) > 5 or math.abs(wa3.Y) > 5 then w89 = true end
+                w83.Position = UDim2.new(0, w87.X.Offset + wa3.X, 0, w87.Y.Offset + wa3.Y)
             end
         end)
-        w178.Changed:Connect(function()
-            if w178.UserInputState == Enum.UserInputState.End or w178.UserInputState == Enum.UserInputState.Cancel then
-                w172 = false
-                if w175 then w175:Disconnect(); w175 = nil end
-                local w456In, mousePos, btnPos, btnSize = math.floor(60 * w62), w3:GetMouseLocation(), w170.AbsolutePosition, w170.AbsoluteSize
-                local isHovered = mousePos.X >= btnPos.X and mousePos.X <= btnPos.X + btnSize.X
-                    and mousePos.Y >= btnPos.Y and mousePos.Y <= btnPos.Y + btnSize.Y
-                if isHovered then
-                    w48(w170, w44.Medium, { Size = UDim2.new(0, math.floor(w456In * 1.17), 0, math.floor(w456In * 1.17)) })
-                    w177SS()
+        wa1.Changed:Connect(function()
+            if wa1.UserInputState == Enum.UserInputState.End or wa1.UserInputState == Enum.UserInputState.Cancel then
+                w85 = false
+                if w88 then w88:Disconnect(); w88 = nil end
+                local wa4, wa5, wa6, wa7 = math.floor(60 * w62), w3:GetMouseLocation(), w83.AbsolutePosition, w83.AbsoluteSize
+                local wa8 = wa5.X >= wa6.X and wa5.X <= wa6.X + wa7.X
+                    and wa5.Y >= wa6.Y and wa5.Y <= wa6.Y + wa7.Y
+                if wa8 then
+                    w48(w83, w44.Medium, { Size = UDim2.new(0, math.floor(wa4 * 1.17), 0, math.floor(wa4 * 1.17)) })
+                    w29()
                 else
-                    w48(w170, w44.Medium, { Size = UDim2.new(0, w456In, 0, w456In), Rotation = 0 })
+                    w48(w83, w44.Medium, { Size = UDim2.new(0, wa4, 0, wa4), Rotation = 0 })
                 end
                 task.wait(0.1)
-                if w176 then
-                    w21.SavedReopenPosition = { X = w170.Position.X.Offset, Y = w170.Position.Y.Offset }
+                if w89 then
+                    w21.SavedReopenPosition = { X = w83.Position.X.Offset, Y = w83.Position.Y.Offset }
                     w33()
                 end
-                w176 = false
+                w89 = false
             end
         end)
     end
 end)
-w170.MouseEnter:Connect(function()
-    if not w172 then
-        local w456 = math.floor(60 * w62)
-        w48(w170, w44.Medium, { Size = UDim2.new(0, math.floor(w456 * 1.17), 0, math.floor(w456 * 1.17)) })
-        w177SS()
+w83.MouseEnter:Connect(function()
+    if not w85 then
+        local wa1 = math.floor(60 * w62)
+        w48(w83, w44.Medium, { Size = UDim2.new(0, math.floor(wa1 * 1.17), 0, math.floor(wa1 * 1.17)) })
+        w29()
     end
 end)
-w170.MouseLeave:Connect(function()
-    if not w172 then
-        w177SX()
-        local w456 = math.floor(60 * w62)
-        w48(w170, w44.Medium, { Size = UDim2.new(0, w456, 0, w456), Rotation = 0 })
+w83.MouseLeave:Connect(function()
+    if not w85 then
+        w28()
+        local wa1 = math.floor(60 * w62)
+        w48(w83, w44.Medium, { Size = UDim2.new(0, wa1, 0, wa1), Rotation = 0 })
     end
 end)
-w170.MouseButton1Down:Connect(function()
-    if not w172 then
-        local w456 = math.floor(60 * w62)
-        w48(w170, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Size = UDim2.new(0, math.floor(w456 * 0.92), 0, math.floor(w456 * 0.92)) })
+w83.MouseButton1Down:Connect(function()
+    if not w85 then
+        local wa1 = math.floor(60 * w62)
+        w48(w83, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Size = UDim2.new(0, math.floor(wa1 * 0.92), 0, math.floor(wa1 * 0.92)) })
     end
 end)
-w170.MouseButton1Up:Connect(function()
-    if not w172 then
-        local w456 = math.floor(60 * w62)
-        w48(w170, w44.Fast, { Size = UDim2.new(0, w456, 0, w456) })
+w83.MouseButton1Up:Connect(function()
+    if not w85 then
+        local wa1 = math.floor(60 * w62)
+        w48(w83, w44.Fast, { Size = UDim2.new(0, wa1, 0, wa1) })
     end
 end)
 
-local w181, w182, w183 = {}, {}, {}
+local w90, w92, w93 = {}, {}, {}
 _G.UU.UI = {
-    ScreenGui = w162,
-    MainFrame = w163,
-    ContentFrame = w169,
-    SideNav = w168,
-    CloseButton = w167,
-    ReopenButton = w170,
-    TabButtons = w181,
-    TabContents = w182,
+    ScreenGui = w71,
+    MainFrame = w72,
+    ContentFrame = w82,
+    SideNav = w77,
+    CloseButton = w76,
+    ReopenButton = w83,
+    TabButtons = w90,
+    TabContents = w92,
     TweenPresets = w44,
     ActiveTweens = w45,
     PlayTween = w48,
     CancelTween = w46,
     UIScale = w61,
-    AllFrames = w183,
+    AllFrames = w93,
 }
 
-local function w184(w185, w186, w187)
-    local w188 = Instance.new("TextButton", w168)
-    w188.Name = w185.."Tab"
-    w188.Size = UDim2.new(1, -10, 0, 50)
-    w188.Position = UDim2.new(0.5, 0, 0, 8 + ((w187 - 1) * 55) + 27)
-    w188.AnchorPoint = Vector2.new(0.5, 0.5)
-    w188.BackgroundColor3 = Color3.fromRGB(35, 35, 42)
-    w188.BorderSizePixel = 0
-    w188.Text = ""
-    w188.AutoButtonColor = false
-    w65(w188, 8)
-    local w189 = Instance.new("TextLabel", w188)
-    w189.Size = UDim2.new(0, 30, 1, 0)
-    w189.Position = UDim2.new(0, 10, 0, 0)
-    w189.BackgroundTransparency = 1
-    w189.Text = w186
-    w189.Font = Enum.Font.GothamBold
-    w189.TextSize = 18
-    w189.TextColor3 = Color3.fromRGB(180, 180, 180)
-    w189.TextXAlignment = Enum.TextXAlignment.Left
-    local w190 = Instance.new("TextLabel", w188)
-    w190.Size = UDim2.new(1, -50, 1, 0)
-    w190.Position = UDim2.new(0, 45, 0, 0)
-    w190.BackgroundTransparency = 1
-    w190.Text = w185
-    w190.Font = Enum.Font.GothamBold
-    w190.TextSize = 13
-    w190.TextColor3 = Color3.fromRGB(180, 180, 180)
-    w190.TextXAlignment = Enum.TextXAlignment.Left
-    w181[w185] = { Button = w188, Icon = w189, Label = w190 }
-    w183["Tab_"..w185] = w188
-    w188.MouseEnter:Connect(function()
-        local sel = w21.CurrentTab == w185
-        if sel then
-            w48(w188, w44.Fast, { Size = UDim2.new(1, -4, 0, 54) })
-            w48(w189, w44.Fast, { TextSize = 21 })
-            w48(w190, w44.Fast, { TextSize = 14 })
+local function w94(wa1, wa2, wa3)
+    local wa4 = Instance.new("TextButton", w77)
+    wa4.Name = wa1.."Tab"
+    wa4.Size = UDim2.new(1, -10, 0, 50)
+    wa4.Position = UDim2.new(0.5, 0, 0, 8 + ((wa3 - 1) * 55) + 27)
+    wa4.AnchorPoint = Vector2.new(0.5, 0.5)
+    wa4.BackgroundColor3 = Color3.fromRGB(35, 35, 42)
+    wa4.BorderSizePixel = 0
+    wa4.Text = ""
+    wa4.AutoButtonColor = false
+    w65(wa4, 8)
+    local wa5 = Instance.new("TextLabel", wa4)
+    wa5.Size = UDim2.new(0, 30, 1, 0)
+    wa5.Position = UDim2.new(0, 10, 0, 0)
+    wa5.BackgroundTransparency = 1
+    wa5.Text = wa2
+    wa5.Font = Enum.Font.GothamBold
+    wa5.TextSize = 18
+    wa5.TextColor3 = Color3.fromRGB(180, 180, 180)
+    wa5.TextXAlignment = Enum.TextXAlignment.Left
+    local wa6 = Instance.new("TextLabel", wa4)
+    wa6.Size = UDim2.new(1, -50, 1, 0)
+    wa6.Position = UDim2.new(0, 45, 0, 0)
+    wa6.BackgroundTransparency = 1
+    wa6.Text = wa1
+    wa6.Font = Enum.Font.GothamBold
+    wa6.TextSize = 13
+    wa6.TextColor3 = Color3.fromRGB(180, 180, 180)
+    wa6.TextXAlignment = Enum.TextXAlignment.Left
+    w90[wa1] = { Button = wa4, Icon = wa5, Label = wa6 }
+    w93["Tab_"..wa1] = wa4
+    wa4.MouseEnter:Connect(function()
+        local wa7 = w21.CurrentTab == wa1
+        if wa7 then
+            w48(wa4, w44.Fast, { Size = UDim2.new(1, -4, 0, 54) })
+            w48(wa5, w44.Fast, { TextSize = 21 })
+            w48(wa6, w44.Fast, { TextSize = 14 })
         else
-            w48(w188, w44.Fast, { BackgroundColor3 = Color3.fromRGB(45, 45, 52), Size = UDim2.new(1, -4, 0, 54) })
-            w48(w189, w44.Fast, { TextColor3 = Color3.fromRGB(200, 200, 200), TextSize = 21 })
-            w48(w190, w44.Fast, { TextColor3 = Color3.fromRGB(200, 200, 200), TextSize = 14 })
+            w48(wa4, w44.Fast, { BackgroundColor3 = Color3.fromRGB(45, 45, 52), Size = UDim2.new(1, -4, 0, 54) })
+            w48(wa5, w44.Fast, { TextColor3 = Color3.fromRGB(200, 200, 200), TextSize = 21 })
+            w48(wa6, w44.Fast, { TextColor3 = Color3.fromRGB(200, 200, 200), TextSize = 14 })
         end
     end)
-    w188.MouseLeave:Connect(function()
-        local sel = w21.CurrentTab == w185
-        if sel then
-            w48(w188, w44.Fast, { BackgroundColor3 = Color3.fromRGB(100, 150, 255), Size = UDim2.new(1, -10, 0, 50) })
-            w48(w189, w44.Fast, { TextColor3 = Color3.fromRGB(255, 255, 255), TextSize = 18 })
-            w48(w190, w44.Fast, { TextColor3 = Color3.fromRGB(255, 255, 255), TextSize = 13 })
+    wa4.MouseLeave:Connect(function()
+        local wa7 = w21.CurrentTab == wa1
+        if wa7 then
+            w48(wa4, w44.Fast, { BackgroundColor3 = Color3.fromRGB(100, 150, 255), Size = UDim2.new(1, -10, 0, 50) })
+            w48(wa5, w44.Fast, { TextColor3 = Color3.fromRGB(255, 255, 255), TextSize = 18 })
+            w48(wa6, w44.Fast, { TextColor3 = Color3.fromRGB(255, 255, 255), TextSize = 13 })
         else
-            w48(w188, w44.Fast, { BackgroundColor3 = Color3.fromRGB(35, 35, 42), Size = UDim2.new(1, -10, 0, 50) })
-            w48(w189, w44.Fast, { TextColor3 = Color3.fromRGB(180, 180, 180), TextSize = 18 })
-            w48(w190, w44.Fast, { TextColor3 = Color3.fromRGB(180, 180, 180), TextSize = 13 })
+            w48(wa4, w44.Fast, { BackgroundColor3 = Color3.fromRGB(35, 35, 42), Size = UDim2.new(1, -10, 0, 50) })
+            w48(wa5, w44.Fast, { TextColor3 = Color3.fromRGB(180, 180, 180), TextSize = 18 })
+            w48(wa6, w44.Fast, { TextColor3 = Color3.fromRGB(180, 180, 180), TextSize = 13 })
         end
     end)
-    w188.MouseButton1Down:Connect(function()
-        local sel = w21.CurrentTab == w185
-        if sel then
-            w48(w188, w44.Fast, { Size = UDim2.new(1, -14, 0, 46) })
+    wa4.MouseButton1Down:Connect(function()
+        local wa7 = w21.CurrentTab == wa1
+        if wa7 then
+            w48(wa4, w44.Fast, { Size = UDim2.new(1, -14, 0, 46) })
         else
-            w48(w188, w44.Fast, { BackgroundColor3 = Color3.fromRGB(55, 55, 62), Size = UDim2.new(1, -14, 0, 46) })
+            w48(wa4, w44.Fast, { BackgroundColor3 = Color3.fromRGB(55, 55, 62), Size = UDim2.new(1, -14, 0, 46) })
         end
-        w48(w189, w44.Fast, { TextSize = 16 })
+        w48(wa5, w44.Fast, { TextSize = 16 })
     end)
-    w188.MouseButton1Up:Connect(function()
-        local sel = w21.CurrentTab == w185
-        if sel then
-            w48(w188, w44.Fast, { BackgroundColor3 = Color3.fromRGB(100, 150, 255), Size = UDim2.new(1, -4, 0, 54) })
+    wa4.MouseButton1Up:Connect(function()
+        local wa7 = w21.CurrentTab == wa1
+        if wa7 then
+            w48(wa4, w44.Fast, { BackgroundColor3 = Color3.fromRGB(100, 150, 255), Size = UDim2.new(1, -4, 0, 54) })
         else
-            w48(w188, w44.Fast, { BackgroundColor3 = Color3.fromRGB(45, 45, 52), Size = UDim2.new(1, -4, 0, 54) })
+            w48(wa4, w44.Fast, { BackgroundColor3 = Color3.fromRGB(45, 45, 52), Size = UDim2.new(1, -4, 0, 54) })
         end
-        w48(w189, w44.Fast, { TextSize = 21 })
+        w48(wa5, w44.Fast, { TextSize = 21 })
     end)
-    return w188
+    return wa4
 end
 
-local function w191(w185)
-    local w192 = Instance.new("ScrollingFrame", w169)
-    w192.Name = w185.."Content"
-    w192.Size = UDim2.new(1, -10, 1, -10)
-    w192.Position = UDim2.new(0, 5, 0, 5)
-    w192.BackgroundTransparency = 1
-    w192.BorderSizePixel = 0
-    w192.ScrollBarThickness = 4
-    w192.ScrollBarImageColor3 = Color3.fromRGB(100, 150, 255)
-    w192.ScrollBarImageTransparency = 0.5
-    w192.CanvasSize = UDim2.new(0, 0, 0, 0)
-    w192.Visible = false
-    w192.AutomaticCanvasSize = Enum.AutomaticSize.Y
-    local w193 = Instance.new("UIListLayout", w192)
-    w193.SortOrder = Enum.SortOrder.LayoutOrder
-    w193.Padding = UDim.new(0, 10)
-    w182[w185] = w192
-    w183["Content_"..w185] = w192
-    return w192
+local function w95(wa1)
+    local wa2 = Instance.new("ScrollingFrame", w82)
+    wa2.Name = wa1.."Content"
+    wa2.Size = UDim2.new(1, -10, 1, -10)
+    wa2.Position = UDim2.new(0, 5, 0, 5)
+    wa2.BackgroundTransparency = 1
+    wa2.BorderSizePixel = 0
+    wa2.ScrollBarThickness = 4
+    wa2.ScrollBarImageColor3 = Color3.fromRGB(100, 150, 255)
+    wa2.ScrollBarImageTransparency = 0.5
+    wa2.CanvasSize = UDim2.new(0, 0, 0, 0)
+    wa2.Visible = false
+    wa2.AutomaticCanvasSize = Enum.AutomaticSize.Y
+    local wa3 = Instance.new("UIListLayout", wa2)
+    wa3.SortOrder = Enum.SortOrder.LayoutOrder
+    wa3.Padding = UDim.new(0, 10)
+    w92[wa1] = wa2
+    w93["Content_"..wa1] = wa2
+    return wa2
 end
 
-local w194 = {
+local w96 = {
     { name = "Home", icon = "🏠", order = 1 },
     { name = "Anti-AFK", icon = "⚡", order = 2 },
     { name = "KeySpam", icon = "⌨️", order = 3 },
@@ -979,766 +979,772 @@ local w194 = {
     { name = "Script Loader", icon = "💾", order = 6 },
     { name = "Settings", icon = "⚙️", order = 7 },
 }
-for w195, w196 in ipairs(w194) do
-    w184(w196.name, w196.icon, w196.order)
-    w191(w196.name)
+for wa1, wa2 in ipairs(w96) do
+    w94(wa2.name, wa2.icon, wa2.order)
+    w95(wa2.name)
 end
 
-local w197, w198, w199 = {}, {}, {}
-local w200, w201, w202, w203 = {}, {}, {}, {}
-local function w218FU(w218Up)
-    local w218Dy, w218Hr, w218Mn, w218Sc = math.floor(w218Up / 86400), math.floor((w218Up % 86400) / 3600), math.floor((w218Up % 3600) / 60), w218Up % 60
-    if w218Dy > 0 then
-        return string.format("Server Uptime: %dd %dh %02dm %02ds", w218Dy, w218Hr, w218Mn, w218Sc)
-    elseif w218Hr > 0 then
-        return string.format("Server Uptime: %dh %02dm %02ds", w218Hr, w218Mn, w218Sc)
-    elseif w218Mn > 0 then
-        return string.format("Server Uptime: %dm %02ds", w218Mn, w218Sc)
+local w97, w99, wA = {}, {}, {}
+local wB, wC, wD, wE = {}, {}, {}, {}
+
+local function w31(wa1)
+    local wa2, wa3, wa4, wa5 = math.floor(wa1 / 86400), math.floor((wa1 % 86400) / 3600), math.floor((wa1 % 3600) / 60), wa1 % 60
+    if wa2 > 0 then
+        return string.format("Server Uptime: %dd %dh %02dm %02ds", wa2, wa3, wa4, wa5)
+    elseif wa3 > 0 then
+        return string.format("Server Uptime: %dh %02dm %02ds", wa3, wa4, wa5)
+    elseif wa4 > 0 then
+        return string.format("Server Uptime: %dm %02ds", wa4, wa5)
     else
-        return "Server Uptime: " .. w218Sc .. "s"
+        return "Server Uptime: " .. wa5 .. "s"
     end
 end
 
-local w218AR = {
-    ["us-east-1"] = "🇺🇸 US East (N. Virginia)",
-    ["us-east-2"] = "🇺🇸 US East (Ohio)",
-    ["us-west-1"] = "🇺🇸 US West (N. California)",
-    ["us-west-2"] = "🇺🇸 US West (Oregon)",
-    ["eu-west-1"] = "🇮🇪 EU West (Ireland)",
-    ["eu-west-2"] = "🇬🇧 EU West (London)",
-    ["eu-west-3"] = "🇫🇷 EU West (Paris)",
-    ["eu-central-1"] = "🇩🇪 EU Central (Frankfurt)",
-    ["eu-central-2"] = "🇨🇭 EU Central (Zurich)",
-    ["eu-north-1"] = "🇸🇪 EU North (Stockholm)",
-    ["eu-south-1"] = "🇮🇹 EU South (Milan)",
-    ["eu-south-2"] = "🇪🇸 EU South (Spain)",
-    ["ap-southeast-1"] = "🇸🇬 AP Southeast (Singapore)",
-    ["ap-southeast-2"] = "🇦🇺 AP Southeast (Sydney)",
-    ["ap-southeast-3"] = "🇮🇩 AP Southeast (Jakarta)",
-    ["ap-southeast-4"] = "🇦🇺 AP Southeast (Melbourne)",
-    ["ap-northeast-1"] = "🇯🇵 AP Northeast (Tokyo)",
-    ["ap-northeast-2"] = "🇰🇷 AP Northeast (Seoul)",
-    ["ap-northeast-3"] = "🇯🇵 AP Northeast (Osaka)",
-    ["ap-south-1"] = "🇮🇳 AP South (Mumbai)",
-    ["ap-south-2"] = "🇮🇳 AP South (Hyderabad)",
-    ["ap-east-1"] = "🇭🇰 AP East (Hong Kong)",
-    ["sa-east-1"] = "🇧🇷 SA East (São Paulo)",
-    ["ca-central-1"] = "🇨🇦 CA Central (Montreal)",
-    ["ca-west-1"] = "🇨🇦 CA West (Calgary)",
-    ["me-south-1"] = "🇧🇭 ME South (Bahrain)",
-    ["me-central-1"] = "🇦🇪 ME Central (UAE)",
-    ["af-south-1"] = "🇿🇦 AF South (Cape Town)",
-    ["il-central-1"] = "🇮🇱 IL Central (Tel Aviv)",
-    ["mx-central-1"] = "🇲🇽 MX Central (Mexico City)",
-}
-
-local w218CF = {
-    AF="🇦🇫", AL="🇦🇱", DZ="🇩🇿", AD="🇦🇩", AO="🇦🇴", AG="🇦🇬", AR="🇦🇷", AM="🇦🇲",
-    AU="🇦🇺", AT="🇦🇹", AZ="🇦🇿", BS="🇧🇸", BH="🇧🇭", BD="🇧🇩", BB="🇧🇧", BY="🇧🇾",
-    BE="🇧🇪", BZ="🇧🇿", BJ="🇧🇯", BT="🇧🇹", BO="🇧🇴", BA="🇧🇦", BW="🇧🇼", BR="🇧🇷",
-    BN="🇧🇳", BG="🇧🇬", BF="🇧🇫", BI="🇧🇮", CV="🇨🇻", KH="🇰🇭", CM="🇨🇲", CA="🇨🇦",
-    CF="🇨🇫", TD="🇹🇩", CL="🇨🇱", CN="🇨🇳", CO="🇨🇴", KM="🇰🇲", CG="🇨🇬", CD="🇨🇩",
-    CR="🇨🇷", HR="🇭🇷", CU="🇨🇺", CY="🇨🇾", CZ="🇨🇿", DK="🇩🇰", DJ="🇩🇯", DM="🇩🇲",
-    DO="🇩🇴", EC="🇪🇨", EG="🇪🇬", SV="🇸🇻", GQ="🇬🇶", ER="🇪🇷", EE="🇪🇪", SZ="🇸🇿",
-    ET="🇪🇹", FJ="🇫🇯", FI="🇫🇮", FR="🇫🇷", GA="🇬🇦", GM="🇬🇲", GE="🇬🇪", DE="🇩🇪",
-    GH="🇬🇭", GR="🇬🇷", GD="🇬🇩", GT="🇬🇹", GN="🇬🇳", GW="🇬🇼", GY="🇬🇾", HT="🇭🇹",
-    HN="🇭🇳", HU="🇭🇺", IS="🇮🇸", IN="🇮🇳", ID="🇮🇩", IR="🇮🇷", IQ="🇮🇶", IE="🇮🇪",
-    IL="🇮🇱", IT="🇮🇹", JM="🇯🇲", JP="🇯🇵", JO="🇯🇴", KZ="🇰🇿", KE="🇰🇪", KI="🇰🇮",
-    KP="🇰🇵", KR="🇰🇷", KW="🇰🇼", KG="🇰🇬", LA="🇱🇦", LV="🇱🇻", LB="🇱🇧", LS="🇱🇸",
-    LR="🇱🇷", LY="🇱🇾", LI="🇱🇮", LT="🇱🇹", LU="🇱🇺", MG="🇲🇬", MW="🇲🇼", MY="🇲🇾",
-    MV="🇲🇻", ML="🇲🇱", MT="🇲🇹", MH="🇲🇭", MR="🇲🇷", MU="🇲🇺", MX="🇲🇽", FM="🇫🇲",
-    MD="🇲🇩", MC="🇲🇨", MN="🇲🇳", ME="🇲🇪", MA="🇲🇦", MZ="🇲🇿", MM="🇲🇲", NA="🇳🇦",
-    NR="🇳🇷", NP="🇳🇵", NL="🇳🇱", NZ="🇳🇿", NI="🇳🇮", NE="🇳🇪", NG="🇳🇬", NO="🇳🇴",
-    OM="🇴🇲", PK="🇵🇰", PW="🇵🇼", PA="🇵🇦", PG="🇵🇬", PY="🇵🇾", PE="🇵🇪", PH="🇵🇭",
-    PL="🇵🇱", PT="🇵🇹", QA="🇶🇦", RO="🇷🇴", RU="🇷🇺", RW="🇷🇼", KN="🇰🇳", LC="🇱🇨",
-    VC="🇻🇨", WS="🇼🇸", SM="🇸🇲", ST="🇸🇹", SA="🇸🇦", SN="🇸🇳", RS="🇷🇸", SC="🇸🇨",
-    SL="🇸🇱", SG="🇸🇬", SK="🇸🇰", SI="🇸🇮", SB="🇸🇧", SO="🇸🇴", ZA="🇿🇦", SS="🇸🇸",
-    ES="🇪🇸", LK="🇱🇰", SD="🇸🇩", SR="🇸🇷", SE="🇸🇪", CH="🇨🇭", SY="🇸🇾", TW="🇹🇼",
-    TJ="🇹🇯", TZ="🇹🇿", TH="🇹🇭", TL="🇹🇱", TG="🇹🇬", TO="🇹🇴", TT="🇹🇹", TN="🇹🇳",
-    TR="🇹🇷", TM="🇹🇲", TV="🇹🇻", UG="🇺🇬", UA="🇺🇦", AE="🇦🇪", GB="🇬🇧", US="🇺🇸",
-    UY="🇺🇾", UZ="🇺🇿", VU="🇻🇺", VE="🇻🇪", VN="🇻🇳", YE="🇾🇪", ZM="🇿🇲", ZW="🇿🇼",
-    HK="🇭🇰", MO="🇲🇴", TF="🇹🇫", EU="🇪🇺",
-}
-
-local function w218FC(w218Cd)
-    if not w218Cd then return "🌐" end
-    return w218CF[w218Cd:upper()] or "🌐"
-end
-
-local function w218DR(w218Lb)
-    task.spawn(function()
-        local w218Dt, w218JI = nil, game.JobId
-        if w218JI and w218JI ~= "" then
-            for w218Cd, w218Nm in pairs(w218AR) do
-                if w218JI:lower():find(w218Cd, 1, true) then
-                    w218Dt = w218Nm
-                    break
+local w34
+do
+    local wa1 = {
+        ["us-east-1"] = "🇺🇸 US East (N. Virginia)",
+        ["us-east-2"] = "🇺🇸 US East (Ohio)",
+        ["us-west-1"] = "🇺🇸 US West (N. California)",
+        ["us-west-2"] = "🇺🇸 US West (Oregon)",
+        ["eu-west-1"] = "🇮🇪 EU West (Ireland)",
+        ["eu-west-2"] = "🇬🇧 EU West (London)",
+        ["eu-west-3"] = "🇫🇷 EU West (Paris)",
+        ["eu-central-1"] = "🇩🇪 EU Central (Frankfurt)",
+        ["eu-central-2"] = "🇨🇭 EU Central (Zurich)",
+        ["eu-north-1"] = "🇸🇪 EU North (Stockholm)",
+        ["eu-south-1"] = "🇮🇹 EU South (Milan)",
+        ["eu-south-2"] = "🇪🇸 EU South (Spain)",
+        ["ap-southeast-1"] = "🇸🇬 AP Southeast (Singapore)",
+        ["ap-southeast-2"] = "🇦🇺 AP Southeast (Sydney)",
+        ["ap-southeast-3"] = "🇮🇩 AP Southeast (Jakarta)",
+        ["ap-southeast-4"] = "🇦🇺 AP Southeast (Melbourne)",
+        ["ap-northeast-1"] = "🇯🇵 AP Northeast (Tokyo)",
+        ["ap-northeast-2"] = "🇰🇷 AP Northeast (Seoul)",
+        ["ap-northeast-3"] = "🇯🇵 AP Northeast (Osaka)",
+        ["ap-south-1"] = "🇮🇳 AP South (Mumbai)",
+        ["ap-south-2"] = "🇮🇳 AP South (Hyderabad)",
+        ["ap-east-1"] = "🇭🇰 AP East (Hong Kong)",
+        ["sa-east-1"] = "🇧🇷 SA East (São Paulo)",
+        ["ca-central-1"] = "🇨🇦 CA Central (Montreal)",
+        ["ca-west-1"] = "🇨🇦 CA West (Calgary)",
+        ["me-south-1"] = "🇧🇭 ME South (Bahrain)",
+        ["me-central-1"] = "🇦🇪 ME Central (UAE)",
+        ["af-south-1"] = "🇿🇦 AF South (Cape Town)",
+        ["il-central-1"] = "🇮🇱 IL Central (Tel Aviv)",
+        ["mx-central-1"] = "🇲🇽 MX Central (Mexico City)",
+    }
+    local wa2 = {
+        AF="🇦🇫", AL="🇦🇱", DZ="🇩🇿", AD="🇦🇩", AO="🇦🇴", AG="🇦🇬", AR="🇦🇷", AM="🇦🇲",
+        AU="🇦🇺", AT="🇦🇹", AZ="🇦🇿", BS="🇧🇸", BH="🇧🇭", BD="🇧🇩", BB="🇧🇧", BY="🇧🇾",
+        BE="🇧🇪", BZ="🇧🇿", BJ="🇧🇯", BT="🇧🇹", BO="🇧🇴", BA="🇧🇦", BW="🇧🇼", BR="🇧🇷",
+        BN="🇧🇳", BG="🇧🇬", BF="🇧🇫", BI="🇧🇮", CV="🇨🇻", KH="🇰🇭", CM="🇨🇲", CA="🇨🇦",
+        CF="🇨🇫", TD="🇹🇩", CL="🇨🇱", CN="🇨🇳", CO="🇨🇴", KM="🇰🇲", CG="🇨🇬", CD="🇨🇩",
+        CR="🇨🇷", HR="🇭🇷", CU="🇨🇺", CY="🇨🇾", CZ="🇨🇿", DK="🇩🇰", DJ="🇩🇯", DM="🇩🇲",
+        DO="🇩🇴", EC="🇪🇨", EG="🇪🇬", SV="🇸🇻", GQ="🇬🇶", ER="🇪🇷", EE="🇪🇪", SZ="🇸🇿",
+        ET="🇪🇹", FJ="🇫🇯", FI="🇫🇮", FR="🇫🇷", GA="🇬🇦", GM="🇬🇲", GE="🇬🇪", DE="🇩🇪",
+        GH="🇬🇭", GR="🇬🇷", GD="🇬🇩", GT="🇬🇹", GN="🇬🇳", GW="🇬🇼", GY="🇬🇾", HT="🇭🇹",
+        HN="🇭🇳", HU="🇭🇺", IS="🇮🇸", IN="🇮🇳", ID="🇮🇩", IR="🇮🇷", IQ="🇮🇶", IE="🇮🇪",
+        IL="🇮🇱", IT="🇮🇹", JM="🇯🇲", JP="🇯🇵", JO="🇯🇴", KZ="🇰🇿", KE="🇰🇪", KI="🇰🇮",
+        KP="🇰🇵", KR="🇰🇷", KW="🇰🇼", KG="🇰🇬", LA="🇱🇦", LV="🇱🇻", LB="🇱🇧", LS="🇱🇸",
+        LR="🇱🇷", LY="🇱🇾", LI="🇱🇮", LT="🇱🇹", LU="🇱🇺", MG="🇲🇬", MW="🇲🇼", MY="🇲🇾",
+        MV="🇲🇻", ML="🇲🇱", MT="🇲🇹", MH="🇲🇭", MR="🇲🇷", MU="🇲🇺", MX="🇲🇽", FM="🇫🇲",
+        MD="🇲🇩", MC="🇲🇨", MN="🇲🇳", ME="🇲🇪", MA="🇲🇦", MZ="🇲🇿", MM="🇲🇲", NA="🇳🇦",
+        NR="🇳🇷", NP="🇳🇵", NL="🇳🇱", NZ="🇳🇿", NI="🇳🇮", NE="🇳🇪", NG="🇳🇬", NO="🇳🇴",
+        OM="🇴🇲", PK="🇵🇰", PW="🇵🇼", PA="🇵🇦", PG="🇵🇬", PY="🇵🇾", PE="🇵🇪", PH="🇵🇭",
+        PL="🇵🇱", PT="🇵🇹", QA="🇶🇦", RO="🇷🇴", RU="🇷🇺", RW="🇷🇼", KN="🇰🇳", LC="🇱🇨",
+        VC="🇻🇨", WS="🇼🇸", SM="🇸🇲", ST="🇸🇹", SA="🇸🇦", SN="🇸🇳", RS="🇷🇸", SC="🇸🇨",
+        SL="🇸🇱", SG="🇸🇬", SK="🇸🇰", SI="🇸🇮", SB="🇸🇧", SO="🇸🇴", ZA="🇿🇦", SS="🇸🇸",
+        ES="🇪🇸", LK="🇱🇰", SD="🇸🇩", SR="🇸🇷", SE="🇸🇪", CH="🇨🇭", SY="🇸🇾", TW="🇹🇼",
+        TJ="🇹🇯", TZ="🇹🇿", TH="🇹🇭", TL="🇹🇱", TG="🇹🇬", TO="🇹🇴", TT="🇹🇹", TN="🇹🇳",
+        TR="🇹🇷", TM="🇹🇲", TV="🇹🇻", UG="🇺🇬", UA="🇺🇦", AE="🇦🇪", GB="🇬🇧", US="🇺🇸",
+        UY="🇺🇾", UZ="🇺🇿", VU="🇻🇺", VE="🇻🇪", VN="🇻🇳", YE="🇾🇪", ZM="🇿🇲", ZW="🇿🇼",
+        HK="🇭🇰", MO="🇲🇴", TF="🇹🇫", EU="🇪🇺",
+    }
+    local function wa3(wa4)
+        if not wa4 then return "🌐" end
+        return wa2[wa4:upper()] or "🌐"
+    end
+    function w34(wa5)
+        task.spawn(function()
+            local wa6, wa7 = nil, game.JobId
+            if wa7 and wa7 ~= "" then
+                for wa8, wa9 in pairs(wa1) do
+                    if wa7:lower():find(wa8, 1, true) then
+                        wa6 = wa9
+                        break
+                    end
                 end
             end
-        end
-        if not w218Dt then
-            local w218Ok, w218Rs = pcall(function()
-                local w218HO, w218Da = pcall(function()
-                    return w:JSONDecode(game:HttpGet("https://ipinfo.io/json", true))
+            if not wa6 then
+                local waa, wab = pcall(function()
+                    local wac, wad = pcall(function()
+                        return w:JSONDecode(game:HttpGet("https://ipinfo.io/json", true))
+                    end)
+                    if wac and wad and wad.country then
+                        local wae = wa3(wad.country)
+                        local waf = wae .. " " .. wad.country
+                        if wad.region and wad.region ~= "" then
+                            waf = waf .. " - " .. wad.region
+                        end
+                        if wad.city and wad.city ~= "" then
+                            waf = waf .. ", " .. wad.city
+                        end
+                        return waf
+                    end
+                    return nil
                 end)
-                if w218HO and w218Da and w218Da.country then
-                    local w218Fl = w218FC(w218Da.country)
-                    local w218St = w218Fl .. " " .. w218Da.country
-                    if w218Da.region and w218Da.region ~= "" then
-                        w218St = w218St .. " - " .. w218Da.region
-                    end
-                    if w218Da.city and w218Da.city ~= "" then
-                        w218St = w218St .. ", " .. w218Da.city
-                    end
-                    return w218St
+                if waa and wab then
+                    wa6 = wab
                 end
-                return nil
-            end)
-            if w218Ok and w218Rs then
-                w218Dt = w218Rs
             end
-        end
-        if not w218Dt then
-            w218Dt = "🌐 Unknown"
-        end
-        if w218Lb and w218Lb.Parent then
-            w218Lb.Text = "Server Region: " .. w218Dt
-        end
-    end)
+            if not wa6 then
+                wa6 = "🌐 Unknown"
+            end
+            if wa5 and wa5.Parent then
+                wa5.Text = "Server Region: " .. wa6
+            end
+        end)
+    end
 end
 
 do
-    local w204 = w182["Home"]
-    local w205 = w134(w204, 200, 1)
-    w183["Home_Card1"] = w205
-    local w206 = Instance.new("ImageLabel", w205)
-    w206.Size = UDim2.new(0, 120, 0, 140)
-    w206.Position = UDim2.new(0, 10, 0, 10)
-    w206.BackgroundColor3 = Color3.fromRGB(45, 45, 52)
-    w206.BorderSizePixel = 0
-    w206.Image = "rbxasset://textures/ui/GuiImagePlaceholder.png"
-    w65(w206, 10)
-    Instance.new("UIStroke", w206).Color = Color3.fromRGB(100, 150, 255)
-    local w207 = Instance.new("TextLabel", w205)
-    w207.Size = UDim2.new(1, -145, 0, 22)
-    w207.Position = UDim2.new(0, 140, 0, 10)
-    w207.BackgroundTransparency = 1
-    w207.Text = w12
-    w207.Font = Enum.Font.GothamBold
-    w207.TextSize = 28
-    w207.TextColor3 = Color3.fromRGB(255, 255, 255)
-    w207.TextXAlignment = Enum.TextXAlignment.Left
-    local w208 = Instance.new("TextLabel", w205)
-    w208.Size = UDim2.new(1, -145, 0, 16)
-    w208.Position = UDim2.new(0, 140, 0, 33)
-    w208.BackgroundTransparency = 1
-    w208.Text = "User ID: "..w13
-    w208.Font = Enum.Font.Gotham
-    w208.TextSize = 12
-    w208.TextColor3 = Color3.fromRGB(150, 150, 150)
-    w208.TextXAlignment = Enum.TextXAlignment.Left
-    local w209 = Instance.new("TextLabel", w205)
-    w209.Size = UDim2.new(1, -145, 0, 18); w209.Position = UDim2.new(0, 140, 0, 55)
-    w209.BackgroundTransparency = 1; w209.Text = "FPS: 60"
-    w209.Font = Enum.Font.Gotham; w209.TextSize = 16
-    w209.TextColor3 = Color3.fromRGB(100, 200, 255); w209.TextXAlignment = Enum.TextXAlignment.Left
-    local w210 = Instance.new("TextLabel", w205)
-    w210.Size = UDim2.new(1, -145, 0, 18); w210.Position = UDim2.new(0, 140, 0, 70)
-    w210.BackgroundTransparency = 1; w210.Text = "Ping: 0 ms"
-    w210.Font = Enum.Font.Gotham; w210.TextSize = 16
-    w210.TextColor3 = Color3.fromRGB(0, 255, 0); w210.TextXAlignment = Enum.TextXAlignment.Left
-    local w211 = Instance.new("TextLabel", w205)
-    w211.Size = UDim2.new(1, -145, 0, 18); w211.Position = UDim2.new(0, 140, 0, 90)
-    w211.BackgroundTransparency = 1; w211.Text = "Memory: 0 MB"
-    w211.Font = Enum.Font.Gotham; w211.TextSize = 16
-    w211.TextColor3 = Color3.fromRGB(255, 180, 100); w211.TextXAlignment = Enum.TextXAlignment.Left
-    local w212, w213 = "Unknown", "N/A"
+    local wa1 = w92["Home"]
+    local wa2 = w51(wa1, 200, 1)
+    w93["Home_Card1"] = wa2
+    local wa3 = Instance.new("ImageLabel", wa2)
+    wa3.Size = UDim2.new(0, 120, 0, 140)
+    wa3.Position = UDim2.new(0, 10, 0, 10)
+    wa3.BackgroundColor3 = Color3.fromRGB(45, 45, 52)
+    wa3.BorderSizePixel = 0
+    wa3.Image = "rbxasset://textures/ui/GuiImagePlaceholder.png"
+    w65(wa3, 10)
+    Instance.new("UIStroke", wa3).Color = Color3.fromRGB(100, 150, 255)
+    local wa4 = Instance.new("TextLabel", wa2)
+    wa4.Size = UDim2.new(1, -145, 0, 22)
+    wa4.Position = UDim2.new(0, 140, 0, 10)
+    wa4.BackgroundTransparency = 1
+    wa4.Text = w12
+    wa4.Font = Enum.Font.GothamBold
+    wa4.TextSize = 28
+    wa4.TextColor3 = Color3.fromRGB(255, 255, 255)
+    wa4.TextXAlignment = Enum.TextXAlignment.Left
+    local wa5 = Instance.new("TextLabel", wa2)
+    wa5.Size = UDim2.new(1, -145, 0, 16)
+    wa5.Position = UDim2.new(0, 140, 0, 33)
+    wa5.BackgroundTransparency = 1
+    wa5.Text = "User ID: "..w13
+    wa5.Font = Enum.Font.Gotham
+    wa5.TextSize = 12
+    wa5.TextColor3 = Color3.fromRGB(150, 150, 150)
+    wa5.TextXAlignment = Enum.TextXAlignment.Left
+    local wa6 = Instance.new("TextLabel", wa2)
+    wa6.Size = UDim2.new(1, -145, 0, 18); wa6.Position = UDim2.new(0, 140, 0, 55)
+    wa6.BackgroundTransparency = 1; wa6.Text = "FPS: 60"
+    wa6.Font = Enum.Font.Gotham; wa6.TextSize = 16
+    wa6.TextColor3 = Color3.fromRGB(100, 200, 255); wa6.TextXAlignment = Enum.TextXAlignment.Left
+    local wa7 = Instance.new("TextLabel", wa2)
+    wa7.Size = UDim2.new(1, -145, 0, 18); wa7.Position = UDim2.new(0, 140, 0, 70)
+    wa7.BackgroundTransparency = 1; wa7.Text = "Ping: 0 ms"
+    wa7.Font = Enum.Font.Gotham; wa7.TextSize = 16
+    wa7.TextColor3 = Color3.fromRGB(0, 255, 0); wa7.TextXAlignment = Enum.TextXAlignment.Left
+    local wa8 = Instance.new("TextLabel", wa2)
+    wa8.Size = UDim2.new(1, -145, 0, 18); wa8.Position = UDim2.new(0, 140, 0, 90)
+    wa8.BackgroundTransparency = 1; wa8.Text = "Memory: 0 MB"
+    wa8.Font = Enum.Font.Gotham; wa8.TextSize = 16
+    wa8.TextColor3 = Color3.fromRGB(255, 180, 100); wa8.TextXAlignment = Enum.TextXAlignment.Left
+    local wa9, waa = "Unknown", "N/A"
     pcall(function()
-        if identifyexecutor then w212, w213 = identifyexecutor()
-        elseif getexecutorname then w212 = getexecutorname() end
+        if identifyexecutor then wa9, waa = identifyexecutor()
+        elseif getexecutorname then wa9 = getexecutorname() end
     end)
-    local w214 = Instance.new("TextLabel", w205)
-    w214.Size = UDim2.new(1, -145, 0, 18); w214.Position = UDim2.new(0, 140, 0, 105)
-    w214.BackgroundTransparency = 1; w214.Text = "Executor: "..w212.." "..w213
-    w214.Font = Enum.Font.Gotham; w214.TextSize = 14
-    w214.TextColor3 = Color3.fromRGB(255, 100, 200); w214.TextXAlignment = Enum.TextXAlignment.Left
-    local w215 = Instance.new("TextLabel", w205)
-    w215.Size = UDim2.new(1, -145, 0, 18); w215.Position = UDim2.new(0, 140, 0, 125)
-    w215.BackgroundTransparency = 1; w215.Text = "Device: "..w19()
-    w215.Font = Enum.Font.Gotham; w215.TextSize = 14
-    w215.TextColor3 = Color3.fromRGB(180, 255, 150); w215.TextXAlignment = Enum.TextXAlignment.Left
-    local w216, w217 = w59(), Instance.new("TextLabel", w205)
-    w217.Size = UDim2.new(1, -145, 0, 16); w217.Position = UDim2.new(0, 140, 0, 140)
-    w217.BackgroundTransparency = 1; w217.Text = string.format("Resolution: %dx%d", w216.X, w216.Y)
-    w217.Font = Enum.Font.Gotham; w217.TextSize = 12
-    w217.TextColor3 = Color3.fromRGB(120, 120, 120); w217.TextXAlignment = Enum.TextXAlignment.Left
-    local w218 = w134(w204, 178, 2)
-    w183["Home_Card2"] = w218
-    local w219 = Instance.new("ImageLabel", w218)
-    w219.Size = UDim2.new(0, 120, 0, 125); w219.Position = UDim2.new(0, 10, 0, 10)
-    w219.BackgroundColor3 = Color3.fromRGB(45, 45, 52); w219.BorderSizePixel = 0
-    w219.Image = "rbxasset://textures/ui/GuiImagePlaceholder.png"
-    w65(w219, 10); Instance.new("UIStroke", w219).Color = Color3.fromRGB(100, 150, 255)
-    local w220 = Instance.new("TextLabel", w218)
-    w220.Size = UDim2.new(1, -145, 0, 24); w220.Position = UDim2.new(0, 140, 0, 5)
-    w220.BackgroundTransparency = 1; w220.Text = "Loading game info..."
-    w220.Font = Enum.Font.GothamBold; w220.TextSize = 24
-    w220.TextColor3 = Color3.fromRGB(255, 255, 255); w220.TextXAlignment = Enum.TextXAlignment.Left
-    w220.TextWrapped = true
-    local w221 = Instance.new("TextLabel", w218)
-    w221.Size = UDim2.new(1, -145, 0, 16); w221.Position = UDim2.new(0, 140, 0, 30)
-    w221.BackgroundTransparency = 1; w221.Text = "Place Id: "..game.PlaceId
-    w221.Font = Enum.Font.Gotham; w221.TextSize = 16
-    w221.TextColor3 = Color3.fromRGB(150, 180, 255); w221.TextXAlignment = Enum.TextXAlignment.Left
-    local w221B = Instance.new("TextLabel", w218)
-    w221B.Size = UDim2.new(1, -145, 0, 16); w221B.Position = UDim2.new(0, 140, 0, 45)
-    w221B.BackgroundTransparency = 1; w221B.Text = "Universe Id: "..game.GameId
-    w221B.Font = Enum.Font.Gotham; w221B.TextSize = 16
-    w221B.TextColor3 = Color3.fromRGB(200, 160, 255); w221B.TextXAlignment = Enum.TextXAlignment.Left
-    local w222 = Instance.new("TextLabel", w218)
-    w222.Size = UDim2.new(1, -145, 0, 16); w222.Position = UDim2.new(0, 140, 0, 70)
-    w222.BackgroundTransparency = 1
-    w222.Text = "Server Players: "..#w1:GetPlayers().." / "..w1.MaxPlayers
-    w222.Font = Enum.Font.Gotham; w222.TextSize = 16
-    w222.TextColor3 = Color3.fromRGB(150, 255, 180); w222.TextXAlignment = Enum.TextXAlignment.Left
-    local w223B = Instance.new("TextLabel", w218)
-    w223B.Size = UDim2.new(1, -145, 0, 16); w223B.Position = UDim2.new(0, 140, 0, 85)
-    w223B.BackgroundTransparency = 1; w223B.Text = "Server Uptime: 0s"
-    w223B.Font = Enum.Font.Gotham; w223B.TextSize = 16
-    w223B.TextColor3 = Color3.fromRGB(255, 220, 100); w223B.TextXAlignment = Enum.TextXAlignment.Left
-    local wa = Instance.new("TextLabel", w218)
-    wa.Size = UDim2.new(1, -145, 0, 16); wa.Position = UDim2.new(0, 140, 0, 100)
-    wa.BackgroundTransparency = 1; wa.Text = "Server Region: Detecting..."
-    wa.Font = Enum.Font.Gotham; wa.TextSize = 12
-    wa.TextColor3 = Color3.fromRGB(130, 220, 255); wa.TextXAlignment = Enum.TextXAlignment.Left
-    local w223 = Instance.new("TextLabel", w218)
-    w223.Size = UDim2.new(1, -145, 0, 14); w223.Position = UDim2.new(0, 140, 0, 120)
-    w223.BackgroundTransparency = 1; w223.Text = "Job Id: "..(game.JobId ~= "" and game.JobId or "N/A")
-    w223.Font = Enum.Font.Gotham; w223.TextSize = 12
-    w223.TextColor3 = Color3.fromRGB(255, 180, 180); w223.TextXAlignment = Enum.TextXAlignment.Left
-    w223.TextTruncate = Enum.TextTruncate.AtEnd
-    local w218TO = tick() - workspace.DistributedGameTime
-    w223B.Text = w218FU(math.floor(workspace.DistributedGameTime))
-    w218DR(wa)
+    local wab = Instance.new("TextLabel", wa2)
+    wab.Size = UDim2.new(1, -145, 0, 18); wab.Position = UDim2.new(0, 140, 0, 105)
+    wab.BackgroundTransparency = 1; wab.Text = "Executor: "..wa9.." "..waa
+    wab.Font = Enum.Font.Gotham; wab.TextSize = 14
+    wab.TextColor3 = Color3.fromRGB(255, 100, 200); wab.TextXAlignment = Enum.TextXAlignment.Left
+    local wac = Instance.new("TextLabel", wa2)
+    wac.Size = UDim2.new(1, -145, 0, 18); wac.Position = UDim2.new(0, 140, 0, 125)
+    wac.BackgroundTransparency = 1; wac.Text = "Device: "..w19()
+    wac.Font = Enum.Font.Gotham; wac.TextSize = 14
+    wac.TextColor3 = Color3.fromRGB(180, 255, 150); wac.TextXAlignment = Enum.TextXAlignment.Left
+    local wad, wae = w59(), Instance.new("TextLabel", wa2)
+    wae.Size = UDim2.new(1, -145, 0, 16); wae.Position = UDim2.new(0, 140, 0, 140)
+    wae.BackgroundTransparency = 1; wae.Text = string.format("Resolution: %dx%d", wad.X, wad.Y)
+    wae.Font = Enum.Font.Gotham; wae.TextSize = 12
+    wae.TextColor3 = Color3.fromRGB(120, 120, 120); wae.TextXAlignment = Enum.TextXAlignment.Left
+    local waf = w51(wa1, 178, 2)
+    w93["Home_Card2"] = waf
+    local wag = Instance.new("ImageLabel", waf)
+    wag.Size = UDim2.new(0, 120, 0, 125); wag.Position = UDim2.new(0, 10, 0, 10)
+    wag.BackgroundColor3 = Color3.fromRGB(45, 45, 52); wag.BorderSizePixel = 0
+    wag.Image = "rbxasset://textures/ui/GuiImagePlaceholder.png"
+    w65(wag, 10); Instance.new("UIStroke", wag).Color = Color3.fromRGB(100, 150, 255)
+    local wah = Instance.new("TextLabel", waf)
+    wah.Size = UDim2.new(1, -145, 0, 24); wah.Position = UDim2.new(0, 140, 0, 5)
+    wah.BackgroundTransparency = 1; wah.Text = "Loading game info..."
+    wah.Font = Enum.Font.GothamBold; wah.TextSize = 24
+    wah.TextColor3 = Color3.fromRGB(255, 255, 255); wah.TextXAlignment = Enum.TextXAlignment.Left
+    wah.TextWrapped = true
+    local wai = Instance.new("TextLabel", waf)
+    wai.Size = UDim2.new(1, -145, 0, 16); wai.Position = UDim2.new(0, 140, 0, 30)
+    wai.BackgroundTransparency = 1; wai.Text = "Place Id: "..game.PlaceId
+    wai.Font = Enum.Font.Gotham; wai.TextSize = 16
+    wai.TextColor3 = Color3.fromRGB(150, 180, 255); wai.TextXAlignment = Enum.TextXAlignment.Left
+    local waj = Instance.new("TextLabel", waf)
+    waj.Size = UDim2.new(1, -145, 0, 16); waj.Position = UDim2.new(0, 140, 0, 45)
+    waj.BackgroundTransparency = 1; waj.Text = "Universe Id: "..game.GameId
+    waj.Font = Enum.Font.Gotham; waj.TextSize = 16
+    waj.TextColor3 = Color3.fromRGB(200, 160, 255); waj.TextXAlignment = Enum.TextXAlignment.Left
+    local wak = Instance.new("TextLabel", waf)
+    wak.Size = UDim2.new(1, -145, 0, 16); wak.Position = UDim2.new(0, 140, 0, 70)
+    wak.BackgroundTransparency = 1
+    wak.Text = "Server Players: "..#w1:GetPlayers().." / "..w1.MaxPlayers
+    wak.Font = Enum.Font.Gotham; wak.TextSize = 16
+    wak.TextColor3 = Color3.fromRGB(150, 255, 180); wak.TextXAlignment = Enum.TextXAlignment.Left
+    local wal = Instance.new("TextLabel", waf)
+    wal.Size = UDim2.new(1, -145, 0, 16); wal.Position = UDim2.new(0, 140, 0, 85)
+    wal.BackgroundTransparency = 1; wal.Text = "Server Uptime: 0s"
+    wal.Font = Enum.Font.Gotham; wal.TextSize = 16
+    wal.TextColor3 = Color3.fromRGB(255, 220, 100); wal.TextXAlignment = Enum.TextXAlignment.Left
+    local wam = Instance.new("TextLabel", waf)
+    wam.Size = UDim2.new(1, -145, 0, 16); wam.Position = UDim2.new(0, 140, 0, 100)
+    wam.BackgroundTransparency = 1; wam.Text = "Server Region: Detecting..."
+    wam.Font = Enum.Font.Gotham; wam.TextSize = 12
+    wam.TextColor3 = Color3.fromRGB(130, 220, 255); wam.TextXAlignment = Enum.TextXAlignment.Left
+    local wan = Instance.new("TextLabel", waf)
+    wan.Size = UDim2.new(1, -145, 0, 14); wan.Position = UDim2.new(0, 140, 0, 120)
+    wan.BackgroundTransparency = 1; wan.Text = "Job Id: "..(game.JobId ~= "" and game.JobId or "N/A")
+    wan.Font = Enum.Font.Gotham; wan.TextSize = 12
+    wan.TextColor3 = Color3.fromRGB(255, 180, 180); wan.TextXAlignment = Enum.TextXAlignment.Left
+    wan.TextTruncate = Enum.TextTruncate.AtEnd
+    local wao = tick() - workspace.DistributedGameTime
+    wal.Text = w31(math.floor(workspace.DistributedGameTime))
+    w34(wam)
     table.insert(_G.UU.Connections, w1.PlayerAdded:Connect(function()
-        w222.Text = "Players: "..#w1:GetPlayers().." / "..w1.MaxPlayers
+        wak.Text = "Players: "..#w1:GetPlayers().." / "..w1.MaxPlayers
     end))
     table.insert(_G.UU.Connections, w1.PlayerRemoving:Connect(function()
-        w222.Text = "Players: "..(#w1:GetPlayers() - 1).." / "..w1.MaxPlayers
+        wak.Text = "Players: "..(#w1:GetPlayers() - 1).." / "..w1.MaxPlayers
     end))
-    local w218LU, w218Cn = -1, w5.Heartbeat:Connect(function()
-        local w218Up = math.floor(tick() - w218TO)
-        if w218Up ~= w218LU then
-            w218LU = w218Up
-            w223B.Text = w218FU(w218Up)
+    local wap, waq = -1, w5.Heartbeat:Connect(function()
+        local war = math.floor(tick() - wao)
+        if war ~= wap then
+            wap = war
+            wal.Text = w31(war)
         end
     end)
-    table.insert(_G.UU.Connections, w218Cn)
-    _G.UU.UI.PlayerImage = w206
-    _G.UU.UI.GameName = w220
-    _G.UU.UI.GameImage = w219
-    _G.UU.UI.ResolutionLabel = w217
-    _G.UU.UI.DeviceLabel = w215
-    w197.FPSLabel = w209
-    w197.PingLabel = w210
-    w197.MemoryLabel = w211
+    table.insert(_G.UU.Connections, waq)
+    _G.UU.UI.PlayerImage = wa3
+    _G.UU.UI.GameName = wah
+    _G.UU.UI.GameImage = wag
+    _G.UU.UI.ResolutionLabel = wae
+    _G.UU.UI.DeviceLabel = wac
+    w97.FPSLabel = wa6
+    w97.PingLabel = wa7
+    w97.MemoryLabel = wa8
 end
 
 do
-    local w225 = w182["Anti-AFK"]
-    local w226 = w134(w225, 450, 1)
-    w183["AntiAFK_Card"] = w226
-    local w227 = w141(w226, "⚡ Anti-AFK System", 8)
-    w227.TextColor3 = Color3.fromRGB(100, 200, 255)
-    w138(w226, "Prevent disconnections by simulating player activity", 34)
-    local w228, _ = w143(w226, "Auto Jump", 60)
-    local w229, _, _, w231 = w147(w228, UDim2.new(0, 56, 0, 28), UDim2.new(1, -28, 0.5, 0), w21.JumpEnabled, nil)
-    local w232, _ = w143(w226, "Auto Click", 102)
-    local w233, _, _, w235 = w147(w232, UDim2.new(0, 56, 0, 28), UDim2.new(1, -28, 0.5, 0), w21.ClickEnabled, nil)
-    w128(w226, 150)
-    local wS, _ = w143(w226, "Mouse Position", 162)
-    local wT, _, _, wU = w147(wS, UDim2.new(0, 56, 0, 28), UDim2.new(1, -28, 0.5, 0), w21.MousePosEnabled, nil)
-    local wV = Instance.new("TextLabel", w226)
-    wV.Size = UDim2.new(1, -20, 0, 16)
-    wV.Position = UDim2.new(0, 10, 0, 198)
-    wV.BackgroundTransparency = 1
-    wV.Text = string.format("[Locked] F5 · %d, %d", math.floor(w21.MousePosSaved.X), math.floor(w21.MousePosSaved.Y))
-    wV.Font = Enum.Font.Gotham
-    wV.TextSize = 12
-    wV.TextColor3 = Color3.fromRGB(150, 150, 150)
-    wV.TextXAlignment = Enum.TextXAlignment.Left
-    w128(w226, 233)
-    local _, w244, w245, w246, w247 = w74(w226, UDim2.new(1, -20, 0, 50), UDim2.new(0, 10, 0, 248), 10, "Jump Interval (seconds)")
-    local _, w249, w250, w251, w252 = w74(w226, UDim2.new(1, -20, 0, 50), UDim2.new(0, 10, 0, 315), 3, "Click Interval (seconds)")
-    local _, w254 = w123(w226, UDim2.new(1, -20, 0, 45), UDim2.new(0, 10, 0, 380), "Status: All Inactive")
-    w198 = {
-        JumpToggleBtn = w229,
-        JumpToggleState = w231,
-        ClickToggleBtn = w233,
-        ClickToggleState = w235,
-        MousePosToggleBtn = wT,
-        MousePosToggleState = wU,
-        MousePosLabel = wV,
-        JumpDelaySlider = w244,
-        JumpSliderFill = w245,
-        JumpSliderButton = w246,
-        JumpDelayBox = w247,
-        ClickDelaySlider = w249,
-        ClickSliderFill = w250,
-        ClickSliderButton = w251,
-        ClickDelayBox = w252,
-        Status = w254,
+    local wa1 = w92["Anti-AFK"]
+    local wa2 = w51(wa1, 450, 1)
+    w93["AntiAFK_Card"] = wa2
+    local wa3 = w54(wa2, "⚡ Anti-AFK System", 8)
+    wa3.TextColor3 = Color3.fromRGB(100, 200, 255)
+    w52(wa2, "Prevent disconnections by simulating player activity", 34)
+    local wa4, _ = w55(wa2, "Auto Jump", 60)
+    local wa5, _, _, wa6 = w58(wa4, UDim2.new(0, 56, 0, 28), UDim2.new(1, -28, 0.5, 0), w21.JumpEnabled, nil)
+    local wa7, _ = w55(wa2, "Auto Click", 102)
+    local wa8, _, _, wa9 = w58(wa7, UDim2.new(0, 56, 0, 28), UDim2.new(1, -28, 0.5, 0), w21.ClickEnabled, nil)
+    w49(wa2, 150)
+    local waa, _ = w55(wa2, "Mouse Position", 162)
+    local wab, _, _, wac = w58(waa, UDim2.new(0, 56, 0, 28), UDim2.new(1, -28, 0.5, 0), w21.MousePosEnabled, nil)
+    local wad = Instance.new("TextLabel", wa2)
+    wad.Size = UDim2.new(1, -20, 0, 16)
+    wad.Position = UDim2.new(0, 10, 0, 198)
+    wad.BackgroundTransparency = 1
+    wad.Text = string.format("[Locked] F5 · %d, %d", math.floor(w21.MousePosSaved.X), math.floor(w21.MousePosSaved.Y))
+    wad.Font = Enum.Font.Gotham
+    wad.TextSize = 12
+    wad.TextColor3 = Color3.fromRGB(150, 150, 150)
+    wad.TextXAlignment = Enum.TextXAlignment.Left
+    w49(wa2, 233)
+    local _, wae, waf, wag, wah = w74(wa2, UDim2.new(1, -20, 0, 50), UDim2.new(0, 10, 0, 248), 10, "Jump Interval (seconds)")
+    local _, wai, waj, wak, wal = w74(wa2, UDim2.new(1, -20, 0, 50), UDim2.new(0, 10, 0, 315), 3, "Click Interval (seconds)")
+    local _, wam = w47(wa2, UDim2.new(1, -20, 0, 45), UDim2.new(0, 10, 0, 380), "Status: All Inactive")
+    w99 = {
+        JumpToggleBtn = wa5,
+        JumpToggleState = wa6,
+        ClickToggleBtn = wa8,
+        ClickToggleState = wa9,
+        MousePosToggleBtn = wab,
+        MousePosToggleState = wac,
+        MousePosLabel = wad,
+        JumpDelaySlider = wae,
+        JumpSliderFill = waf,
+        JumpSliderButton = wag,
+        JumpDelayBox = wah,
+        ClickDelaySlider = wai,
+        ClickSliderFill = waj,
+        ClickSliderButton = wak,
+        ClickDelayBox = wal,
+        Status = wam,
     }
 end
 
 do
-    local w255 = w182["KeySpam"]
-    local w256 = w134(w255, 330, 1)
-    w183["KeySpam_Card"] = w256
-    local w257 = w141(w256, "⌨️ Key Spam Controller", 8)
-    w257.TextColor3 = Color3.fromRGB(255, 200, 100)
-    w138(w256, "Automatically spam any keyboard key at custom intervals", 34)
-    w131(w256, "Target Key", 60)
-    local w258 = Instance.new("TextBox", w256)
-    w258.Size = UDim2.new(1, -20, 0, 40)
-    w258.Position = UDim2.new(0, 10, 0, 82)
-    w258.BackgroundColor3 = Color3.fromRGB(45, 45, 52)
-    w258.Text = w21.SpamKey
-    w258.PlaceholderText = "Enter key (A-Z, 0-9, F1-F12)"
-    w258.Font = Enum.Font.Gotham
-    w258.TextSize = 14
-    w258.TextColor3 = Color3.fromRGB(255, 255, 255)
-    w258.PlaceholderColor3 = Color3.fromRGB(120, 120, 120)
-    w258.BorderSizePixel = 0
-    w258.ClearTextOnFocus = false
-    w65(w258, 8)
-    Instance.new("UIStroke", w258).Color = Color3.fromRGB(60, 60, 70)
-    w128(w256, 135)
-    local _, w260, w261, w262, w263 = w74(w256, UDim2.new(1, -20, 0, 50), UDim2.new(0, 10, 0, 150), 0.1, "Spam Interval (seconds)")
-    local w264, _ = w143(w256, "Auto Spam", 215)
-    local w265, _, _, w267 = w147(w264, UDim2.new(0, 56, 0, 28), UDim2.new(1, -28, 0.5, 0), w21.AutoSpamEnabled, nil)
-    local _, w269 = w123(w256, UDim2.new(1, -20, 0, 45), UDim2.new(0, 10, 0, 265), "Status: Inactive")
-    w199 = {
-        SpamInput = w258,
-        SpamDelaySlider = w260,
-        SpamSliderFill = w261,
-        SpamSliderButton = w262,
-        SpamDelayBox = w263,
-        AutoSpamToggleBtn = w265,
-        AutoSpamToggleState = w267,
-        Status = w269,
+    local wa1 = w92["KeySpam"]
+    local wa2 = w51(wa1, 330, 1)
+    w93["KeySpam_Card"] = wa2
+    local wa3 = w54(wa2, "⌨️ Key Spam Controller", 8)
+    wa3.TextColor3 = Color3.fromRGB(255, 200, 100)
+    w52(wa2, "Automatically spam any keyboard key at custom intervals", 34)
+    w50(wa2, "Target Key", 60)
+    local wa4 = Instance.new("TextBox", wa2)
+    wa4.Size = UDim2.new(1, -20, 0, 40)
+    wa4.Position = UDim2.new(0, 10, 0, 82)
+    wa4.BackgroundColor3 = Color3.fromRGB(45, 45, 52)
+    wa4.Text = w21.SpamKey
+    wa4.PlaceholderText = "Enter key (A-Z, 0-9, F1-F12)"
+    wa4.Font = Enum.Font.Gotham
+    wa4.TextSize = 14
+    wa4.TextColor3 = Color3.fromRGB(255, 255, 255)
+    wa4.PlaceholderColor3 = Color3.fromRGB(120, 120, 120)
+    wa4.BorderSizePixel = 0
+    wa4.ClearTextOnFocus = false
+    w65(wa4, 8)
+    Instance.new("UIStroke", wa4).Color = Color3.fromRGB(60, 60, 70)
+    w49(wa2, 135)
+    local _, wa5, wa6, wa7, wa8 = w74(wa2, UDim2.new(1, -20, 0, 50), UDim2.new(0, 10, 0, 150), 0.1, "Spam Interval (seconds)")
+    local wa9, _ = w55(wa2, "Auto Spam", 215)
+    local waa, _, _, wab = w58(wa9, UDim2.new(0, 56, 0, 28), UDim2.new(1, -28, 0.5, 0), w21.AutoSpamEnabled, nil)
+    local _, wac = w47(wa2, UDim2.new(1, -20, 0, 45), UDim2.new(0, 10, 0, 265), "Status: Inactive")
+    wA = {
+        SpamInput = wa4,
+        SpamDelaySlider = wa5,
+        SpamSliderFill = wa6,
+        SpamSliderButton = wa7,
+        SpamDelayBox = wa8,
+        AutoSpamToggleBtn = waa,
+        AutoSpamToggleState = wab,
+        Status = wac,
     }
 end
 
 do
-    local w270 = w182["Performance Status"]
-    local w271 = w134(w270, 660, 1)
-    w183["Performance_Card"] = w271
-    local w272 = w141(w271, "📊 Performance Monitor", 8)
-    w272.TextColor3 = Color3.fromRGB(100, 255, 150)
-    w138(w271, "Track real-time performance metrics and unlock FPS limits", 34)
-    local w273, _ = w143(w271, "FPS Unlock", 60)
-    local w274, _, _, w276 = w147(w273, UDim2.new(0, 56, 0, 28), UDim2.new(1, -28, 0.5, 0), w21.FPSUnlockEnabled, nil)
-    local w277 = Instance.new("TextLabel", w271)
-    w277.Size = UDim2.new(1, -20, 0, 20)
-    w277.Position = UDim2.new(0, 10, 0, 102)
-    w277.BackgroundTransparency = 1
-    w277.Text = "Current Limit: 60 FPS"
-    w277.Font = Enum.Font.Gotham
-    w277.TextSize = 13
-    w277.TextColor3 = Color3.fromRGB(180, 180, 180)
-    w277.TextXAlignment = Enum.TextXAlignment.Center
-    local _, w279, w280, w281, w282 = w74(w271, UDim2.new(1, -20, 0, 50), UDim2.new(0, 10, 0, 135), 60, "Target FPS Limit")
-    w128(w271, 200)
-    w131(w271, "Framerate Statistics", 210)
-    local w283 = Instance.new("Frame", w271)
-    w283.Size = UDim2.new(1, -20, 0, 50); w283.Position = UDim2.new(0, 10, 0, 235)
-    w283.BackgroundColor3 = Color3.fromRGB(30, 30, 35); w283.BorderSizePixel = 0
-    w65(w283, 8); Instance.new("UIStroke", w283).Color = Color3.fromRGB(50, 50, 60)
-    local function w284(w285, w286, w287, w288)
-        local w289 = Instance.new("TextLabel", w285)
-        w289.Size = UDim2.new(w286[3], 0, 1, 0); w289.Position = UDim2.new(w286[1], 0, 0, 0)
-        w289.BackgroundTransparency = 1; w289.Text = w287
-        w289.Font = Enum.Font.GothamBold; w289.TextSize = 13
-        w289.TextColor3 = w288; w289.TextXAlignment = Enum.TextXAlignment.Center
-        return w289
+    local wa1 = w92["Performance Status"]
+    local wa2 = w51(wa1, 660, 1)
+    w93["Performance_Card"] = wa2
+    local wa3 = w54(wa2, "📊 Performance Monitor", 8)
+    wa3.TextColor3 = Color3.fromRGB(100, 255, 150)
+    w52(wa2, "Track real-time performance metrics and unlock FPS limits", 34)
+    local wa4, _ = w55(wa2, "FPS Unlock", 60)
+    local wa5, _, _, wa6 = w58(wa4, UDim2.new(0, 56, 0, 28), UDim2.new(1, -28, 0.5, 0), w21.FPSUnlockEnabled, nil)
+    local wa7 = Instance.new("TextLabel", wa2)
+    wa7.Size = UDim2.new(1, -20, 0, 20)
+    wa7.Position = UDim2.new(0, 10, 0, 102)
+    wa7.BackgroundTransparency = 1
+    wa7.Text = "Current Limit: 60 FPS"
+    wa7.Font = Enum.Font.Gotham
+    wa7.TextSize = 13
+    wa7.TextColor3 = Color3.fromRGB(180, 180, 180)
+    wa7.TextXAlignment = Enum.TextXAlignment.Center
+    local _, wa8, wa9, waa, wab = w74(wa2, UDim2.new(1, -20, 0, 50), UDim2.new(0, 10, 0, 135), 60, "Target FPS Limit")
+    w49(wa2, 200)
+    w50(wa2, "Framerate Statistics", 210)
+    local wac = Instance.new("Frame", wa2)
+    wac.Size = UDim2.new(1, -20, 0, 50); wac.Position = UDim2.new(0, 10, 0, 235)
+    wac.BackgroundColor3 = Color3.fromRGB(30, 30, 35); wac.BorderSizePixel = 0
+    w65(wac, 8); Instance.new("UIStroke", wac).Color = Color3.fromRGB(50, 50, 60)
+    local function wad(wae, waf, wag, wah)
+        local wai = Instance.new("TextLabel", wae)
+        wai.Size = UDim2.new(waf[3], 0, 1, 0); wai.Position = UDim2.new(waf[1], 0, 0, 0)
+        wai.BackgroundTransparency = 1; wai.Text = wag
+        wai.Font = Enum.Font.GothamBold; wai.TextSize = 13
+        wai.TextColor3 = wah; wai.TextXAlignment = Enum.TextXAlignment.Center
+        return wai
     end
-    local w290, w291 = w284(w283, {0, 0, 0.33}, "Current: 60", Color3.fromRGB(100, 200, 255)), w284(w283, {0.33, 0, 0.33}, "Average: 60", Color3.fromRGB(50, 220, 100))
-    local w292 = w284(w283, {0.66, 0, 0.34}, "Min: 60 | Max: 60",Color3.fromRGB(255, 200, 100))
-    w128(w271, 300); w131(w271, "Network Latency Statistics", 310)
-    local w293 = Instance.new("Frame", w271)
-    w293.Size = UDim2.new(1, -20, 0, 50); w293.Position = UDim2.new(0, 10, 0, 335)
-    w293.BackgroundColor3 = Color3.fromRGB(30, 30, 35); w293.BorderSizePixel = 0
-    w65(w293, 8); Instance.new("UIStroke", w293).Color = Color3.fromRGB(50, 50, 60)
-    local w294, w295 = w284(w293, {0, 0, 0.33}, "Current: 0ms", Color3.fromRGB(100, 200, 255)), w284(w293, {0.33, 0, 0.33}, "Average: 0ms", Color3.fromRGB(50, 220, 100))
-    local w296, w297 = w284(w293, {0.66, 0, 0.34}, "Min: 0ms | Max: 0ms", Color3.fromRGB(255, 200, 100)), Instance.new("Frame", w271)
-    w297.Size = UDim2.new(1, -20, 0, 50); w297.Position = UDim2.new(0, 10, 0, 400)
-    w297.BackgroundColor3 = Color3.fromRGB(30, 30, 35); w297.BorderSizePixel = 0
-    w65(w297, 8); Instance.new("UIStroke", w297).Color = Color3.fromRGB(50, 50, 60)
-    w284(w297, {0, 0, 0.5}, "Connection Quality", Color3.fromRGB(255, 255, 255))
-    local w298 = w284(w297, {0.5, 0, 0.5}, "Excellent", Color3.fromRGB(50, 220, 100))
-    w128(w271, 460); w131(w271, "Memory Usage Statistics", 470)
-    local w299 = Instance.new("Frame", w271)
-    w299.Size = UDim2.new(1, -20, 0, 50); w299.Position = UDim2.new(0, 10, 0, 495)
-    w299.BackgroundColor3 = Color3.fromRGB(30, 30, 35); w299.BorderSizePixel = 0
-    w65(w299, 8); Instance.new("UIStroke", w299).Color = Color3.fromRGB(50, 50, 60)
-    local w300, w301 = w284(w299, {0, 0, 0.5}, "Current: 0 MB", Color3.fromRGB(255, 180, 100)), w284(w299, {0.5, 0, 0.5}, "Peak: 0 MB", Color3.fromRGB(255, 150, 50))
-    local w302 = Instance.new("TextLabel", w271)
-    w302.Size = UDim2.new(1, -20, 0, 60); w302.Position = UDim2.new(0, 10, 0, 555)
-    w302.BackgroundColor3 = Color3.fromRGB(30, 30, 35); w302.BorderSizePixel = 0
-    w302.Text = "Performance monitoring tracks your game's framerate, network latency, and memory usage in real-time.\n\nLowering FPS limits reduces memory usage."
-    w302.Font = Enum.Font.Gotham; w302.TextSize = 12
-    w302.TextColor3 = Color3.fromRGB(200, 180, 150); w302.TextWrapped = true
-    w302.TextXAlignment = Enum.TextXAlignment.Left; w302.TextYAlignment = Enum.TextYAlignment.Top
-    w65(w302, 8); Instance.new("UIStroke", w302).Color = Color3.fromRGB(50, 50, 60)
-    local w303 = Instance.new("UIPadding", w302)
-    w303.PaddingLeft = UDim.new(0, 10); w303.PaddingRight = UDim.new(0, 10)
-    w303.PaddingTop = UDim.new(0, 10); w303.PaddingBottom = UDim.new(0, 10)
-    w200 = {
-        FPSToggleBtn = w274,
-        FPSToggleState = w276,
-        FPSUnlockStatus = w277,
-        FPSSlider = w279,
-        FPSFill = w280,
-        FPSButton = w281,
-        FPSValueBox = w282,
-        FPSStats = { Current = w290, Avg = w291, MinMax = w292 },
-        PingStats = { Current = w294, Avg = w295, MinMax = w296, Quality = w298 },
-        MemoryStats = { Current = w300, Peak = w301 },
+    local waj = wad(wac, {0, 0, 0.33}, "Current: 60", Color3.fromRGB(100, 200, 255))
+    local wak = wad(wac, {0.33, 0, 0.33}, "Average: 60", Color3.fromRGB(50, 220, 100))
+    local wal = wad(wac, {0.66, 0, 0.34}, "Min: 60 | Max: 60", Color3.fromRGB(255, 200, 100))
+    w49(wa2, 300); w50(wa2, "Network Latency Statistics", 310)
+    local wam = Instance.new("Frame", wa2)
+    wam.Size = UDim2.new(1, -20, 0, 50); wam.Position = UDim2.new(0, 10, 0, 335)
+    wam.BackgroundColor3 = Color3.fromRGB(30, 30, 35); wam.BorderSizePixel = 0
+    w65(wam, 8); Instance.new("UIStroke", wam).Color = Color3.fromRGB(50, 50, 60)
+    local wan = wad(wam, {0, 0, 0.33}, "Current: 0ms", Color3.fromRGB(100, 200, 255))
+    local wao = wad(wam, {0.33, 0, 0.33}, "Average: 0ms", Color3.fromRGB(50, 220, 100))
+    local wap = wad(wam, {0.66, 0, 0.34}, "Min: 0ms | Max: 0ms", Color3.fromRGB(255, 200, 100))
+    local waq = Instance.new("Frame", wa2)
+    waq.Size = UDim2.new(1, -20, 0, 50); waq.Position = UDim2.new(0, 10, 0, 400)
+    waq.BackgroundColor3 = Color3.fromRGB(30, 30, 35); waq.BorderSizePixel = 0
+    w65(waq, 8); Instance.new("UIStroke", waq).Color = Color3.fromRGB(50, 50, 60)
+    wad(waq, {0, 0, 0.5}, "Connection Quality", Color3.fromRGB(255, 255, 255))
+    local war = wad(waq, {0.5, 0, 0.5}, "Excellent", Color3.fromRGB(50, 220, 100))
+    w49(wa2, 460); w50(wa2, "Memory Usage Statistics", 470)
+    local was = Instance.new("Frame", wa2)
+    was.Size = UDim2.new(1, -20, 0, 50); was.Position = UDim2.new(0, 10, 0, 495)
+    was.BackgroundColor3 = Color3.fromRGB(30, 30, 35); was.BorderSizePixel = 0
+    w65(was, 8); Instance.new("UIStroke", was).Color = Color3.fromRGB(50, 50, 60)
+    local wat = wad(was, {0, 0, 0.5}, "Current: 0 MB", Color3.fromRGB(255, 180, 100))
+    local wau = wad(was, {0.5, 0, 0.5}, "Peak: 0 MB", Color3.fromRGB(255, 150, 50))
+    local wav = Instance.new("TextLabel", wa2)
+    wav.Size = UDim2.new(1, -20, 0, 60); wav.Position = UDim2.new(0, 10, 0, 555)
+    wav.BackgroundColor3 = Color3.fromRGB(30, 30, 35); wav.BorderSizePixel = 0
+    wav.Text = "Performance monitoring tracks your game's framerate, network latency, and memory usage in real-time.\n\nLowering FPS limits reduces memory usage."
+    wav.Font = Enum.Font.Gotham; wav.TextSize = 12
+    wav.TextColor3 = Color3.fromRGB(200, 180, 150); wav.TextWrapped = true
+    wav.TextXAlignment = Enum.TextXAlignment.Left; wav.TextYAlignment = Enum.TextYAlignment.Top
+    w65(wav, 8); Instance.new("UIStroke", wav).Color = Color3.fromRGB(50, 50, 60)
+    local waw = Instance.new("UIPadding", wav)
+    waw.PaddingLeft = UDim.new(0, 10); waw.PaddingRight = UDim.new(0, 10)
+    waw.PaddingTop = UDim.new(0, 10); waw.PaddingBottom = UDim.new(0, 10)
+    wB = {
+        FPSToggleBtn = wa5,
+        FPSToggleState = wa6,
+        FPSUnlockStatus = wa7,
+        FPSSlider = wa8,
+        FPSFill = wa9,
+        FPSButton = waa,
+        FPSValueBox = wab,
+        FPSStats = { Current = waj, Avg = wak, MinMax = wal },
+        PingStats = { Current = wan, Avg = wao, MinMax = wap, Quality = war },
+        MemoryStats = { Current = wat, Peak = wau },
     }
 end
 
 do
-    local w304 = w182["Auto Rejoin"]
-    local w305 = w134(w304, 270, 1)
-    w183["AutoRejoin_Card"] = w305
-    local w306 = w141(w305, "🔄 Auto Rejoin System", 8)
-    w306.TextColor3 = Color3.fromRGB(150, 200, 255)
-    w138(w305, "Automatically reconnect when disconnected from the server", 34)
-    local w307, _ = w143(w305, "Auto Rejoin", 65)
-    local w308, _, _, w310 = w147(w307, UDim2.new(0, 56, 0, 28), UDim2.new(1, -28, 0.5, 0), w21.AutoRejoinEnabled, nil)
-    local _, w312 = w123(w305, UDim2.new(1, -20, 0, 105), UDim2.new(0, 10, 0, 120),
+    local wa1 = w92["Auto Rejoin"]
+    local wa2 = w51(wa1, 270, 1)
+    w93["AutoRejoin_Card"] = wa2
+    local wa3 = w54(wa2, "🔄 Auto Rejoin System", 8)
+    wa3.TextColor3 = Color3.fromRGB(150, 200, 255)
+    w52(wa2, "Automatically reconnect when disconnected from the server", 34)
+    local wa4, _ = w55(wa2, "Auto Rejoin", 65)
+    local wa5, _, _, wa6 = w58(wa4, UDim2.new(0, 56, 0, 28), UDim2.new(1, -28, 0.5, 0), w21.AutoRejoinEnabled, nil)
+    local _, wa7 = w47(wa2, UDim2.new(1, -20, 0, 105), UDim2.new(0, 10, 0, 120),
         "Status: Disabled\n\nWhen enabled, automatically rejoins the current server when disconnected.")
-    w201 = {
-        AutoRejoinToggleBtn = w308,
-        AutoRejoinToggleState = w310,
-        Status = w312,
+    wC = {
+        AutoRejoinToggleBtn = wa5,
+        AutoRejoinToggleState = wa6,
+        Status = wa7,
     }
 end
 
 do
-    local w313 = w182["Script Loader"]
-    local w314 = w134(w313, 660, 1)
-    w183["ScriptLoader_Card"] = w314
-    local w315 = w141(w314, "💾 Script Executor", 8)
-    w315.TextColor3 = Color3.fromRGB(200, 150, 255)
-    w138(w314, "Execute custom Lua scripts with auto-save and auto-load capabilities", 34)
-    local w316 = Instance.new("Frame", w314)
-    w316.Size = UDim2.new(1, -20, 0, 220)
-    w316.Position = UDim2.new(0, 10, 0, 60)
-    w316.BackgroundColor3 = Color3.fromRGB(45, 45, 52)
-    w316.BorderSizePixel = 0
-    w65(w316, 8)
-    Instance.new("UIStroke", w316).Color = Color3.fromRGB(60, 60, 70)
-    local w317 = Instance.new("ScrollingFrame", w316)
-    w317.Size = UDim2.new(0, 40, 1, 0)
-    w317.BackgroundColor3 = Color3.fromRGB(35, 35, 40)
-    w317.BorderSizePixel = 0
-    w317.ScrollBarThickness = 0
-    w317.ScrollingEnabled = false
-    w317.CanvasSize = UDim2.new(0, 0, 0, 220)
-    w65(w317, 8)
-    local w318 = Instance.new("TextLabel", w317)
-    w318.Size = UDim2.new(1, -5, 1, 0)
-    w318.BackgroundTransparency = 1
-    w318.Text = "1"
-    w318.Font = Enum.Font.Code
-    w318.TextSize = 12
-    w318.TextColor3 = Color3.fromRGB(120, 120, 120)
-    w318.TextXAlignment = Enum.TextXAlignment.Right
-    w318.TextYAlignment = Enum.TextYAlignment.Top
-    local w319 = Instance.new("Frame", w316)
-    w319.Size = UDim2.new(0, 1, 1, 0)
-    w319.Position = UDim2.new(0, 40, 0, 0)
-    w319.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
-    w319.BorderSizePixel = 0
-    local w320 = Instance.new("ScrollingFrame", w316)
-    w320.Size = UDim2.new(1, -41, 1, 0)
-    w320.Position = UDim2.new(0, 41, 0, 0)
-    w320.BackgroundTransparency = 1
-    w320.BorderSizePixel = 0
-    w320.ScrollBarThickness = 4
-    w320.ScrollBarImageColor3 = Color3.fromRGB(100, 150, 255)
-    w320.ScrollBarImageTransparency = 0.5
-    w320.CanvasSize = UDim2.new(0, 0, 0, 220)
-    local w321 = Instance.new("TextBox", w320)
-    w321.Size = UDim2.new(1, -10, 1, 0)
-    w321.Position = UDim2.new(0, 5, 0, 0)
-    w321.BackgroundTransparency = 1
-    w321.Text = w21.SavedCode
-    w321.PlaceholderText = "-- Paste your Lua code here..."
-    w321.Font = Enum.Font.Code
-    w321.TextSize = 12
-    w321.TextColor3 = Color3.fromRGB(255, 255, 255)
-    w321.PlaceholderColor3 = Color3.fromRGB(120, 120, 120)
-    w321.BorderSizePixel = 0
-    w321.TextWrapped = false
-    w321.TextXAlignment = Enum.TextXAlignment.Left
-    w321.TextYAlignment = Enum.TextYAlignment.Top
-    w321.MultiLine = true
-    w321.ClearTextOnFocus = false
-    w321.TextEditable = true
-    local w322 = Instance.new("TextButton", w314)
-    w322.Size = UDim2.new(0.5, -15, 0, 36)
-    w322.Position = UDim2.new(0.25, 2.5, 0, 318)
-    w322.AnchorPoint = Vector2.new(0.5, 0.5)
-    w322.BackgroundColor3 = Color3.fromRGB(100, 150, 255)
-    w322.Text = "▶ Execute"
-    w322.Font = Enum.Font.GothamBold
-    w322.TextSize = 14
-    w322.TextColor3 = Color3.fromRGB(255, 255, 255)
-    w322.BorderSizePixel = 0
-    w322.AutoButtonColor = false
-    w65(w322, 8)
-    w498(w322,
+    local wa1 = w92["Script Loader"]
+    local wa2 = w51(wa1, 660, 1)
+    w93["ScriptLoader_Card"] = wa2
+    local wa3 = w54(wa2, "💾 Script Executor", 8)
+    wa3.TextColor3 = Color3.fromRGB(200, 150, 255)
+    w52(wa2, "Execute custom Lua scripts with auto-save and auto-load capabilities", 34)
+    local wa4 = Instance.new("Frame", wa2)
+    wa4.Size = UDim2.new(1, -20, 0, 220)
+    wa4.Position = UDim2.new(0, 10, 0, 60)
+    wa4.BackgroundColor3 = Color3.fromRGB(45, 45, 52)
+    wa4.BorderSizePixel = 0
+    w65(wa4, 8)
+    Instance.new("UIStroke", wa4).Color = Color3.fromRGB(60, 60, 70)
+    local wa5 = Instance.new("ScrollingFrame", wa4)
+    wa5.Size = UDim2.new(0, 40, 1, 0)
+    wa5.BackgroundColor3 = Color3.fromRGB(35, 35, 40)
+    wa5.BorderSizePixel = 0
+    wa5.ScrollBarThickness = 0
+    wa5.ScrollingEnabled = false
+    wa5.CanvasSize = UDim2.new(0, 0, 0, 220)
+    w65(wa5, 8)
+    local wa6 = Instance.new("TextLabel", wa5)
+    wa6.Size = UDim2.new(1, -5, 1, 0)
+    wa6.BackgroundTransparency = 1
+    wa6.Text = "1"
+    wa6.Font = Enum.Font.Code
+    wa6.TextSize = 12
+    wa6.TextColor3 = Color3.fromRGB(120, 120, 120)
+    wa6.TextXAlignment = Enum.TextXAlignment.Right
+    wa6.TextYAlignment = Enum.TextYAlignment.Top
+    local wa7 = Instance.new("Frame", wa4)
+    wa7.Size = UDim2.new(0, 1, 1, 0)
+    wa7.Position = UDim2.new(0, 40, 0, 0)
+    wa7.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+    wa7.BorderSizePixel = 0
+    local wa8 = Instance.new("ScrollingFrame", wa4)
+    wa8.Size = UDim2.new(1, -41, 1, 0)
+    wa8.Position = UDim2.new(0, 41, 0, 0)
+    wa8.BackgroundTransparency = 1
+    wa8.BorderSizePixel = 0
+    wa8.ScrollBarThickness = 4
+    wa8.ScrollBarImageColor3 = Color3.fromRGB(100, 150, 255)
+    wa8.ScrollBarImageTransparency = 0.5
+    wa8.CanvasSize = UDim2.new(0, 0, 0, 220)
+    local wa9 = Instance.new("TextBox", wa8)
+    wa9.Size = UDim2.new(1, -10, 1, 0)
+    wa9.Position = UDim2.new(0, 5, 0, 0)
+    wa9.BackgroundTransparency = 1
+    wa9.Text = w21.SavedCode
+    wa9.PlaceholderText = "-- Paste your Lua code here..."
+    wa9.Font = Enum.Font.Code
+    wa9.TextSize = 12
+    wa9.TextColor3 = Color3.fromRGB(255, 255, 255)
+    wa9.PlaceholderColor3 = Color3.fromRGB(120, 120, 120)
+    wa9.BorderSizePixel = 0
+    wa9.TextWrapped = false
+    wa9.TextXAlignment = Enum.TextXAlignment.Left
+    wa9.TextYAlignment = Enum.TextYAlignment.Top
+    wa9.MultiLine = true
+    wa9.ClearTextOnFocus = false
+    wa9.TextEditable = true
+    local waa = Instance.new("TextButton", wa2)
+    waa.Size = UDim2.new(0.5, -15, 0, 36)
+    waa.Position = UDim2.new(0.25, 2.5, 0, 318)
+    waa.AnchorPoint = Vector2.new(0.5, 0.5)
+    waa.BackgroundColor3 = Color3.fromRGB(100, 150, 255)
+    waa.Text = "▶ Execute"
+    waa.Font = Enum.Font.GothamBold
+    waa.TextSize = 14
+    waa.TextColor3 = Color3.fromRGB(255, 255, 255)
+    waa.BorderSizePixel = 0
+    waa.AutoButtonColor = false
+    w65(waa, 8)
+    w25(waa,
         { BackgroundColor3 = Color3.fromRGB(100, 150, 255), Size = UDim2.new(0.5, -15, 0, 36) },
         { BackgroundColor3 = Color3.fromRGB(120, 170, 255), Size = UDim2.new(0.5, -8, 0, 40) },
         { BackgroundColor3 = Color3.fromRGB(80, 130, 225), Size = UDim2.new(0.5, -22, 0, 32) }
     )
-    local w323, _ = w143(w314, "Auto Load", 300)
-    w323.Size = UDim2.new(0.5, -15, 0, 36); w323.Position = UDim2.new(0.5, 5, 0, 300)
-    local w324, _, _, w326 = w147(w323, UDim2.new(0, 56, 0, 28), UDim2.new(1, -28, 0.5, 0), w21.AutoLoadEnabled, nil)
-    w128(w314, 348)
-    w131(w314, "Status", 360)
-    local w327Fr = Instance.new("Frame", w314)
-    w327Fr.Size = UDim2.new(1, -20, 0, 36)
-    w327Fr.Position = UDim2.new(0, 10, 0, 382)
-    w327Fr.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
-    w327Fr.BorderSizePixel = 0
-    w65(w327Fr, 8)
-    Instance.new("UIStroke", w327Fr).Color = Color3.fromRGB(50, 50, 60)
-    local w327 = Instance.new("TextLabel", w327Fr)
-    w327.Size = UDim2.new(1, -10, 1, 0)
-    w327.Position = UDim2.new(0, 10, 0, 0)
-    w327.BackgroundTransparency = 1
-    w327.Text = "Ready"
-    w327.Font = Enum.Font.GothamBold
-    w327.TextSize = 13
-    w327.TextColor3 = Color3.fromRGB(180, 180, 180)
-    w327.TextXAlignment = Enum.TextXAlignment.Left
-    w327.TextYAlignment = Enum.TextYAlignment.Center
-    w327.TextTruncate = Enum.TextTruncate.AtEnd
-    w128(w314, 430)
-    w131(w314, "Output", 442)
-    local _, w330, w333, w335, w328 = w499(w314,
+    local wab, _ = w55(wa2, "Auto Load", 300)
+    wab.Size = UDim2.new(0.5, -15, 0, 36); wab.Position = UDim2.new(0.5, 5, 0, 300)
+    local wac, _, _, wad = w58(wab, UDim2.new(0, 56, 0, 28), UDim2.new(1, -28, 0.5, 0), w21.AutoLoadEnabled, nil)
+    w49(wa2, 348)
+    w50(wa2, "Status", 360)
+    local wae = Instance.new("Frame", wa2)
+    wae.Size = UDim2.new(1, -20, 0, 36)
+    wae.Position = UDim2.new(0, 10, 0, 382)
+    wae.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+    wae.BorderSizePixel = 0
+    w65(wae, 8)
+    Instance.new("UIStroke", wae).Color = Color3.fromRGB(50, 50, 60)
+    local waf = Instance.new("TextLabel", wae)
+    waf.Size = UDim2.new(1, -10, 1, 0)
+    waf.Position = UDim2.new(0, 10, 0, 0)
+    waf.BackgroundTransparency = 1
+    waf.Text = "Ready"
+    waf.Font = Enum.Font.GothamBold
+    waf.TextSize = 13
+    waf.TextColor3 = Color3.fromRGB(180, 180, 180)
+    waf.TextXAlignment = Enum.TextXAlignment.Left
+    waf.TextYAlignment = Enum.TextYAlignment.Center
+    waf.TextTruncate = Enum.TextTruncate.AtEnd
+    w49(wa2, 430)
+    w50(wa2, "Output", 442)
+    local _, wag, wah, wai, waj = w26(wa2,
         UDim2.new(1, -20, 0, 140),
         UDim2.new(0, 10, 0, 465),
         Color3.fromRGB(100, 150, 255)
     )
-    w328.Position = UDim2.new(1, -35, 0, 450)
-    w328.AnchorPoint = Vector2.new(0.5, 0.5)
-    w333.Text = "No output yet."
-    local w340 = Instance.new("TextLabel", w314)
-    w340.Size = UDim2.new(1, -20, 0, 30); w340.Position = UDim2.new(0, 10, 0, 618)
-    w340.BackgroundTransparency = 1
-    w340.Text = "Code is auto-saved while typing. Enable Auto Load to execute on rejoin."
-    w340.Font = Enum.Font.Gotham; w340.TextSize = 11
-    w340.TextColor3 = Color3.fromRGB(100, 100, 110)
-    w340.TextXAlignment = Enum.TextXAlignment.Center; w340.TextWrapped = true
-    w202 = {
-        LoadStringBox = w321,
-        LineNumbers = w318,
-        LoadStringScrollFrame = w320,
-        LineNumbersScrollFrame = w317,
-        ExecuteButton = w322,
-        AutoLoadToggleBtn = w324,
-        AutoLoadToggleState = w326,
-        Status = w327,
-        OutputScroll = w330,
-        OutputEmpty = w333,
-        AddOutput = w335,
+    waj.Position = UDim2.new(1, -35, 0, 450)
+    waj.AnchorPoint = Vector2.new(0.5, 0.5)
+    wah.Text = "No output yet."
+    local wak = Instance.new("TextLabel", wa2)
+    wak.Size = UDim2.new(1, -20, 0, 30); wak.Position = UDim2.new(0, 10, 0, 618)
+    wak.BackgroundTransparency = 1
+    wak.Text = "Code is auto-saved while typing. Enable Auto Load to execute on rejoin."
+    wak.Font = Enum.Font.Gotham; wak.TextSize = 11
+    wak.TextColor3 = Color3.fromRGB(100, 100, 110)
+    wak.TextXAlignment = Enum.TextXAlignment.Center; wak.TextWrapped = true
+    wD = {
+        LoadStringBox = wa9,
+        LineNumbers = wa6,
+        LoadStringScrollFrame = wa8,
+        LineNumbersScrollFrame = wa5,
+        ExecuteButton = waa,
+        AutoLoadToggleBtn = wac,
+        AutoLoadToggleState = wad,
+        Status = waf,
+        OutputScroll = wag,
+        OutputEmpty = wah,
+        AddOutput = wai,
     }
 end
 
 do
-    local w341 = w182["Settings"]
-    local w342 = w134(w341, 560, 1)
-    w183["Settings_Card"] = w342
-    local w343 = w141(w342, "⚙️ UI Configuration", 8)
-    w343.TextColor3 = Color3.fromRGB(255, 180, 100)
-    w138(w342, "Customize interface preferences and keybinds", 34)
-    w131(w342, "Toggle Keybind", 60)
-    local w344, w345 = w22[w21.Keybind] or w21.Keybind.Name, Instance.new("TextButton", w342)
-    w345.Size = UDim2.new(1, -20, 0, 40)
-    w345.Position = UDim2.new(0.5, 0, 0, 102)
-    w345.AnchorPoint = Vector2.new(0.5, 0.5)
-    w345.BackgroundColor3 = Color3.fromRGB(45, 45, 52)
-    w345.Text = "Current Key: "..w344
-    w345.Font = Enum.Font.GothamBold
-    w345.TextSize = 13
-    w345.TextColor3 = Color3.fromRGB(255, 255, 255)
-    w345.BorderSizePixel = 0
-    w345.AutoButtonColor = false
-    w65(w345, 8)
-    w498(w345,
+    local wa1 = w92["Settings"]
+    local wa2 = w51(wa1, 560, 1)
+    w93["Settings_Card"] = wa2
+    local wa3 = w54(wa2, "⚙️ UI Configuration", 8)
+    wa3.TextColor3 = Color3.fromRGB(255, 180, 100)
+    w52(wa2, "Customize interface preferences and keybinds", 34)
+    w50(wa2, "Toggle Keybind", 60)
+    local wa4 = w22[w21.Keybind] or w21.Keybind.Name
+    local wa5 = Instance.new("TextButton", wa2)
+    wa5.Size = UDim2.new(1, -20, 0, 40)
+    wa5.Position = UDim2.new(0.5, 0, 0, 102)
+    wa5.AnchorPoint = Vector2.new(0.5, 0.5)
+    wa5.BackgroundColor3 = Color3.fromRGB(45, 45, 52)
+    wa5.Text = "Current Key: "..wa4
+    wa5.Font = Enum.Font.GothamBold
+    wa5.TextSize = 13
+    wa5.TextColor3 = Color3.fromRGB(255, 255, 255)
+    wa5.BorderSizePixel = 0
+    wa5.AutoButtonColor = false
+    w65(wa5, 8)
+    w25(wa5,
         { BackgroundColor3 = Color3.fromRGB(45, 45, 52), Size = UDim2.new(1, -20, 0, 40) },
         { BackgroundColor3 = Color3.fromRGB(55, 55, 65), Size = UDim2.new(1, -15, 0, 44) },
         { BackgroundColor3 = Color3.fromRGB(70, 70, 80), Size = UDim2.new(1, -25, 0, 36) }
     )
-    w128(w342, 135)
-    local w346, _ = w143(w342, "Auto Hide UI", 150)
-    local w347, _, _, w349 = w147(w346, UDim2.new(0, 56, 0, 28), UDim2.new(1, -28, 0.5, 0), w21.AutoHideEnabled, nil)
-    local _, w351 = w123(w342, UDim2.new(1, -20, 0, 60), UDim2.new(0, 10, 0, 200), "")
-    w351.TextColor3 = Color3.fromRGB(150, 150, 150)
-    w128(w342, 278)
-    local w351bHd = w131(w342, "Activity Log", 290)
-    w351bHd.TextColor3 = Color3.fromRGB(200, 200, 200)
-    local w351bOt, w351bSr, w351bEm, w351bAd, w351bCl = w499(w342,
+    w49(wa2, 135)
+    local wa6, _ = w55(wa2, "Auto Hide UI", 150)
+    local wa7, _, _, wa8 = w58(wa6, UDim2.new(0, 56, 0, 28), UDim2.new(1, -28, 0.5, 0), w21.AutoHideEnabled, nil)
+    local _, wa9 = w47(wa2, UDim2.new(1, -20, 0, 60), UDim2.new(0, 10, 0, 200), "")
+    wa9.TextColor3 = Color3.fromRGB(150, 150, 150)
+    w49(wa2, 278)
+    local waa = w50(wa2, "Activity Log", 290)
+    waa.TextColor3 = Color3.fromRGB(200, 200, 200)
+    local wab, wac, wad, wae, waf = w26(wa2,
         UDim2.new(1, -20, 0, 200),
         UDim2.new(0, 10, 0, 312),
         Color3.fromRGB(255, 180, 100)
     )
-    w351bCl.Position = UDim2.new(1, -35, 0, 297.5)
-    w351bCl.AnchorPoint = Vector2.new(0.5, 0.5)
-    w351bEm.Text = "No activity yet."
-    w203 = {
-        KeybindButton = w345,
-        AutoHideToggleBtn = w347,
-        AutoHideToggleState = w349,
-        Status = w351,
-        AddSettingsLog = w351bAd,
+    waf.Position = UDim2.new(1, -35, 0, 297.5)
+    waf.AnchorPoint = Vector2.new(0.5, 0.5)
+    wad.Text = "No activity yet."
+    wE = {
+        KeybindButton = wa5,
+        AutoHideToggleBtn = wa7,
+        AutoHideToggleState = wa8,
+        Status = wa9,
+        AddSettingsLog = wae,
     }
-    _G.UU.AddActivityLog = w351bAd
-    for _, w351bPn in ipairs(wPL) do
-        _G.UU.AddActivityLog(w351bPn.msg, w351bPn.col)
+    _G.UU.AddActivityLog = wae
+    for _, wag in ipairs(w15) do
+        _G.UU.AddActivityLog(wag.msg, wag.col)
     end
-    wPL = {}
+    w15 = {}
 end
 
-local w352 = typeof(setfpscap) == "function"
-if w352 then
-    local w352Ok = pcall(setfpscap, 60)
-    if not w352Ok then w352 = false end
+local wF = typeof(setfpscap) == "function"
+if wF then
+    local wa1 = pcall(setfpscap, 60)
+    if not wa1 then wF = false end
 end
 
-local w354, w355, w356 = {}, {}, 60
-local w357, w358 = tick(), 0
-local w359 = 0
-for w360 = 1, 60 do
-    table.insert(w354, 60)
-    table.insert(w355, 0)
+local wG, wH, wI = {}, {}, 60
+local wJ, wK = tick(), 0
+local wL = 0
+for wa1 = 1, 60 do
+    table.insert(wG, 60)
+    table.insert(wH, 0)
 end
 
-local function w361()
-    if not w198.Status then return end
-    local w362, w363
+local function wM()
+    if not w99.Status then return end
+    local wa1, wa2
     if w21.JumpEnabled and w21.ClickEnabled then
-        w362, w363 = "Status: Jump & Click Active", Color3.fromRGB(50, 220, 100)
+        wa1, wa2 = "Status: Jump & Click Active", Color3.fromRGB(50, 220, 100)
     elseif w21.JumpEnabled then
-        w362, w363 = "Status: Jump Active", Color3.fromRGB(100, 200, 255)
+        wa1, wa2 = "Status: Jump Active", Color3.fromRGB(100, 200, 255)
     elseif w21.ClickEnabled then
-        w362, w363 = "Status: Click Active", Color3.fromRGB(255, 200, 100)
+        wa1, wa2 = "Status: Click Active", Color3.fromRGB(255, 200, 100)
     else
-        w362, w363 = "Status: All Inactive", Color3.fromRGB(180, 180, 180)
+        wa1, wa2 = "Status: All Inactive", Color3.fromRGB(180, 180, 180)
     end
-    w48(w198.Status, w44.Fast, { TextColor3 = w363 })
-    w198.Status.Text = w362
+    w48(w99.Status, w44.Fast, { TextColor3 = wa2 })
+    w99.Status.Text = wa1
 end
 
-local function w365()
+local function wN()
     w56("Jump")
     _G.UU.Threads.Jump = task.spawn(function()
         while w21.JumpEnabled do
             task.wait(w21.JumpDelay)
             if w21.JumpEnabled and w11.Character then
-                local w367 = w11.Character:FindFirstChildOfClass("Humanoid")
-                if w367 then w367:ChangeState(Enum.HumanoidStateType.Jumping) end
+                local wa1 = w11.Character:FindFirstChildOfClass("Humanoid")
+                if wa1 then wa1:ChangeState(Enum.HumanoidStateType.Jumping) end
             end
         end
         _G.UU.Threads.Jump = nil
     end)
 end
 
-local function w368()
+local function wO()
     w56("Click")
     _G.UU.Threads.Click = task.spawn(function()
         while w21.ClickEnabled do
             task.wait(w21.ClickDelay)
             if w21.ClickEnabled then
-                local w7, w8
+                local wa1, wa2
                 if w21.MousePosEnabled then
-                    local w9 = w3:GetMouseLocation()
-                    w7, w8 = w9.X, w9.Y
+                    local wa3 = w3:GetMouseLocation()
+                    wa1, wa2 = wa3.X, wa3.Y
                 else
-                    w7, w8 = w21.MousePosSaved.X, w21.MousePosSaved.Y
+                    wa1, wa2 = w21.MousePosSaved.X, w21.MousePosSaved.Y
                 end
-                w4:SendMouseButtonEvent(w7, w8, 0, true, game, 0)
+                w4:SendMouseButtonEvent(wa1, wa2, 0, true, game, 0)
                 task.wait(0.05)
-                w4:SendMouseButtonEvent(w7, w8, 0, false, game, 0)
+                w4:SendMouseButtonEvent(wa1, wa2, 0, false, game, 0)
             end
         end
         _G.UU.Threads.Click = nil
     end)
 end
 
-local function w373()
+local function wP()
     w56("Spam")
-    local w374 = w21.SpamKey:upper()
-    local w375 = w23[w374]
-    if not w375 then return end
+    local wa1 = w21.SpamKey:upper()
+    local wa2 = w23[wa1]
+    if not wa2 then return end
     _G.UU.Threads.Spam = task.spawn(function()
         while w21.AutoSpamEnabled do
             task.wait(w21.SpamDelay)
             if w21.AutoSpamEnabled then
-                w4:SendKeyEvent(true, w375, false, game)
+                w4:SendKeyEvent(true, wa2, false, game)
                 task.wait(0.05)
-                w4:SendKeyEvent(false, w375, false, game)
+                w4:SendKeyEvent(false, wa2, false, game)
             end
         end
         _G.UU.Threads.Spam = nil
     end)
 end
 
-local w376, w377B = false, nil
-local function w377bDC()
-    if w377B then
-        pcall(function() w377B:Disconnect() end)
-        w377B = nil
+local wb, w38 = false, nil
+local function w40()
+    if w38 then
+        pcall(function() w38:Disconnect() end)
+        w38 = nil
     end
 end
 
-local function w378()
-    w377bDC()
+local function wQ()
+    w40()
     if not w21.AutoRejoinEnabled then return end
     task.spawn(function()
-        local w379 = w6:FindFirstChild("RobloxPromptGui")
-        if not w379 then
-            local w380, w381 = pcall(function() return w6:WaitForChild("RobloxPromptGui", 10) end)
-            if not w380 or not w381 then
-                if w201.Status then
-                    w201.Status.Text = "Status: Enabled (waiting for prompt GUI...)\n\nAutomatically rejoins when disconnected."
+        local wa1 = w6:FindFirstChild("RobloxPromptGui")
+        if not wa1 then
+            local wa2, wa3 = pcall(function() return w6:WaitForChild("RobloxPromptGui", 10) end)
+            if not wa2 or not wa3 then
+                if wC.Status then
+                    wC.Status.Text = "Status: Enabled (waiting for prompt GUI...)\n\nAutomatically rejoins when disconnected."
                 end
                 return
             end
-            w379 = w381
+            wa1 = wa3
         end
-        local w382 = w379:FindFirstChild("promptOverlay")
-        if not w382 then
-            local w383, w384 = pcall(function() return w379:WaitForChild("promptOverlay", 10) end)
-            if not w383 or not w384 then
-                if w201.Status then
-                    w201.Status.Text = "Status: Enabled (prompt overlay unavailable)\n\nAutomatically rejoins when disconnected."
+        local wa4 = wa1:FindFirstChild("promptOverlay")
+        if not wa4 then
+            local wa5, wa6 = pcall(function() return wa1:WaitForChild("promptOverlay", 10) end)
+            if not wa5 or not wa6 then
+                if wC.Status then
+                    wC.Status.Text = "Status: Enabled (prompt overlay unavailable)\n\nAutomatically rejoins when disconnected."
                 end
                 return
             end
-            w382 = w384
+            wa4 = wa6
         end
-        w377B = w382.ChildAdded:Connect(function(w385)
-            if w385.Name == "ErrorPrompt" and w21.AutoRejoinEnabled and not w376 then
-                w376 = true
-                w33L("Disconnected detected → rejoining...", Color3.fromRGB(255, 200, 100))
+        w38 = wa4.ChildAdded:Connect(function(wa7)
+            if wa7.Name == "ErrorPrompt" and w21.AutoRejoinEnabled and not wb then
+                wb = true
+                w16("Disconnected detected → rejoining...", Color3.fromRGB(255, 200, 100))
                 _G.UU.Threads.Rejoin = task.spawn(function()
-                    while w21.AutoRejoinEnabled and w376 do
+                    while w21.AutoRejoinEnabled and wb do
                         w7:Teleport(game.PlaceId, w11)
                         task.wait(2)
                     end
@@ -1746,685 +1752,685 @@ local function w378()
                 end)
             end
         end)
-        table.insert(_G.UU.Connections, w377B)
+        table.insert(_G.UU.Connections, w38)
     end)
 end
 
-local function w386(w387)
-    if not w387 or w387 == "" then return false, "Empty script", "No code to execute." end
-    local w388, w389 = pcall(function()
-        local w390, w391 = loadstring(w387)
-        if not w390 then error(w391, 0) end
-        w390()
+local function wR(wa1)
+    if not wa1 or wa1 == "" then return false, "Empty script", "No code to execute." end
+    local wa2, wa3 = pcall(function()
+        local wa4, wa5 = loadstring(wa1)
+        if not wa4 then error(wa5, 0) end
+        wa4()
     end)
-    if w388 then return true, "Executed successfully!", nil end
-    return false, "Execution failed", tostring(w389)
+    if wa2 then return true, "Executed successfully!", nil end
+    return false, "Execution failed", tostring(wa3)
 end
 
-local w392 = { jump = false, click = false, spam = false, fps = false }
-local function w391MS(w391CK, w391Bs, w391Rg, w391Fi, w391Bx, w391Ma, w391M, w391Fm, w391Lb, w391SE)
-    local function w391Si(w394)
-        w21[w391CK] = w391Bs + (w394 * w391Rg)
-        if w391Fm == "%d" then w21[w391CK] = math.floor(w21[w391CK]) end
-        w91Si(w391Fi(), w391Bx(), w21[w391CK], w391Ma, w391M, w391Fm)
-        if w391SE then w391SE() end
+local wS = { jump = false, click = false, spam = false, fps = false }
+local function w42(wa1, wa2, wa3, wa4, wa5, wa6, wa7, wa8, wa9, waa)
+    local function wab(wac)
+        w21[wa1] = wa2 + (wac * wa3)
+        if wa8 == "%d" then w21[wa1] = math.floor(w21[wa1]) end
+        w18(wa4(), wa5(), w21[wa1], wa6, wa7, wa8)
+        if waa then waa() end
     end
-    local function w391Lg(w394)
-        w21[w391CK] = w391Bs + (w394 * w391Rg)
-        if w391Fm == "%d" then w21[w391CK] = math.floor(w21[w391CK]) end
-        w91(w391Fi(), w391Bx(), w21[w391CK], w391Ma, w391M, w391Fm)
-        if w391SE then w391SE() end
-        w33SL(string.format(w391Lb .. " → " .. w391Fm, w21[w391CK]))
+    local function wad(wac)
+        w21[wa1] = wa2 + (wac * wa3)
+        if wa8 == "%d" then w21[wa1] = math.floor(w21[wa1]) end
+        w91(wa4(), wa5(), w21[wa1], wa6, wa7, wa8)
+        if waa then waa() end
+        w17(string.format(wa9 .. " → " .. wa8, w21[wa1]))
     end
-    return w391Si, w391Lg
+    return wab, wad
 end
 
-local w393, w393L = w391MS(
+local wT, w78 = w42(
     "JumpDelay", 5, 25,
-    function() return w198.JumpSliderFill end, function() return w198.JumpDelayBox end,
+    function() return w99.JumpSliderFill end, function() return w99.JumpDelayBox end,
     5, 30, "%.1f", "Jump Interval")
-local w395, w395L = w391MS(
+local wU, w79 = w42(
     "ClickDelay", 1, 9,
-    function() return w198.ClickSliderFill end, function() return w198.ClickDelayBox end,
+    function() return w99.ClickSliderFill end, function() return w99.ClickDelayBox end,
     1, 10, "%.1f", "Click Interval")
-local w396, w396L = w391MS(
+local wV, w80 = w42(
     "SpamDelay", 0.05, 4.95,
-    function() return w199.SpamSliderFill end, function() return w199.SpamDelayBox end,
+    function() return wA.SpamSliderFill end, function() return wA.SpamDelayBox end,
     0.05, 5, "%.2f", "Spam Interval")
-local w397, w397L = w391MS(
+local wW, w81 = w42(
     "TargetFPS", 15, 345,
-    function() return w200.FPSFill end, function() return w200.FPSValueBox end,
+    function() return wB.FPSFill end, function() return wB.FPSValueBox end,
     15, 360, "%d", "Target FPS",
     function()
-        if w21.FPSUnlockEnabled and w352 then
+        if w21.FPSUnlockEnabled and wF then
             pcall(setfpscap, w21.TargetFPS)
-            w200.FPSUnlockStatus.Text = "Your target: "..w21.TargetFPS.." FPS"
+            wB.FPSUnlockStatus.Text = "Your target: "..w21.TargetFPS.." FPS"
         end
     end)
-w198.JumpSliderButton.MouseButton1Down:Connect(function() w392.jump = true; w98(w198.JumpSliderButton, 0.9) end)
-w198.ClickSliderButton.MouseButton1Down:Connect(function() w392.click = true; w98(w198.ClickSliderButton, 0.9) end)
-w199.SpamSliderButton.MouseButton1Down:Connect(function() w392.spam = true; w98(w199.SpamSliderButton, 0.9) end)
-w200.FPSButton.MouseButton1Down:Connect(function() w392.fps = true; w98(w200.FPSButton, 0.9) end)
-table.insert(_G.UU.Connections, w3.InputEnded:Connect(function(w398)
-    if w398.UserInputType == Enum.UserInputType.MouseButton1 then
-        if w392.jump then w393L((w21.JumpDelay - 5) / 25) end
-        if w392.click then w395L((w21.ClickDelay - 1) / 9) end
-        if w392.spam then w396L((w21.SpamDelay - 0.05) / 4.95) end
-        if w392.fps then w397L((w21.TargetFPS - 15) / 345) end
-        w392.jump = false; w392.click = false; w392.spam = false; w392.fps = false
+w99.JumpSliderButton.MouseButton1Down:Connect(function() wS.jump = true; w98(w99.JumpSliderButton, 0.9) end)
+w99.ClickSliderButton.MouseButton1Down:Connect(function() wS.click = true; w98(w99.ClickSliderButton, 0.9) end)
+wA.SpamSliderButton.MouseButton1Down:Connect(function() wS.spam = true; w98(wA.SpamSliderButton, 0.9) end)
+wB.FPSButton.MouseButton1Down:Connect(function() wS.fps = true; w98(wB.FPSButton, 0.9) end)
+table.insert(_G.UU.Connections, w3.InputEnded:Connect(function(wa1)
+    if wa1.UserInputType == Enum.UserInputType.MouseButton1 then
+        if wS.jump then w78((w21.JumpDelay - 5) / 25) end
+        if wS.click then w79((w21.ClickDelay - 1) / 9) end
+        if wS.spam then w80((w21.SpamDelay - 0.05) / 4.95) end
+        if wS.fps then w81((w21.TargetFPS - 15) / 345) end
+        wS.jump = false; wS.click = false; wS.spam = false; wS.fps = false
     end
 end))
-table.insert(_G.UU.Connections, w3.InputChanged:Connect(function(w398)
-    if w398.UserInputType ~= Enum.UserInputType.MouseMovement then return end
-    local w399 = w3:GetMouseLocation().X
-    if w392.jump and w198.JumpDelaySlider then
-        w393(math.clamp((w399 - w198.JumpDelaySlider.AbsolutePosition.X) / w198.JumpDelaySlider.AbsoluteSize.X, 0, 1))
-    elseif w392.click and w198.ClickDelaySlider then
-        w395(math.clamp((w399 - w198.ClickDelaySlider.AbsolutePosition.X) / w198.ClickDelaySlider.AbsoluteSize.X, 0, 1))
-    elseif w392.spam and w199.SpamDelaySlider then
-        w396(math.clamp((w399 - w199.SpamDelaySlider.AbsolutePosition.X) / w199.SpamDelaySlider.AbsoluteSize.X, 0, 1))
-    elseif w392.fps and w200.FPSSlider then
-        w397(math.clamp((w399 - w200.FPSSlider.AbsolutePosition.X) / w200.FPSSlider.AbsoluteSize.X, 0, 1))
+table.insert(_G.UU.Connections, w3.InputChanged:Connect(function(wa1)
+    if wa1.UserInputType ~= Enum.UserInputType.MouseMovement then return end
+    local wa2 = w3:GetMouseLocation().X
+    if wS.jump and w99.JumpDelaySlider then
+        wT(math.clamp((wa2 - w99.JumpDelaySlider.AbsolutePosition.X) / w99.JumpDelaySlider.AbsoluteSize.X, 0, 1))
+    elseif wS.click and w99.ClickDelaySlider then
+        wU(math.clamp((wa2 - w99.ClickDelaySlider.AbsolutePosition.X) / w99.ClickDelaySlider.AbsoluteSize.X, 0, 1))
+    elseif wS.spam and wA.SpamDelaySlider then
+        wV(math.clamp((wa2 - wA.SpamDelaySlider.AbsolutePosition.X) / wA.SpamDelaySlider.AbsoluteSize.X, 0, 1))
+    elseif wS.fps and wB.FPSSlider then
+        wW(math.clamp((wa2 - wB.FPSSlider.AbsolutePosition.X) / wB.FPSSlider.AbsoluteSize.X, 0, 1))
     end
 end))
-w198.JumpDelayBox.FocusLost:Connect(function()
-    w393L((math.clamp(tonumber(w198.JumpDelayBox.Text) or w21.JumpDelay, 5, 30) - 5) / 25)
+w99.JumpDelayBox.FocusLost:Connect(function()
+    w78((math.clamp(tonumber(w99.JumpDelayBox.Text) or w21.JumpDelay, 5, 30) - 5) / 25)
 end)
-w198.ClickDelayBox.FocusLost:Connect(function()
-    w395L((math.clamp(tonumber(w198.ClickDelayBox.Text) or w21.ClickDelay, 1, 10) - 1) / 9)
+w99.ClickDelayBox.FocusLost:Connect(function()
+    w79((math.clamp(tonumber(w99.ClickDelayBox.Text) or w21.ClickDelay, 1, 10) - 1) / 9)
 end)
-w199.SpamDelayBox.FocusLost:Connect(function()
-    w396L((math.clamp(tonumber(w199.SpamDelayBox.Text) or w21.SpamDelay, 0.05, 5) - 0.05) / 4.95)
+wA.SpamDelayBox.FocusLost:Connect(function()
+    w80((math.clamp(tonumber(wA.SpamDelayBox.Text) or w21.SpamDelay, 0.05, 5) - 0.05) / 4.95)
 end)
-w200.FPSValueBox.FocusLost:Connect(function()
-    w397L((math.clamp(tonumber(w200.FPSValueBox.Text) or w21.TargetFPS, 15, 360) - 15) / 345)
+wB.FPSValueBox.FocusLost:Connect(function()
+    w81((math.clamp(tonumber(wB.FPSValueBox.Text) or w21.TargetFPS, 15, 360) - 15) / 345)
 end)
-w199.SpamInput.FocusLost:Connect(function()
-    local w33Pv = w21.SpamKey
-    w21.SpamKey = w199.SpamInput.Text:upper()
-    if w21.SpamKey ~= w33Pv then
-        w33SL("Spam Key → " .. w21.SpamKey)
+wA.SpamInput.FocusLost:Connect(function()
+    local wa1 = w21.SpamKey
+    w21.SpamKey = wA.SpamInput.Text:upper()
+    if w21.SpamKey ~= wa1 then
+        w17("Spam Key → " .. w21.SpamKey)
     end
 end)
-w198.JumpToggleBtn.MouseButton1Click:Connect(function()
+w99.JumpToggleBtn.MouseButton1Click:Connect(function()
     if not w53("Jump", 0.3) then return end
     w21.JumpEnabled = not w21.JumpEnabled
-    w160(w198.JumpToggleState, w21.JumpEnabled)
-    if w21.JumpEnabled then task.wait(0.05); w365() else w56("Jump") end
-    w361()
-    w33SL("Auto Jump → " .. (w21.JumpEnabled and "Enabled" or "Disabled"))
+    w70(w99.JumpToggleState, w21.JumpEnabled)
+    if w21.JumpEnabled then task.wait(0.05); wN() else w56("Jump") end
+    wM()
+    w17("Auto Jump → " .. (w21.JumpEnabled and "Enabled" or "Disabled"))
 end)
-w198.ClickToggleBtn.MouseButton1Click:Connect(function()
+w99.ClickToggleBtn.MouseButton1Click:Connect(function()
     if not w53("Click", 0.3) then return end
     w21.ClickEnabled = not w21.ClickEnabled
-    w160(w198.ClickToggleState, w21.ClickEnabled)
-    if w21.ClickEnabled then task.wait(0.05); w368() else w56("Click") end
-    w361()
-    w33SL("Auto Click → " .. (w21.ClickEnabled and "Enabled" or "Disabled"))
+    w70(w99.ClickToggleState, w21.ClickEnabled)
+    if w21.ClickEnabled then task.wait(0.05); wO() else w56("Click") end
+    wM()
+    w17("Auto Click → " .. (w21.ClickEnabled and "Enabled" or "Disabled"))
 end)
-w199.AutoSpamToggleBtn.MouseButton1Click:Connect(function()
+wA.AutoSpamToggleBtn.MouseButton1Click:Connect(function()
     if not w53("Spam", 0.3) then return end
     w21.AutoSpamEnabled = not w21.AutoSpamEnabled
     if w21.AutoSpamEnabled then
-        local w403 = w199.SpamInput.Text:upper()
-        local w404 = w23[w403]
-        if not w404 then
+        local wa1 = wA.SpamInput.Text:upper()
+        local wa2 = w23[wa1]
+        if not wa2 then
             w21.AutoSpamEnabled = false
-            w160(w199.AutoSpamToggleState, false)
-            w199.Status.Text = "Status: Invalid key"
-            w48(w199.Status, w44.Fast, { TextColor3 = Color3.fromRGB(220, 50, 50) })
-            w33L("Key Spam → Invalid key '" .. w403 .. "'", Color3.fromRGB(220, 80, 80))
+            w70(wA.AutoSpamToggleState, false)
+            wA.Status.Text = "Status: Invalid key"
+            w48(wA.Status, w44.Fast, { TextColor3 = Color3.fromRGB(220, 50, 50) })
+            w16("Key Spam → Invalid key '" .. wa1 .. "'", Color3.fromRGB(220, 80, 80))
             w33()
             return
         end
-        if w404 == Enum.KeyCode.P or w404 == w21.Keybind or w404 == Enum.KeyCode.F5 then
+        if wa2 == Enum.KeyCode.P or wa2 == w21.Keybind or wa2 == Enum.KeyCode.F5 then
             w21.AutoSpamEnabled = false
-            w160(w199.AutoSpamToggleState, false)
-            w199.Status.Text = "Status: Key reserved"
-            w48(w199.Status, w44.Fast, { TextColor3 = Color3.fromRGB(220, 50, 50) })
-            w33L("Key Spam → Key '" .. w403 .. "' is reserved", Color3.fromRGB(220, 80, 80))
+            w70(wA.AutoSpamToggleState, false)
+            wA.Status.Text = "Status: Key reserved"
+            w48(wA.Status, w44.Fast, { TextColor3 = Color3.fromRGB(220, 50, 50) })
+            w16("Key Spam → Key '" .. wa1 .. "' is reserved", Color3.fromRGB(220, 80, 80))
             w33()
             return
         end
-        w21.SpamKey = w403
-        w160(w199.AutoSpamToggleState, true)
-        w199.Status.Text = "Status: Spamming "..w403
-        w48(w199.Status, w44.Fast, { TextColor3 = Color3.fromRGB(50, 220, 100) })
-        task.wait(0.05); w373()
+        w21.SpamKey = wa1
+        w70(wA.AutoSpamToggleState, true)
+        wA.Status.Text = "Status: Spamming "..wa1
+        w48(wA.Status, w44.Fast, { TextColor3 = Color3.fromRGB(50, 220, 100) })
+        task.wait(0.05); wP()
     else
-        w160(w199.AutoSpamToggleState, false)
-        w199.Status.Text = "Status: Inactive"
-        w48(w199.Status, w44.Fast, { TextColor3 = Color3.fromRGB(180, 180, 180) })
+        w70(wA.AutoSpamToggleState, false)
+        wA.Status.Text = "Status: Inactive"
+        w48(wA.Status, w44.Fast, { TextColor3 = Color3.fromRGB(180, 180, 180) })
         w56("Spam")
     end
-    w33SL("Key Spam → " .. (w21.AutoSpamEnabled and ("Enabled (" .. w21.SpamKey .. ")") or "Disabled"))
+    w17("Key Spam → " .. (w21.AutoSpamEnabled and ("Enabled (" .. w21.SpamKey .. ")") or "Disabled"))
 end)
-w200.FPSToggleBtn.MouseButton1Click:Connect(function()
+wB.FPSToggleBtn.MouseButton1Click:Connect(function()
     if not w53("FPS", 0.3) then return end
-    if not w352 then
-        w200.FPSUnlockStatus.Text = "FPS Unlock not supported"
-        w48(w200.FPSUnlockStatus, w44.Fast, { TextColor3 = Color3.fromRGB(220, 50, 50) })
-        w33L("FPS Unlock → Not supported by executor", Color3.fromRGB(220, 80, 80))
+    if not wF then
+        wB.FPSUnlockStatus.Text = "FPS Unlock not supported"
+        w48(wB.FPSUnlockStatus, w44.Fast, { TextColor3 = Color3.fromRGB(220, 50, 50) })
+        w16("FPS Unlock → Not supported by executor", Color3.fromRGB(220, 80, 80))
         return
     end
     w21.FPSUnlockEnabled = not w21.FPSUnlockEnabled
-    w160(w200.FPSToggleState, w21.FPSUnlockEnabled)
+    w70(wB.FPSToggleState, w21.FPSUnlockEnabled)
     if w21.FPSUnlockEnabled then
         pcall(setfpscap, w21.TargetFPS)
-        w200.FPSUnlockStatus.Text = "Your target: "..w21.TargetFPS.." FPS"
-        w48(w200.FPSUnlockStatus, w44.Fast, { TextColor3 = Color3.fromRGB(50, 220, 100) })
+        wB.FPSUnlockStatus.Text = "Your target: "..w21.TargetFPS.." FPS"
+        w48(wB.FPSUnlockStatus, w44.Fast, { TextColor3 = Color3.fromRGB(50, 220, 100) })
     else
         pcall(setfpscap, 60)
-        w200.FPSUnlockStatus.Text = "Current Limit: 60 FPS (Default)"
-        w48(w200.FPSUnlockStatus, w44.Fast, { TextColor3 = Color3.fromRGB(180, 180, 180) })
+        wB.FPSUnlockStatus.Text = "Current Limit: 60 FPS (Default)"
+        w48(wB.FPSUnlockStatus, w44.Fast, { TextColor3 = Color3.fromRGB(180, 180, 180) })
     end
-    w33SL("FPS Unlock → " .. (w21.FPSUnlockEnabled and ("Enabled (" .. w21.TargetFPS .. " FPS)") or "Disabled"))
+    w17("FPS Unlock → " .. (w21.FPSUnlockEnabled and ("Enabled (" .. w21.TargetFPS .. " FPS)") or "Disabled"))
 end)
-w201.AutoRejoinToggleBtn.MouseButton1Click:Connect(function()
+wC.AutoRejoinToggleBtn.MouseButton1Click:Connect(function()
     if not w53("Rejoin", 0.3) then return end
     w21.AutoRejoinEnabled = not w21.AutoRejoinEnabled
-    w160(w201.AutoRejoinToggleState, w21.AutoRejoinEnabled)
+    w70(wC.AutoRejoinToggleState, w21.AutoRejoinEnabled)
     if w21.AutoRejoinEnabled then
-        w201.Status.Text = "Status: Enabled\n\nAutomatically rejoins when disconnected."
-        w48(w201.Status, w44.Fast, { TextColor3 = Color3.fromRGB(50, 220, 100) })
-        w378()
+        wC.Status.Text = "Status: Enabled\n\nAutomatically rejoins when disconnected."
+        w48(wC.Status, w44.Fast, { TextColor3 = Color3.fromRGB(50, 220, 100) })
+        wQ()
     else
-        w376 = false; w56("Rejoin")
-        w377bDC()
-        w201.Status.Text = "Status: Disabled\n\nWhen enabled, automatically rejoins the current server when disconnected."
-        w48(w201.Status, w44.Fast, { TextColor3 = Color3.fromRGB(180, 180, 180) })
+        wb = false; w56("Rejoin")
+        w40()
+        wC.Status.Text = "Status: Disabled\n\nWhen enabled, automatically rejoins the current server when disconnected."
+        w48(wC.Status, w44.Fast, { TextColor3 = Color3.fromRGB(180, 180, 180) })
     end
-    w33SL("Auto Rejoin → " .. (w21.AutoRejoinEnabled and "Enabled" or "Disabled"))
+    w17("Auto Rejoin → " .. (w21.AutoRejoinEnabled and "Enabled" or "Disabled"))
 end)
-w202.ExecuteButton.MouseButton1Click:Connect(function()
+wD.ExecuteButton.MouseButton1Click:Connect(function()
     if not w53("Execute", 0.5) then return end
-    local w405, w405L = w202.LoadStringBox.Text, 0
-    for _ in (w405.."\n"):gmatch("[^\n]*\n") do w405L = w405L + 1 end
-    w202.Status.Text = "Executing..."
-    w202.Status.TextColor3 = Color3.fromRGB(255, 200, 100)
-    w48(w202.ExecuteButton, w44.Medium, { BackgroundColor3 = Color3.fromRGB(255, 200, 100) })
-    local w406, _, wb = w386(w405)
-    if w406 then
-        w202.AddOutput("Script executed successfully.", Color3.fromRGB(80, 220, 120))
-        w33L(string.format("Script executed ✓ (%d lines)", w405L), Color3.fromRGB(80, 220, 120))
-        w48(w202.ExecuteButton, w44.Medium, { BackgroundColor3 = Color3.fromRGB(50, 180, 80) })
+    local wa1, wa2 = wD.LoadStringBox.Text, 0
+    for _ in (wa1.."\n"):gmatch("[^\n]*\n") do wa2 = wa2 + 1 end
+    wD.Status.Text = "Executing..."
+    wD.Status.TextColor3 = Color3.fromRGB(255, 200, 100)
+    w48(wD.ExecuteButton, w44.Medium, { BackgroundColor3 = Color3.fromRGB(255, 200, 100) })
+    local wa3, _, wa4 = wR(wa1)
+    if wa3 then
+        wD.AddOutput("Script executed successfully.", Color3.fromRGB(80, 220, 120))
+        w16(string.format("Script executed ✓ (%d lines)", wa2), Color3.fromRGB(80, 220, 120))
+        w48(wD.ExecuteButton, w44.Medium, { BackgroundColor3 = Color3.fromRGB(50, 180, 80) })
     else
-        if wb then
-            w202.AddOutput(wb, Color3.fromRGB(255, 100, 100))
-            w33L("Script error: " .. tostring(wb):sub(1, 80), Color3.fromRGB(255, 100, 100))
+        if wa4 then
+            wD.AddOutput(wa4, Color3.fromRGB(255, 100, 100))
+            w16("Script error: " .. tostring(wa4):sub(1, 80), Color3.fromRGB(255, 100, 100))
         end
-        w48(w202.ExecuteButton, w44.Medium, { BackgroundColor3 = Color3.fromRGB(180, 50, 50) })
+        w48(wD.ExecuteButton, w44.Medium, { BackgroundColor3 = Color3.fromRGB(180, 50, 50) })
     end
     task.wait(0.5)
-    w202.Status.Text = "Ready"
-    w202.Status.TextColor3 = Color3.fromRGB(180, 180, 180)
-    w48(w202.ExecuteButton, w44.Medium, { BackgroundColor3 = Color3.fromRGB(100, 150, 255) })
+    wD.Status.Text = "Ready"
+    wD.Status.TextColor3 = Color3.fromRGB(180, 180, 180)
+    w48(wD.ExecuteButton, w44.Medium, { BackgroundColor3 = Color3.fromRGB(100, 150, 255) })
 end)
-w202.AutoLoadToggleBtn.MouseButton1Click:Connect(function()
+wD.AutoLoadToggleBtn.MouseButton1Click:Connect(function()
     if not w53("AutoLoad", 0.3) then return end
     w21.AutoLoadEnabled = not w21.AutoLoadEnabled
-    w160(w202.AutoLoadToggleState, w21.AutoLoadEnabled)
+    w70(wD.AutoLoadToggleState, w21.AutoLoadEnabled)
     if w21.AutoLoadEnabled then
         if w21.SavedCode and w21.SavedCode ~= "" then
-            w202.AddOutput("Auto-load enabled — will execute saved code on rejoin.", Color3.fromRGB(80, 220, 120))
-            w33L("Auto Load → Enabled (code ready)", Color3.fromRGB(80, 220, 120))
+            wD.AddOutput("Auto-load enabled — will execute saved code on rejoin.", Color3.fromRGB(80, 220, 120))
+            w16("Auto Load → Enabled (code ready)", Color3.fromRGB(80, 220, 120))
         else
-            w202.AddOutput("Auto-load enabled — but no code is saved yet.", Color3.fromRGB(255, 200, 100))
-            w33L("Auto Load → Enabled (no code saved yet)", Color3.fromRGB(255, 200, 100))
+            wD.AddOutput("Auto-load enabled — but no code is saved yet.", Color3.fromRGB(255, 200, 100))
+            w16("Auto Load → Enabled (no code saved yet)", Color3.fromRGB(255, 200, 100))
         end
     else
-        w202.AddOutput("Auto-load disabled.", Color3.fromRGB(160, 160, 160))
-        w33L("Auto Load → Disabled", Color3.fromRGB(160, 160, 160))
+        wD.AddOutput("Auto-load disabled.", Color3.fromRGB(160, 160, 160))
+        w16("Auto Load → Disabled", Color3.fromRGB(160, 160, 160))
     end
-    local w33AO = w33()
-    if not w33AO then
-        w33L("Auto Load change → Save failed ✗", Color3.fromRGB(220, 80, 80))
+    local wa1 = w33()
+    if not wa1 then
+        w16("Auto Load change → Save failed ✗", Color3.fromRGB(220, 80, 80))
     end
 end)
 
-local w408, w409, w408L = 0, 0.3, false
-w202.LoadStringBox:GetPropertyChangedSignal("Text"):Connect(function()
-    w21.SavedCode = w202.LoadStringBox.Text
-    if not w408L then
-        w408L = true
+local w35, w36, w37 = 0, 0.3, false
+wD.LoadStringBox:GetPropertyChangedSignal("Text"):Connect(function()
+    w21.SavedCode = wD.LoadStringBox.Text
+    if not w37 then
+        w37 = true
         task.defer(function()
-            w408L = false
-            w102(w202.LoadStringBox, w202.LineNumbers, w202.LoadStringScrollFrame, w202.LineNumbersScrollFrame)
+            w37 = false
+            w20(wD.LoadStringBox, wD.LineNumbers, wD.LoadStringScrollFrame, wD.LineNumbersScrollFrame)
         end)
     end
-    local w410 = tick()
-    if w410 - w408 >= w409 then
-        w408 = w410
-        w202.Status.Text = "Saving..."
-        w202.Status.TextColor3 = Color3.fromRGB(100, 200, 255)
-        local w410Ok = w33()
-        if w410Ok then
-            w202.Status.Text = "Saved"
-            w202.Status.TextColor3 = Color3.fromRGB(80, 220, 120)
+    local wa1 = tick()
+    if wa1 - w35 >= w36 then
+        w35 = wa1
+        wD.Status.Text = "Saving..."
+        wD.Status.TextColor3 = Color3.fromRGB(100, 200, 255)
+        local wa2 = w33()
+        if wa2 then
+            wD.Status.Text = "Saved"
+            wD.Status.TextColor3 = Color3.fromRGB(80, 220, 120)
         else
-            w202.Status.Text = "Save failed"
-            w202.Status.TextColor3 = Color3.fromRGB(220, 80, 80)
+            wD.Status.Text = "Save failed"
+            wD.Status.TextColor3 = Color3.fromRGB(220, 80, 80)
         end
         task.delay(1.5, function()
-            if w202.Status.Text == "Saved" or w202.Status.Text == "Save failed" then
-                w202.Status.Text = "Ready"
-                w202.Status.TextColor3 = Color3.fromRGB(180, 180, 180)
+            if wD.Status.Text == "Saved" or wD.Status.Text == "Save failed" then
+                wD.Status.Text = "Ready"
+                wD.Status.TextColor3 = Color3.fromRGB(180, 180, 180)
             end
         end)
     end
 end)
-w202.LoadStringScrollFrame:GetPropertyChangedSignal("CanvasPosition"):Connect(function()
-    w202.LineNumbersScrollFrame.CanvasPosition = Vector2.new(0, w202.LoadStringScrollFrame.CanvasPosition.Y)
+wD.LoadStringScrollFrame:GetPropertyChangedSignal("CanvasPosition"):Connect(function()
+    wD.LineNumbersScrollFrame.CanvasPosition = Vector2.new(0, wD.LoadStringScrollFrame.CanvasPosition.Y)
 end)
-w203.KeybindButton.MouseButton1Click:Connect(function()
+wE.KeybindButton.MouseButton1Click:Connect(function()
     if not w53("Keybind", 0.5) or w21.IsChangingKeybind then return end
     w21.IsChangingKeybind = true
-    w203.KeybindButton.Text = "Press any key..."
-    w33L("Keybind: waiting for key press...", Color3.fromRGB(255, 200, 100))
-    w203.KeybindButton.Active = false
-    local w411
-    local w412 = task.delay(5, function()
+    wE.KeybindButton.Text = "Press any key..."
+    w16("Keybind: waiting for key press...", Color3.fromRGB(255, 200, 100))
+    wE.KeybindButton.Active = false
+    local wa1
+    local wa2 = task.delay(5, function()
         _G.UU.Threads.KeybindTimeout = nil
-        if w411 then w411:Disconnect() end
+        if wa1 then wa1:Disconnect() end
         w21.IsChangingKeybind = false
-        w203.KeybindButton.Active = true
-        w203.KeybindButton.Text = "Current Key: "..(w22[w21.Keybind] or w21.Keybind.Name)
-        w33L("Keybind: input timed out — no change.", Color3.fromRGB(255, 100, 100))
+        wE.KeybindButton.Active = true
+        wE.KeybindButton.Text = "Current Key: "..(w22[w21.Keybind] or w21.Keybind.Name)
+        w16("Keybind: input timed out — no change.", Color3.fromRGB(255, 100, 100))
     end)
-    _G.UU.Threads.KeybindTimeout = w412
-    w411 = w3.InputBegan:Connect(function(w413, w414)
-        if w413.UserInputType == Enum.UserInputType.Keyboard and not w414 then
+    _G.UU.Threads.KeybindTimeout = wa2
+    wa1 = w3.InputBegan:Connect(function(wa3, wa4)
+        if wa3.UserInputType == Enum.UserInputType.Keyboard and not wa4 then
             if _G.UU.Threads.KeybindTimeout then
                 pcall(task.cancel, _G.UU.Threads.KeybindTimeout)
                 _G.UU.Threads.KeybindTimeout = nil
             end
-            if w413.KeyCode == Enum.KeyCode.F5 then
-                w203.KeybindButton.Text = "Current Key: "..(w22[w21.Keybind] or w21.Keybind.Name)
-                w203.KeybindButton.Active = true
+            if wa3.KeyCode == Enum.KeyCode.F5 then
+                wE.KeybindButton.Text = "Current Key: "..(w22[w21.Keybind] or w21.Keybind.Name)
+                wE.KeybindButton.Active = true
                 w21.IsChangingKeybind = false
-                w411:Disconnect()
-                w33L("Keybind: F5 is reserved", Color3.fromRGB(255, 100, 100))
+                wa1:Disconnect()
+                w16("Keybind: F5 is reserved", Color3.fromRGB(255, 100, 100))
                 return
             end
-            w21.Keybind = w413.KeyCode
-            local w415 = w22[w413.KeyCode] or w413.KeyCode.Name
-            w203.KeybindButton.Text = "Current Key: "..w415
-            w33SL("Keybind → " .. w415)
-            w203.KeybindButton.Active = true
-            w411:Disconnect()
+            w21.Keybind = wa3.KeyCode
+            local wa5 = w22[wa3.KeyCode] or wa3.KeyCode.Name
+            wE.KeybindButton.Text = "Current Key: "..wa5
+            w17("Keybind → " .. wa5)
+            wE.KeybindButton.Active = true
+            wa1:Disconnect()
             task.delay(0.1, function() w21.IsChangingKeybind = false end)
         end
     end)
 end)
-w203.AutoHideToggleBtn.MouseButton1Click:Connect(function()
+wE.AutoHideToggleBtn.MouseButton1Click:Connect(function()
     if not w53("AutoHide", 0.3) then return end
     w21.AutoHideEnabled = not w21.AutoHideEnabled
-    w160(w203.AutoHideToggleState, w21.AutoHideEnabled)
+    w70(wE.AutoHideToggleState, w21.AutoHideEnabled)
     if w21.AutoHideEnabled then
-        w203.Status.Text = "Auto Hide enabled — UI starts hidden on next execution."
-        w48(w203.Status, w44.Fast, { TextColor3 = Color3.fromRGB(50, 220, 100) })
-        w33L("Auto Hide → Enabled (UI hidden on start)", Color3.fromRGB(50, 220, 100))
+        wE.Status.Text = "Auto Hide enabled — UI starts hidden on next execution."
+        w48(wE.Status, w44.Fast, { TextColor3 = Color3.fromRGB(50, 220, 100) })
+        w16("Auto Hide → Enabled (UI hidden on start)", Color3.fromRGB(50, 220, 100))
     else
-        w203.Status.Text = "Auto Hide disabled — UI shows normally on start."
-        w48(w203.Status, w44.Fast, { TextColor3 = Color3.fromRGB(180, 180, 180) })
-        w33L("Auto Hide → Disabled (UI shows on start)", Color3.fromRGB(180, 180, 180))
+        wE.Status.Text = "Auto Hide disabled — UI shows normally on start."
+        w48(wE.Status, w44.Fast, { TextColor3 = Color3.fromRGB(180, 180, 180) })
+        w16("Auto Hide → Disabled (UI shows on start)", Color3.fromRGB(180, 180, 180))
     end
-    local w33Ok = w33()
-    if w33Ok then
-        w33L("Auto Hide change → Saved ✓", Color3.fromRGB(80, 220, 120))
+    local wa1 = w33()
+    if wa1 then
+        w16("Auto Hide change → Saved ✓", Color3.fromRGB(80, 220, 120))
     else
-        w33L("Auto Hide change → Save failed ✗", Color3.fromRGB(220, 80, 80))
+        w16("Auto Hide change → Save failed ✗", Color3.fromRGB(220, 80, 80))
     end
 end)
 
-local function w416AV(w417)
-    for w418, w420 in pairs(w181) do
-        local w421 = w418 == w417
-        w46(w420.Button); w46(w420.Icon); w46(w420.Label)
-        w420.Button.BackgroundColor3 = w421 and Color3.fromRGB(100, 150, 255) or Color3.fromRGB(35, 35, 42)
-        w420.Button.Size = w421 and UDim2.new(1, -4, 0, 54) or UDim2.new(1, -10, 0, 50)
-        w420.Icon.TextColor3 = w421 and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(180, 180, 180)
-        w420.Icon.TextSize = w421 and 19 or 18
-        w420.Label.TextColor3 = w421 and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(180, 180, 180)
+local function w43(wa1)
+    for wa2, wa3 in pairs(w90) do
+        local wa4 = wa2 == wa1
+        w46(wa3.Button); w46(wa3.Icon); w46(wa3.Label)
+        wa3.Button.BackgroundColor3 = wa4 and Color3.fromRGB(100, 150, 255) or Color3.fromRGB(35, 35, 42)
+        wa3.Button.Size = wa4 and UDim2.new(1, -4, 0, 54) or UDim2.new(1, -10, 0, 50)
+        wa3.Icon.TextColor3 = wa4 and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(180, 180, 180)
+        wa3.Icon.TextSize = wa4 and 19 or 18
+        wa3.Label.TextColor3 = wa4 and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(180, 180, 180)
     end
 end
 
-local function w416(w417)
-    if w21.CurrentTab == w417 and _G.UU.Debounces["Tab"] then return end
+local function wX(wa1)
+    if w21.CurrentTab == wa1 and _G.UU.Debounces["Tab"] then return end
     if not w53("Tab", 0.15) then return end
-    w21.CurrentTab = w417
+    w21.CurrentTab = wa1
     w33()
-    for w418, w419 in pairs(w182) do
-        if w418 == w417 then
-            w419.Visible = true
-            w419.Position = UDim2.new(0, 15, 0, 0)
-            w48(w419, w44.Smooth, { Position = UDim2.new(0, 5, 0, 0) })
+    for wa2, wa3 in pairs(w92) do
+        if wa2 == wa1 then
+            wa3.Visible = true
+            wa3.Position = UDim2.new(0, 15, 0, 0)
+            w48(wa3, w44.Smooth, { Position = UDim2.new(0, 5, 0, 0) })
         else
-            w419.Visible = false
+            wa3.Visible = false
         end
     end
-    w416AV(w417)
+    w43(wa1)
 end
 
-for w422, w423 in ipairs(w194) do
-    if w181[w423.name] then
-        local w424 = w423.name
-        w181[w424].Button.MouseButton1Click:Connect(function() w416(w424) end)
+for wa1, wa2 in ipairs(w96) do
+    if w90[wa2.name] then
+        local wa3 = wa2.name
+        w90[wa3].Button.MouseButton1Click:Connect(function() wX(wa3) end)
     end
 end
 
-local w425, w426 = {}, false
-local function w427()
-    if w426 or #w425 == 0 then return end
-    w426 = true
+local wY, wZ = {}, false
+local function wc()
+    if wZ or #wY == 0 then return end
+    wZ = true
     task.spawn(function()
-        while #w425 > 0 do
-            local w428 = table.remove(w425, 1)
-            w428()
+        while #wY > 0 do
+            local wa1 = table.remove(wY, 1)
+            wa1()
             task.wait(0.05)
         end
-        w426 = false
+        wZ = false
     end)
 end
 
-local function w429(w428)
-    table.insert(w425, w428)
-    w427()
+local function wd(wa1)
+    table.insert(wY, wa1)
+    wc()
 end
 
-local function w430(w431, w432)
-    local w433, w434 = w60.Width * w432, w60.Height * w432
-    return math.max(0, (w431.X - w433) / 2), math.max(0, (w431.Y - w434) / 2)
+local function we(wa1, wa2)
+    local wa3, wa4 = w60.Width * wa2, w60.Height * wa2
+    return math.max(0, (wa1.X - wa3) / 2), math.max(0, (wa1.Y - wa4) / 2)
 end
 
-local function w435(w431, w432)
-    local w436 = math.floor(60 * w432)
-    return w436, math.max(0, (w431.X - w436) / 2), math.max(0, math.min(30, w431.Y - w436))
+local function wf(wa1, wa2)
+    local wa3 = math.floor(60 * wa2)
+    return wa3, math.max(0, (wa1.X - wa3) / 2), math.max(0, math.min(30, wa1.Y - wa3))
 end
 
-local function w437(w438)
+local function wg(wa1)
     if not w61 then return end
-    w62 = w438
-    w48(w61, w44.Smooth, { Scale = w438 })
-    w171.TextSize = math.floor(24 * w438)
+    w62 = wa1
+    w48(w61, w44.Smooth, { Scale = wa1 })
+    w84.TextSize = math.floor(24 * wa1)
 end
 
-local w439, w440 = TweenInfo.new(0.45, Enum.EasingStyle.Back, Enum.EasingDirection.Out, 0, false, 0), TweenInfo.new(0.30, Enum.EasingStyle.Back, Enum.EasingDirection.In, 0, false, 0)
-local function w441()
+local wh, wi = TweenInfo.new(0.45, Enum.EasingStyle.Back, Enum.EasingDirection.Out, 0, false, 0), TweenInfo.new(0.30, Enum.EasingStyle.Back, Enum.EasingDirection.In, 0, false, 0)
+local function wj()
     if not w53("UI", 0.6) then return end
-    w429(function()
-        if w163.Visible then
-            w21.SavedUIPosition = { X = w163.Position.X.Offset, Y = w163.Position.Y.Offset }
-            w163.Size = UDim2.new(0, w60.Width, 0, w60.Height)
-            local wd, wc = w48(w61, w440, { Scale = 0 }), w2:Create(w163, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { BackgroundTransparency = 1 })
-            wc:Play()
-            wd.Completed:Wait()
-            w163.Visible = false; w163.BackgroundTransparency = 0; w61.Scale = 0; w33()
-            local w443, w444 = w59(), math.floor(60 * w62)
-            local w445, w446
+    wd(function()
+        if w72.Visible then
+            w21.SavedUIPosition = { X = w72.Position.X.Offset, Y = w72.Position.Y.Offset }
+            w72.Size = UDim2.new(0, w60.Width, 0, w60.Height)
+            local wa1, wa2 = w48(w61, wi, { Scale = 0 }), w2:Create(w72, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { BackgroundTransparency = 1 })
+            wa2:Play()
+            wa1.Completed:Wait()
+            w72.Visible = false; w72.BackgroundTransparency = 0; w61.Scale = 0; w33()
+            local wa3, wa4 = w59(), math.floor(60 * w62)
+            local wa5, wa6
             if w21.SavedReopenPosition then
-                w445 = w21.SavedReopenPosition.X
-                w446 = w21.SavedReopenPosition.Y
+                wa5 = w21.SavedReopenPosition.X
+                wa6 = w21.SavedReopenPosition.Y
             else
-                local _, w447, w448 = w435(w443, w62)
-                w445, w446 = w447, w448
+                local _, wa7, wa8 = wf(wa3, w62)
+                wa5, wa6 = wa7, wa8
             end
-            w170.Size = UDim2.new(0, w444, 0, w444)
-            w170.Position = UDim2.new(0, w445, 0, w446)
-            w170.ImageTransparency = 1; w171.TextTransparency = 1
-            w170.Rotation = -180; w170.Visible = true
-            local w449 = w2:Create(w170, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-                Size = UDim2.new(0, w444, 0, w444),
-                Position = UDim2.new(0, w445, 0, w446),
+            w83.Size = UDim2.new(0, wa4, 0, wa4)
+            w83.Position = UDim2.new(0, wa5, 0, wa6)
+            w83.ImageTransparency = 1; w84.TextTransparency = 1
+            w83.Rotation = -180; w83.Visible = true
+            local wa9 = w2:Create(w83, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+                Size = UDim2.new(0, wa4, 0, wa4),
+                Position = UDim2.new(0, wa5, 0, wa6),
                 ImageTransparency = 0, Rotation = 0,
             })
-            local w450 = w2:Create(w171, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { TextTransparency = 0 })
-            w449:Play(); task.delay(0.15, function() w450:Play() end); w449.Completed:Wait()
+            local waa = w2:Create(w84, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { TextTransparency = 0 })
+            wa9:Play(); task.delay(0.15, function() waa:Play() end); wa9.Completed:Wait()
         else
-            w177SX()
-            w21.SavedReopenPosition = { X = w170.Position.X.Offset, Y = w170.Position.Y.Offset }
-            local w451 = w2:Create(w170, TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
+            w28()
+            w21.SavedReopenPosition = { X = w83.Position.X.Offset, Y = w83.Position.Y.Offset }
+            local wab = w2:Create(w83, TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
                 Size = UDim2.new(0, 0, 0, 0),
-                Position = UDim2.new(0, w170.Position.X.Offset, 0, w170.Position.Y.Offset),
+                Position = UDim2.new(0, w83.Position.X.Offset, 0, w83.Position.Y.Offset),
                 ImageTransparency = 1, Rotation = 90,
             })
-            local w452 = w2:Create(w171, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.In), { TextTransparency = 1 })
-            w452:Play(); w451:Play(); w451.Completed:Wait()
-            w170.Visible = false; w170.Rotation = 0; w170.ImageTransparency = 0; w171.TextTransparency = 0; w33()
-            local w453, w454
+            local wac = w2:Create(w84, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.In), { TextTransparency = 1 })
+            wac:Play(); wab:Play(); wab.Completed:Wait()
+            w83.Visible = false; w83.Rotation = 0; w83.ImageTransparency = 0; w84.TextTransparency = 0; w33()
+            local wad, wae
             if w21.SavedUIPosition then
-                w453 = w21.SavedUIPosition.X; w454 = w21.SavedUIPosition.Y
+                wad = w21.SavedUIPosition.X; wae = w21.SavedUIPosition.Y
             else
-                w453, w454 = w430(w59(), w62)
+                wad, wae = we(w59(), w62)
             end
-            w163.Visible = true
-            w163.Size = UDim2.new(0, w60.Width, 0, w60.Height)
-            w163.Position = UDim2.new(0, w453, 0, w454 + 18)
-            w163.BackgroundTransparency = 1
+            w72.Visible = true
+            w72.Size = UDim2.new(0, w60.Width, 0, w60.Height)
+            w72.Position = UDim2.new(0, wad, 0, wae + 18)
+            w72.BackgroundTransparency = 1
             w61.Scale = 0
-            local we = w2:Create(w163, TweenInfo.new(0.45, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-                Position = UDim2.new(0, w453, 0, w454),
+            local waf = w2:Create(w72, TweenInfo.new(0.45, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                Position = UDim2.new(0, wad, 0, wae),
                 BackgroundTransparency = 0,
             })
-            local w455 = w48(w61, w439, { Scale = w62 })
-            we:Play()
-            w455.Completed:Wait()
-            w163.BackgroundTransparency = 0
+            local wag = w48(w61, wh, { Scale = w62 })
+            waf:Play()
+            wag.Completed:Wait()
+            w72.BackgroundTransparency = 0
         end
     end)
 end
 
-w167.MouseButton1Click:Connect(w441)
-w167.MouseEnter:Connect(function() w48(w167, w44.Fast, { BackgroundColor3 = Color3.fromRGB(240, 70, 70), Size = UDim2.new(0, 32, 0, 32), Rotation = 90 }) end)
-w167.MouseLeave:Connect(function() w48(w167, w44.Fast, { BackgroundColor3 = Color3.fromRGB(220, 50, 50), Size = UDim2.new(0, 28, 0, 28), Rotation = 0 }) end)
-w167.MouseButton1Down:Connect(function() w48(w167, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Size = UDim2.new(0, 24, 0, 24) }) end)
-w167.MouseButton1Up:Connect(function() w48(w167, w44.Fast, { Size = UDim2.new(0, 28, 0, 28) }) end)
-w170.MouseButton1Click:Connect(function() if not w176 then w441() end end)
-table.insert(_G.UU.Connections, w3.InputBegan:Connect(function(w458, w459)
-    if not w459 and w458.KeyCode == w21.Keybind and not w21.IsChangingKeybind then
-        w441()
+w76.MouseButton1Click:Connect(wj)
+w76.MouseEnter:Connect(function() w48(w76, w44.Fast, { BackgroundColor3 = Color3.fromRGB(240, 70, 70), Size = UDim2.new(0, 32, 0, 32), Rotation = 90 }) end)
+w76.MouseLeave:Connect(function() w48(w76, w44.Fast, { BackgroundColor3 = Color3.fromRGB(220, 50, 50), Size = UDim2.new(0, 28, 0, 28), Rotation = 0 }) end)
+w76.MouseButton1Down:Connect(function() w48(w76, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Size = UDim2.new(0, 24, 0, 24) }) end)
+w76.MouseButton1Up:Connect(function() w48(w76, w44.Fast, { Size = UDim2.new(0, 28, 0, 28) }) end)
+w83.MouseButton1Click:Connect(function() if not w89 then wj() end end)
+table.insert(_G.UU.Connections, w3.InputBegan:Connect(function(wa1, wa2)
+    if not wa2 and wa1.KeyCode == w21.Keybind and not w21.IsChangingKeybind then
+        wj()
     end
 end))
 
-local w460, wM = Vector2.new(0, 0), nil
-local function wN()
-    if wM then wM:Disconnect(); wM = nil end
+local wk, w64 = Vector2.new(0, 0), nil
+local function w66()
+    if w64 then w64:Disconnect(); w64 = nil end
     if w21.MousePosEnabled then
-        wM = w5.RenderStepped:Connect(function()
-            local wO = w3:GetMouseLocation()
-            w21.MousePosSaved.X = wO.X
-            w21.MousePosSaved.Y = wO.Y
+        w64 = w5.RenderStepped:Connect(function()
+            local wa1 = w3:GetMouseLocation()
+            w21.MousePosSaved.X = wa1.X
+            w21.MousePosSaved.Y = wa1.Y
         end)
     end
 end
 
-table.insert(_G.UU.Connections, w3.InputBegan:Connect(function(wP, wQ)
-    if not wQ and wP.KeyCode == Enum.KeyCode.F5 then
+table.insert(_G.UU.Connections, w3.InputBegan:Connect(function(wa1, wa2)
+    if not wa2 and wa1.KeyCode == Enum.KeyCode.F5 then
         w21.MousePosEnabled = not w21.MousePosEnabled
-        w160(w198.MousePosToggleState, w21.MousePosEnabled)
-        wN()
-        w33SL("Mouse Position → " .. (w21.MousePosEnabled and "Tracking" or "Locked"))
+        w70(w99.MousePosToggleState, w21.MousePosEnabled)
+        w66()
+        w17("Mouse Position → " .. (w21.MousePosEnabled and "Tracking" or "Locked"))
     end
 end))
-w198.MousePosToggleBtn.MouseButton1Click:Connect(function()
+w99.MousePosToggleBtn.MouseButton1Click:Connect(function()
     w21.MousePosEnabled = not w21.MousePosEnabled
-    w160(w198.MousePosToggleState, w21.MousePosEnabled)
-    wN()
-    w33SL("Mouse Position → " .. (w21.MousePosEnabled and "Tracking" or "Locked"))
+    w70(w99.MousePosToggleState, w21.MousePosEnabled)
+    w66()
+    w17("Mouse Position → " .. (w21.MousePosEnabled and "Tracking" or "Locked"))
 end)
 task.spawn(function()
     while true do
         task.wait(0.25)
-        if w198.MousePosLabel and w198.MousePosLabel.Parent then
-            local wR = w21.MousePosEnabled and "Tracking" or "Locked"
-            w198.MousePosLabel.Text = string.format("[%s] F5 · %d, %d", wR, math.floor(w21.MousePosSaved.X), math.floor(w21.MousePosSaved.Y))
-            w198.MousePosLabel.TextColor3 = w21.MousePosEnabled and Color3.fromRGB(50, 220, 100) or Color3.fromRGB(150, 150, 150)
+        if w99.MousePosLabel and w99.MousePosLabel.Parent then
+            local wa1 = w21.MousePosEnabled and "Tracking" or "Locked"
+            w99.MousePosLabel.Text = string.format("[%s] F5 · %d, %d", wa1, math.floor(w21.MousePosSaved.X), math.floor(w21.MousePosSaved.Y))
+            w99.MousePosLabel.TextColor3 = w21.MousePosEnabled and Color3.fromRGB(50, 220, 100) or Color3.fromRGB(150, 150, 150)
         end
     end
 end)
 
-local w461 = false
-local function w462()
-    if w461 then return end
-    w461 = true
+local w67 = false
+local function w68()
+    if w67 then return end
+    w67 = true
     task.delay(0.1, function()
-        w461 = false
-        local w463 = w59()
-        if math.abs(w463.X - w460.X) < 2 and math.abs(w463.Y - w460.Y) < 2 then return end
-        w460 = w463
-        local w464 = w63(w463)
-        if _G.UU.UI.ResolutionLabel then _G.UU.UI.ResolutionLabel.Text = string.format("Resolution: %dx%d", w463.X, w463.Y) end
+        w67 = false
+        local wa1 = w59()
+        if math.abs(wa1.X - wk.X) < 2 and math.abs(wa1.Y - wk.Y) < 2 then return end
+        wk = wa1
+        local wa2 = w63(wa1)
+        if _G.UU.UI.ResolutionLabel then _G.UU.UI.ResolutionLabel.Text = string.format("Resolution: %dx%d", wa1.X, wa1.Y) end
         if _G.UU.UI.DeviceLabel then _G.UU.UI.DeviceLabel.Text = "Device: "..w19() end
-        w437(w464)
+        wg(wa2)
         w21.SavedUIPosition = nil
         w21.SavedReopenPosition = nil
-        local w465, w466 = w430(w463, w464)
-        w163.Position = UDim2.new(0, w465, 0, w466)
-        local w467 = math.floor(60 * w62)
-        w465 = math.max(0, (w463.X - w467) / 2)
-        w466 = math.max(0, math.min(30, w463.Y - w467))
-        w170.Size = UDim2.new(0, w467, 0, w467)
-        w170.Position = UDim2.new(0, w465, 0, w466)
+        local wa3, wa4 = we(wa1, wa2)
+        w72.Position = UDim2.new(0, wa3, 0, wa4)
+        local wa5 = math.floor(60 * w62)
+        wa3 = math.max(0, (wa1.X - wa5) / 2)
+        wa4 = math.max(0, math.min(30, wa1.Y - wa5))
+        w83.Size = UDim2.new(0, wa5, 0, wa5)
+        w83.Position = UDim2.new(0, wa3, 0, wa4)
         w33()
     end)
 end
 
 if workspace.CurrentCamera then
-    table.insert(_G.UU.Connections, workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(w462))
+    table.insert(_G.UU.Connections, workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(w68))
 end
 
 table.insert(_G.UU.Connections, workspace:GetPropertyChangedSignal("CurrentCamera"):Connect(function()
     if workspace.CurrentCamera then
-        table.insert(_G.UU.Connections, workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(w462))
+        table.insert(_G.UU.Connections, workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(w68))
     end
 end))
 table.insert(_G.UU.Connections, w5.RenderStepped:Connect(function()
-    w358 = w358 + 1
-    local w468 = tick()
-    if w468 - w357 >= 1 then
-        w356 = math.floor(w358 / (w468 - w357))
-        w358 = 0; w357 = w468
-        if w197.FPSLabel then w197.FPSLabel.Text = "FPS: "..w356 end
-        table.remove(w354, 1); table.insert(w354, w356)
-        local w469, w470, w471 = math.huge, 0, 0
-        for _, w472 in ipairs(w354) do
-            w469 = math.min(w469, w472); w470 = math.max(w470, w472); w471 = w471 + w472
+    wK = wK + 1
+    local wa1 = tick()
+    if wa1 - wJ >= 1 then
+        wI = math.floor(wK / (wa1 - wJ))
+        wK = 0; wJ = wa1
+        if w97.FPSLabel then w97.FPSLabel.Text = "FPS: "..wI end
+        table.remove(wG, 1); table.insert(wG, wI)
+        local wa2, wa3, wa4 = math.huge, 0, 0
+        for _, wa5 in ipairs(wG) do
+            wa2 = math.min(wa2, wa5); wa3 = math.max(wa3, wa5); wa4 = wa4 + wa5
         end
-        local w473 = math.floor(w471 / #w354)
-        if w200.FPSStats then
-            w200.FPSStats.Current.Text = "Current: "..w356
-            w200.FPSStats.Avg.Text = "Average: "..w473
-            w200.FPSStats.MinMax.Text = string.format("Min: %d | Max: %d", w469, w470)
+        local wa6 = math.floor(wa4 / #wG)
+        if wB.FPSStats then
+            wB.FPSStats.Current.Text = "Current: "..wI
+            wB.FPSStats.Avg.Text = "Average: "..wa6
+            wB.FPSStats.MinMax.Text = string.format("Min: %d | Max: %d", wa2, wa3)
         end
-        local w474 = w10:GetTotalMemoryUsageMb()
-        w359 = math.max(w359, w474)
-        if w197.MemoryLabel then w197.MemoryLabel.Text = string.format("Memory: %.1f MB", w474) end
-        if w200.MemoryStats then
-            w200.MemoryStats.Current.Text = string.format("Current: %.1f MB", w474)
-            w200.MemoryStats.Peak.Text = string.format("Peak: %.1f MB", w359)
+        local wa7 = w10:GetTotalMemoryUsageMb()
+        wL = math.max(wL, wa7)
+        if w97.MemoryLabel then w97.MemoryLabel.Text = string.format("Memory: %.1f MB", wa7) end
+        if wB.MemoryStats then
+            wB.MemoryStats.Current.Text = string.format("Current: %.1f MB", wa7)
+            wB.MemoryStats.Peak.Text = string.format("Peak: %.1f MB", wL)
         end
     end
-    if w358 % 30 == 0 then
-        local w475 = math.floor(w11:GetNetworkPing() * 1000)
-        if w197.PingLabel then
-            w197.PingLabel.Text = "Ping: "..w475.." ms"
-            w197.PingLabel.TextColor3 = w475 < 100 and Color3.fromRGB(0, 255, 0) or w475 < 200 and Color3.fromRGB(255, 255, 0) or Color3.fromRGB(255, 0, 0)
+    if wK % 30 == 0 then
+        local wa8 = math.floor(w11:GetNetworkPing() * 1000)
+        if w97.PingLabel then
+            w97.PingLabel.Text = "Ping: "..wa8.." ms"
+            w97.PingLabel.TextColor3 = wa8 < 100 and Color3.fromRGB(0, 255, 0) or wa8 < 200 and Color3.fromRGB(255, 255, 0) or Color3.fromRGB(255, 0, 0)
         end
-        table.remove(w355, 1); table.insert(w355, w475)
-        local w476, w477, w478 = math.huge, 0, 0
-        for _, w479 in ipairs(w355) do
-            w476 = math.min(w476, w479); w477 = math.max(w477, w479); w478 = w478 + w479
+        table.remove(wH, 1); table.insert(wH, wa8)
+        local wa9, waa, wab = math.huge, 0, 0
+        for _, wac in ipairs(wH) do
+            wa9 = math.min(wa9, wac); waa = math.max(waa, wac); wab = wab + wac
         end
-        local w480 = math.floor(w478 / #w355)
-        if w200.PingStats then
-            w200.PingStats.Current.Text = "Current: "..w475.."ms"
-            w200.PingStats.Avg.Text = "Average: "..w480.."ms"
-            w200.PingStats.MinMax.Text = string.format("Min: %dms | Max: %dms", w476, w477)
-            local w481, w482
-            if w475 < 50 then w481, w482 = "Excellent", Color3.fromRGB(50, 220, 100)
-            elseif w475 < 100 then w481, w482 = "Good", Color3.fromRGB(100, 200, 255)
-            elseif w475 < 200 then w481, w482 = "Fair", Color3.fromRGB(255, 200, 100)
-            elseif w475 < 300 then w481, w482 = "Poor", Color3.fromRGB(255, 150, 50)
-            else w481, w482 = "Very Poor", Color3.fromRGB(220, 50, 50)
+        local wad = math.floor(wab / #wH)
+        if wB.PingStats then
+            wB.PingStats.Current.Text = "Current: "..wa8.."ms"
+            wB.PingStats.Avg.Text = "Average: "..wad.."ms"
+            wB.PingStats.MinMax.Text = string.format("Min: %dms | Max: %dms", wa9, waa)
+            local wae, waf
+            if wa8 < 50 then wae, waf = "Excellent", Color3.fromRGB(50, 220, 100)
+            elseif wa8 < 100 then wae, waf = "Good", Color3.fromRGB(100, 200, 255)
+            elseif wa8 < 200 then wae, waf = "Fair", Color3.fromRGB(255, 200, 100)
+            elseif wa8 < 300 then wae, waf = "Poor", Color3.fromRGB(255, 150, 50)
+            else wae, waf = "Very Poor", Color3.fromRGB(220, 50, 50)
             end
-            w200.PingStats.Quality.Text = w481
-            w200.PingStats.Quality.TextColor3 = w482
+            wB.PingStats.Quality.Text = wae
+            wB.PingStats.Quality.TextColor3 = waf
         end
     end
 end))
 
-local w483 = w41()
+local wl = w41()
 
-if w483 then
-    if w203.KeybindButton then w203.KeybindButton.Text = "Current Key: "..(w22[w21.Keybind] or w21.Keybind.Name) end
-    if w199.SpamInput then w199.SpamInput.Text = w21.SpamKey end
-    if w202.LoadStringBox then w202.LoadStringBox.Text = w21.SavedCode end
-    w393((w21.JumpDelay - 5) / 25)
-    w395((w21.ClickDelay - 1) / 9)
-    w396((w21.SpamDelay - 0.05) / 4.95)
-    w397((w21.TargetFPS - 15) / 345)
-    w160(w202.AutoLoadToggleState, w21.AutoLoadEnabled)
-    w160(w203.AutoHideToggleState, w21.AutoHideEnabled)
+if wl then
+    if wE.KeybindButton then wE.KeybindButton.Text = "Current Key: "..(w22[w21.Keybind] or w21.Keybind.Name) end
+    if wA.SpamInput then wA.SpamInput.Text = w21.SpamKey end
+    if wD.LoadStringBox then wD.LoadStringBox.Text = w21.SavedCode end
+    wT((w21.JumpDelay - 5) / 25)
+    wU((w21.ClickDelay - 1) / 9)
+    wV((w21.SpamDelay - 0.05) / 4.95)
+    wW((w21.TargetFPS - 15) / 345)
+    w70(wD.AutoLoadToggleState, w21.AutoLoadEnabled)
+    w70(wE.AutoHideToggleState, w21.AutoHideEnabled)
     if w21.AutoHideEnabled then
-        w203.Status.Text = "Auto Hide enabled — UI starts hidden on next execution."
-        w203.Status.TextColor3 = Color3.fromRGB(50, 220, 100)
+        wE.Status.Text = "Auto Hide enabled — UI starts hidden on next execution."
+        wE.Status.TextColor3 = Color3.fromRGB(50, 220, 100)
     else
-        w203.Status.Text = "Auto Hide disabled — UI shows normally on start."
-        w203.Status.TextColor3 = Color3.fromRGB(180, 180, 180)
+        wE.Status.Text = "Auto Hide disabled — UI shows normally on start."
+        wE.Status.TextColor3 = Color3.fromRGB(180, 180, 180)
     end
     if w21.AutoRejoinEnabled then
-        w160(w201.AutoRejoinToggleState, true)
-        w201.Status.Text = "Status: Enabled\n\nAutomatically rejoins when disconnected."
-        w201.Status.TextColor3 = Color3.fromRGB(50, 220, 100)
-        w378()
+        w70(wC.AutoRejoinToggleState, true)
+        wC.Status.Text = "Status: Enabled\n\nAutomatically rejoins when disconnected."
+        wC.Status.TextColor3 = Color3.fromRGB(50, 220, 100)
+        wQ()
     else
-        w160(w201.AutoRejoinToggleState, false)
+        w70(wC.AutoRejoinToggleState, false)
     end
-    if w21.FPSUnlockEnabled and w352 then
-        w160(w200.FPSToggleState, true)
-        w200.FPSUnlockStatus.TextColor3 = Color3.fromRGB(50, 220, 100)
-        w200.FPSUnlockStatus.Text = "Current Limit: "..w21.TargetFPS.." FPS (Custom)"
+    if w21.FPSUnlockEnabled and wF then
+        w70(wB.FPSToggleState, true)
+        wB.FPSUnlockStatus.TextColor3 = Color3.fromRGB(50, 220, 100)
+        wB.FPSUnlockStatus.Text = "Current Limit: "..w21.TargetFPS.." FPS (Custom)"
         pcall(setfpscap, w21.TargetFPS)
     else
-        w160(w200.FPSToggleState, false)
-        if w352 then pcall(setfpscap, 60) end
+        w70(wB.FPSToggleState, false)
+        if wF then pcall(setfpscap, 60) end
     end
-    w160(w198.JumpToggleState, w21.JumpEnabled)
-    if w21.JumpEnabled then task.wait(0.1); w365() end
-    w160(w198.ClickToggleState, w21.ClickEnabled)
-    w160(w198.MousePosToggleState, w21.MousePosEnabled)
-    if w21.ClickEnabled then task.wait(0.1); w368() end
-    if w21.MousePosEnabled then wN() end
+    w70(w99.JumpToggleState, w21.JumpEnabled)
+    if w21.JumpEnabled then task.wait(0.1); wN() end
+    w70(w99.ClickToggleState, w21.ClickEnabled)
+    w70(w99.MousePosToggleState, w21.MousePosEnabled)
+    if w21.ClickEnabled then task.wait(0.1); wO() end
+    if w21.MousePosEnabled then w66() end
     if w21.AutoSpamEnabled and w23[w21.SpamKey] then
-        w160(w199.AutoSpamToggleState, true)
-        w199.Status.Text = "Status: Spamming "..w21.SpamKey
-        w199.Status.TextColor3 = Color3.fromRGB(50, 220, 100)
-        task.wait(0.1); w373()
+        w70(wA.AutoSpamToggleState, true)
+        wA.Status.Text = "Status: Spamming "..w21.SpamKey
+        wA.Status.TextColor3 = Color3.fromRGB(50, 220, 100)
+        task.wait(0.1); wP()
     else
         w21.AutoSpamEnabled = false
-        w160(w199.AutoSpamToggleState, false)
+        w70(wA.AutoSpamToggleState, false)
     end
-    w361()
+    wM()
     task.defer(function()
-        w33L("Config loaded for "..w12.." (Id: "..w13..")", Color3.fromRGB(100, 200, 255))
+        w16("Config loaded for "..w12.." (Id: "..w13..")", Color3.fromRGB(100, 200, 255))
     end)
 else
-    w393(0.2); w395(0.22); w396(0.01); w397(0.13)
-    w160(w198.JumpToggleState, false)
-    w160(w198.ClickToggleState, false)
-    w160(w199.AutoSpamToggleState, false)
-    w160(w198.MousePosToggleState, false)
-    w160(w200.FPSToggleState, false)
-    w160(w201.AutoRejoinToggleState, false)
-    w160(w202.AutoLoadToggleState, false)
-    w160(w203.AutoHideToggleState, false)
-    w200.FPSUnlockStatus.Text = "Current Limit: 60 FPS (Default)"
-    w203.Status.Text = "Auto Hide disabled — UI shows normally on start."
-    w203.Status.TextColor3 = Color3.fromRGB(180, 180, 180)
-    w361()
+    wT(0.2); wU(0.22); wV(0.01); wW(0.13)
+    w70(w99.JumpToggleState, false)
+    w70(w99.ClickToggleState, false)
+    w70(wA.AutoSpamToggleState, false)
+    w70(w99.MousePosToggleState, false)
+    w70(wB.FPSToggleState, false)
+    w70(wC.AutoRejoinToggleState, false)
+    w70(wD.AutoLoadToggleState, false)
+    w70(wE.AutoHideToggleState, false)
+    wB.FPSUnlockStatus.Text = "Current Limit: 60 FPS (Default)"
+    wE.Status.Text = "Auto Hide disabled — UI shows normally on start."
+    wE.Status.TextColor3 = Color3.fromRGB(180, 180, 180)
+    wM()
     task.defer(function()
-        w33L("Fresh start — no saved config found.", Color3.fromRGB(255, 200, 100))
-        w33L("Using defaults. Keybind: G | Auto Hide: Off", Color3.fromRGB(150, 150, 150))
+        w16("Fresh start — no saved config found.", Color3.fromRGB(255, 200, 100))
+        w16("Using defaults. Keybind: G | Auto Hide: Off", Color3.fromRGB(150, 150, 150))
     end)
 end
 
@@ -2434,101 +2440,103 @@ task.spawn(function()
             _G.UU.UI.PlayerImage.Image = "rbxthumb://type=AvatarHeadShot&id="..w13.."&w=420&h=420"
         end
         if _G.UU.UI.GameName and _G.UU.UI.GameImage then
-            local w484 = w8:GetProductInfo(game.PlaceId)
-            _G.UU.UI.GameName.Text = w484.Name
-            if w484.IconImageAssetId and w484.IconImageAssetId ~= 0 then
-                _G.UU.UI.GameImage.Image = "rbxthumb://type=Asset&id="..w484.IconImageAssetId.."&w=420&h=420"
+            local wa1 = w8:GetProductInfo(game.PlaceId)
+            _G.UU.UI.GameName.Text = wa1.Name
+            if wa1.IconImageAssetId and wa1.IconImageAssetId ~= 0 then
+                _G.UU.UI.GameImage.Image = "rbxthumb://type=Asset&id="..wa1.IconImageAssetId.."&w=420&h=420"
             end
         end
     end)
 end)
 
-w102(w202.LoadStringBox, w202.LineNumbers, w202.LoadStringScrollFrame, w202.LineNumbersScrollFrame)
+w20(wD.LoadStringBox, wD.LineNumbers, wD.LoadStringScrollFrame, wD.LineNumbersScrollFrame)
 
-w162.Destroying:Connect(function()
+w71.Destroying:Connect(function()
     w33()
-    w177SX()
-    for w485, w15 in pairs(_G.UU.Threads) do
-        if w15 and typeof(w15) == "thread" and coroutine.status(w15) ~= "dead" then
-            pcall(task.cancel, w15)
+    w28()
+    for wa1, wa2 in pairs(_G.UU.Threads) do
+        if wa2 and typeof(wa2) == "thread" and coroutine.status(wa2) ~= "dead" then
+            pcall(task.cancel, wa2)
         end
-        _G.UU.Threads[w485] = nil
+        _G.UU.Threads[wa1] = nil
     end
-    if w377B then pcall(function() w377B:Disconnect() end); w377B = nil end
+    if w38 then pcall(function() w38:Disconnect() end); w38 = nil end
 end)
-for w486, w487 in pairs(w182) do w487.Visible = false end
+for wa1, wa2 in pairs(w92) do wa2.Visible = false end
 
-local w488 = w59()
-if w488.X < 100 or w488.Y < 100 then
-    repeat task.wait() until workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize.X > 100
-end
+do
+    local wa1 = w59()
+    if wa1.X < 100 or wa1.Y < 100 then
+        repeat task.wait() until workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize.X > 100
+    end
 
-task.wait(0.1)
+    task.wait(0.1)
 
-local w489 = not w21.AutoHideEnabled
-w488 = w59()
-w460 = w488
-w62 = w63(w488)
+    local wa2 = not w21.AutoHideEnabled
+    wa1 = w59()
+    wk = wa1
+    w62 = w63(wa1)
 
-local w490, w491
-if w21.SavedUIPosition and w21.SavedUIPosition.X and w21.SavedUIPosition.Y then
-    w490 = w21.SavedUIPosition.X
-    w491 = w21.SavedUIPosition.Y
-else
-    w490, w491 = w430(w488, w62)
-end
+    local wa3, wa4
+    if w21.SavedUIPosition and w21.SavedUIPosition.X and w21.SavedUIPosition.Y then
+        wa3 = w21.SavedUIPosition.X
+        wa4 = w21.SavedUIPosition.Y
+    else
+        wa3, wa4 = we(wa1, w62)
+    end
 
-local w492, w493, w494
-if w21.SavedReopenPosition and w21.SavedReopenPosition.X and w21.SavedReopenPosition.Y then
-    w492 = math.floor(60 * w62)
-    w493 = w21.SavedReopenPosition.X
-    w494 = w21.SavedReopenPosition.Y
-else
-    w492, w493, w494 = w435(w488, w62)
-end
+    local wa5, wa6, wa7
+    if w21.SavedReopenPosition and w21.SavedReopenPosition.X and w21.SavedReopenPosition.Y then
+        wa5 = math.floor(60 * w62)
+        wa6 = w21.SavedReopenPosition.X
+        wa7 = w21.SavedReopenPosition.Y
+    else
+        wa5, wa6, wa7 = wf(wa1, w62)
+    end
 
-local w416ST = w21.CurrentTab or "Home"
-for w418, w419 in pairs(w182) do
-    w419.Visible = (w418 == w416ST)
-end
+    local wa8 = w21.CurrentTab or "Home"
+    for wa9, waa in pairs(w92) do
+        waa.Visible = (wa9 == wa8)
+    end
 
-w416AV(w416ST)
-w21.CurrentTab = w416ST
-w33()
+    w43(wa8)
+    w21.CurrentTab = wa8
+    w33()
 
-if w489 then
-    w163.Visible = true
-    w163.Size = UDim2.new(0, w60.Width, 0, w60.Height)
-    w163.Position = UDim2.new(0, w490, 0, w491 + 24)
-    w163.BackgroundTransparency = 1
-    w61.Scale = 0
-    w170.Visible = false
-    local wf = w2:Create(w163, TweenInfo.new(0.55, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-        Position = UDim2.new(0, w490, 0, w491),
-        BackgroundTransparency = 0,
-    })
-    local wg = w48(w61, TweenInfo.new(0.65, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = w62 })
-    wf:Play()
-    wg.Completed:Wait()
-    w163.BackgroundTransparency = 0
-else
-    w163.Visible = false
-    w170.Size = UDim2.new(0, 0, 0, 0)
-    w170.Position = UDim2.new(0, w493 + w492 / 2, 0, w494 + w492 / 2)
-    w170.ImageTransparency = 1
-    w171.TextTransparency = 1
-    w170.Rotation = -270
-    w170.Visible = true
-    local wh = w2:Create(w170, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-        Size = UDim2.new(0, w492, 0, w492),
-        Position = UDim2.new(0, w493, 0, w494),
-        ImageTransparency = 0,
-        Rotation = 0,
-    })
-    local wi = w2:Create(w171, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { TextTransparency = 0 })
-    wh:Play()
-    task.delay(0.2, function() wi:Play() end)
-    wh.Completed:Wait()
+    if wa2 then
+        w72.Visible = true
+        w72.Size = UDim2.new(0, w60.Width, 0, w60.Height)
+        w72.Position = UDim2.new(0, wa3, 0, wa4 + 24)
+        w72.BackgroundTransparency = 1
+        w61.Scale = 0
+        w83.Visible = false
+        local wab = w2:Create(w72, TweenInfo.new(0.55, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+            Position = UDim2.new(0, wa3, 0, wa4),
+            BackgroundTransparency = 0,
+        })
+        local wac = w48(w61, TweenInfo.new(0.65, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = w62 })
+        wab:Play()
+        wac.Completed:Wait()
+        w72.BackgroundTransparency = 0
+    else
+        w72.Visible = false
+        w83.Size = UDim2.new(0, 0, 0, 0)
+        w83.Position = UDim2.new(0, wa6 + wa5 / 2, 0, wa7 + wa5 / 2)
+        w83.ImageTransparency = 1
+        w84.TextTransparency = 1
+        w83.Rotation = -270
+        w83.Visible = true
+        local wad = w2:Create(w83, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+            Size = UDim2.new(0, wa5, 0, wa5),
+            Position = UDim2.new(0, wa6, 0, wa7),
+            ImageTransparency = 0,
+            Rotation = 0,
+        })
+        local wae = w2:Create(w84, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { TextTransparency = 0 })
+        wad:Play()
+        task.delay(0.2, function() wae:Play() end)
+        wad.Completed:Wait()
+    end
 end
 
 if queue_on_teleport and not _G.UU.TeleportQueued then
@@ -2542,22 +2550,22 @@ _G.UU.Loaded = true
 _G.UU.LoadLock = false
 
 task.defer(function()
-    if w483 and w21.AutoLoadEnabled and w21.SavedCode and w21.SavedCode ~= "" then
-        w202.Status.Text = "Executing..."
-        w202.Status.TextColor3 = Color3.fromRGB(255, 200, 100)
-        w33L("Auto Load → executing saved script on start...", Color3.fromRGB(255, 200, 100))
-        local w496, _, wj = w386(w21.SavedCode)
-        if w496 then
-            w202.AddOutput("Auto-load executed successfully.", Color3.fromRGB(80, 220, 120))
-            w33L("Auto Load → script executed ✓", Color3.fromRGB(80, 220, 120))
+    if wl and w21.AutoLoadEnabled and w21.SavedCode and w21.SavedCode ~= "" then
+        wD.Status.Text = "Executing..."
+        wD.Status.TextColor3 = Color3.fromRGB(255, 200, 100)
+        w16("Auto Load → executing saved script on start...", Color3.fromRGB(255, 200, 100))
+        local wa1, _, wa2 = wR(w21.SavedCode)
+        if wa1 then
+            wD.AddOutput("Auto-load executed successfully.", Color3.fromRGB(80, 220, 120))
+            w16("Auto Load → script executed ✓", Color3.fromRGB(80, 220, 120))
         else
-            if wj then
-                w202.AddOutput(wj, Color3.fromRGB(255, 100, 100))
-                w33L("Auto Load error: " .. tostring(wj):sub(1, 80), Color3.fromRGB(255, 100, 100))
+            if wa2 then
+                wD.AddOutput(wa2, Color3.fromRGB(255, 100, 100))
+                w16("Auto Load error: " .. tostring(wa2):sub(1, 80), Color3.fromRGB(255, 100, 100))
             end
         end
-        w202.Status.Text = "Ready"
-        w202.Status.TextColor3 = Color3.fromRGB(180, 180, 180)
+        wD.Status.Text = "Ready"
+        wD.Status.TextColor3 = Color3.fromRGB(180, 180, 180)
     end
 end)
 
