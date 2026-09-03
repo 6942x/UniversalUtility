@@ -608,6 +608,7 @@ local function w26(wa1, wa2, wa3, wa4)
     wa9.TextXAlignment = Enum.TextXAlignment.Left
     wa9.LayoutOrder = 1
     local waa = 1
+    local wax = {}
     local function wab(wac, wad)
         wa9.Visible = false
         waa = waa + 1
@@ -624,6 +625,11 @@ local function w26(wa1, wa2, wa3, wa4)
         waf.TextWrapped = true
         waf.RichText = false
         waf.LayoutOrder = waa
+        wax[#wax + 1] = waf
+        if #wax > 40 then
+            wax[1]:Destroy()
+            table.remove(wax, 1)
+        end
         task.defer(function() wa6.CanvasPosition = Vector2.new(0, math.huge) end)
         return waf
     end
@@ -648,6 +654,7 @@ local function w26(wa1, wa2, wa3, wa4)
                 wah:Destroy()
             end
         end
+        wax = {}
         waa = 1
         wa9.Visible = true
     end)
@@ -987,19 +994,6 @@ end
 local w97, w99, wA = {}, {}, {}
 local wB, wC, wD, wE = {}, {}, {}, {}
 
-local function w31(wa1)
-    local wa2, wa3, wa4, wa5 = math.floor(wa1 / 86400), math.floor((wa1 % 86400) / 3600), math.floor((wa1 % 3600) / 60), wa1 % 60
-    if wa2 > 0 then
-        return string.format("Server Uptime: %dd %dh %02dm %02ds", wa2, wa3, wa4, wa5)
-    elseif wa3 > 0 then
-        return string.format("Server Uptime: %dh %02dm %02ds", wa3, wa4, wa5)
-    elseif wa4 > 0 then
-        return string.format("Server Uptime: %dm %02ds", wa4, wa5)
-    else
-        return "Server Uptime: " .. wa5 .. "s"
-    end
-end
-
 local w34
 do
     local wa1 = {
@@ -1204,9 +1198,9 @@ do
     wak.TextColor3 = Color3.fromRGB(150, 255, 180); wak.TextXAlignment = Enum.TextXAlignment.Left
     local wal = Instance.new("TextLabel", waf)
     wal.Size = UDim2.new(1, -145, 0, 16); wal.Position = UDim2.new(0, 140, 0, 85)
-    wal.BackgroundTransparency = 1; wal.Text = "Server Uptime: 0s"
+    wal.BackgroundTransparency = 1; wal.Text = "Place Version: "..game.PlaceVersion
     wal.Font = Enum.Font.Gotham; wal.TextSize = 16
-    wal.TextColor3 = Color3.fromRGB(255, 220, 100); wal.TextXAlignment = Enum.TextXAlignment.Left
+    wal.TextColor3 = Color3.fromRGB(255, 200, 100); wal.TextXAlignment = Enum.TextXAlignment.Left
     local wam = Instance.new("TextLabel", waf)
     wam.Size = UDim2.new(1, -145, 0, 16); wam.Position = UDim2.new(0, 140, 0, 100)
     wam.BackgroundTransparency = 1; wam.Text = "Server Region: Detecting..."
@@ -1218,23 +1212,13 @@ do
     wan.Font = Enum.Font.Gotham; wan.TextSize = 12
     wan.TextColor3 = Color3.fromRGB(255, 180, 180); wan.TextXAlignment = Enum.TextXAlignment.Left
     wan.TextTruncate = Enum.TextTruncate.AtEnd
-    local wao = tick() - workspace.DistributedGameTime
-    wal.Text = w31(math.floor(workspace.DistributedGameTime))
     w34(wam)
     table.insert(_G.UU.Connections, w1.PlayerAdded:Connect(function()
-        wak.Text = "Players: "..#w1:GetPlayers().." / "..w1.MaxPlayers
+        wak.Text = "Server Players: "..#w1:GetPlayers().." / "..w1.MaxPlayers
     end))
     table.insert(_G.UU.Connections, w1.PlayerRemoving:Connect(function()
-        wak.Text = "Players: "..(#w1:GetPlayers() - 1).." / "..w1.MaxPlayers
+        wak.Text = "Server Players: "..(#w1:GetPlayers() - 1).." / "..w1.MaxPlayers
     end))
-    local wap, waq = -1, w5.Heartbeat:Connect(function()
-        local war = math.floor(tick() - wao)
-        if war ~= wap then
-            wap = war
-            wal.Text = w31(war)
-        end
-    end)
-    table.insert(_G.UU.Connections, waq)
     _G.UU.UI.PlayerImage = wa3
     _G.UU.UI.GameName = wah
     _G.UU.UI.GameImage = wag
@@ -1655,7 +1639,7 @@ local function wN()
     w56("Jump")
     _G.UU.Threads.Jump = task.spawn(function()
         while w21.JumpEnabled do
-            task.wait(w21.JumpDelay)
+            task.wait(math.max(w21.JumpDelay or 1, 0.05))
             if w21.JumpEnabled and w11.Character then
                 local wa1 = w11.Character:FindFirstChildOfClass("Humanoid")
                 if wa1 then wa1:ChangeState(Enum.HumanoidStateType.Jumping) end
@@ -1669,7 +1653,7 @@ local function wO()
     w56("Click")
     _G.UU.Threads.Click = task.spawn(function()
         while w21.ClickEnabled do
-            task.wait(w21.ClickDelay)
+            task.wait(math.max(w21.ClickDelay or 0.1, 0.05))
             if w21.ClickEnabled then
                 local wa1, wa2
                 if w21.MousePosEnabled then
@@ -1694,7 +1678,7 @@ local function wP()
     if not wa2 then return end
     _G.UU.Threads.Spam = task.spawn(function()
         while w21.AutoSpamEnabled do
-            task.wait(w21.SpamDelay)
+            task.wait(math.max(w21.SpamDelay or 0.1, 0.05))
             if w21.AutoSpamEnabled then
                 w4:SendKeyEvent(true, wa2, false, game)
                 task.wait(0.05)
@@ -1716,7 +1700,8 @@ end
 local function wQ()
     w40()
     if not w21.AutoRejoinEnabled then return end
-    task.spawn(function()
+    w56("RejoinWait")
+    _G.UU.Threads.RejoinWait = task.spawn(function()
         local wa1 = w6:FindFirstChild("RobloxPromptGui")
         if not wa1 then
             local wa2, wa3 = pcall(function() return w6:WaitForChild("RobloxPromptGui", 10) end)
@@ -1988,7 +1973,7 @@ wD.AutoLoadToggleBtn.MouseButton1Click:Connect(function()
     end
 end)
 
-local w35, w36, w37 = 0, 0.3, false
+local w37 = false
 wD.LoadStringBox:GetPropertyChangedSignal("Text"):Connect(function()
     w21.SavedCode = wD.LoadStringBox.Text
     if not w37 then
@@ -1998,9 +1983,9 @@ wD.LoadStringBox:GetPropertyChangedSignal("Text"):Connect(function()
             w20(wD.LoadStringBox, wD.LineNumbers, wD.LoadStringScrollFrame, wD.LineNumbersScrollFrame)
         end)
     end
-    local wa1 = tick()
-    if wa1 - w35 >= w36 then
-        w35 = wa1
+    if _G.UU.CodeSaveJob then pcall(task.cancel, _G.UU.CodeSaveJob) end
+    _G.UU.CodeSaveJob = task.delay(0.75, function()
+        _G.UU.CodeSaveJob = nil
         wD.Status.Text = "Saving..."
         wD.Status.TextColor3 = Color3.fromRGB(100, 200, 255)
         local wa2 = w33()
@@ -2017,7 +2002,7 @@ wD.LoadStringBox:GetPropertyChangedSignal("Text"):Connect(function()
                 wD.Status.TextColor3 = Color3.fromRGB(180, 180, 180)
             end
         end)
-    end
+    end)
 end)
 wD.LoadStringScrollFrame:GetPropertyChangedSignal("CanvasPosition"):Connect(function()
     wD.LineNumbersScrollFrame.CanvasPosition = Vector2.new(0, wD.LoadStringScrollFrame.CanvasPosition.Y)
@@ -2258,7 +2243,7 @@ w99.MousePosToggleBtn.MouseButton1Click:Connect(function()
     w66()
     w17("Mouse Position → " .. (w21.MousePosEnabled and "Tracking" or "Locked"))
 end)
-task.spawn(function()
+_G.UU.Threads.MousePosLabel = task.spawn(function()
     while true do
         task.wait(0.25)
         if w99.MousePosLabel and w99.MousePosLabel.Parent then
@@ -2330,7 +2315,8 @@ table.insert(_G.UU.Connections, w5.RenderStepped:Connect(function()
             wB.MemoryStats.Peak.Text = string.format("Peak: %.1f MB", wL)
         end
     end
-    if wK % 30 == 0 then
+    if tick() - (_G.UU.LastPingTime or 0) >= 2 then
+        _G.UU.LastPingTime = tick()
         local wa8 = math.floor(w11:GetNetworkPing() * 1000)
         if w97.PingLabel then
             w97.PingLabel.Text = "Ping: "..wa8.." ms"
