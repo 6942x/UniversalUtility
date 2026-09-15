@@ -232,10 +232,10 @@ local function w41()
     w21.AutoSpamEnabled = wa3.AutoSpamEnabled or false
     w21.AutoLoadEnabled = wa3.AutoLoadEnabled or false
     w21.AutoHideEnabled = wa3.AutoHideEnabled or false
-    w21.TargetFPS = wa3.TargetFPS or 60
-    w21.JumpDelay = wa3.JumpDelay or 10.0
-    w21.ClickDelay = wa3.ClickDelay or 3.0
-    w21.SpamDelay = wa3.SpamDelay or 0.1
+    w21.TargetFPS = math.clamp(tonumber(wa3.TargetFPS) or 60, 15, 360)
+    w21.JumpDelay = math.clamp(tonumber(wa3.JumpDelay) or 10, 1, 600)
+    w21.ClickDelay = math.clamp(tonumber(wa3.ClickDelay) or 3, 1, 600)
+    w21.SpamDelay = math.clamp(tonumber(wa3.SpamDelay) or 0.1, 0.05, 5)
     w21.SpamKey = wa3.SpamKey or "Q"
     w21.SavedCode = wa3.SavedCode or ""
     w21.CurrentTab = wa3.CurrentTab or "Home"
@@ -244,6 +244,40 @@ local function w41()
     w21.SavedUIPosition = wa3.SavedUIPosition or nil
     w21.SavedReopenPosition = wa3.SavedReopenPosition or nil
     return true
+end
+
+local function wq4(wa1)
+    wa1 = math.floor(wa1 * 10 + 0.5) / 10
+    if wa1 < 60 then
+        if wa1 % 1 == 0 then return string.format("%ds", wa1) end
+        return string.format("%.1fs", wa1)
+    end
+    local wa2 = math.floor(wa1 / 60 + 0.001)
+    local wa3 = math.floor(wa1 - wa2 * 60 + 0.5)
+    if wa3 >= 60 then
+        wa2, wa3 = wa2 + 1, 0
+    end
+    if wa3 == 0 then return string.format("%dm", wa2) end
+    return string.format("%dm %02ds", wa2, wa3)
+end
+
+local function wq5(wa1)
+    if type(wa1) ~= "string" then return nil end
+    local wa2 = wa1:lower():gsub("%s+", "")
+    local wa3, wa4 = wa2:match("^(%d+)m(%d*)s?$")
+    if wa3 then return tonumber(wa3) * 60 + (tonumber(wa4) or 0) end
+    local wa5 = wa2:match("^(%d+%.?%d*)m$")
+    if wa5 then return math.floor(tonumber(wa5) * 600 + 0.5) / 10 end
+    return tonumber((wa2:gsub("s$", "")))
+end
+
+local function wq6(wa1)
+    return math.floor((600 ^ math.clamp(wa1, 0, 1)) * 10 + 0.5) / 10
+end
+
+local function wq7(wa1)
+    wa1 = math.clamp(wa1, 1, 600)
+    return math.clamp(math.log(wa1) / math.log(600), 0, 1)
 end
 
 local w44 = {
@@ -255,7 +289,6 @@ local w44 = {
     Elastic = TweenInfo.new(0.60, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out),
     Smooth = TweenInfo.new(0.30, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut),
 }
-
 local w45 = {}
 local function w46(wa1)
     if w45[wa1] then w45[wa1]:Cancel(); w45[wa1] = nil end
@@ -314,36 +347,39 @@ local function w69(wa1, wa2, wa3, wa4)
     return wa5
 end
 
-local function w74(wa1, wa2, wa3, wa4, wa5, wa6, wa7, wa8)
+local function w74(wa1, wa2, wa3, wa4, wa5, wa6)
     local wa9 = Instance.new("Frame", wa1)
     wa9.Size = wa2
     wa9.Position = wa3
     wa9.BackgroundTransparency = 1
+
     local waa = Instance.new("TextLabel", wa9)
     waa.Size = UDim2.new(1, 0, 0, 18)
     waa.BackgroundTransparency = 1
-    waa.Text = wa8 or wa5
+    waa.Text = wa5
     waa.Font = Enum.Font.Gotham
     waa.TextSize = 12
     waa.TextColor3 = Color3.fromRGB(180, 180, 180)
     waa.TextXAlignment = Enum.TextXAlignment.Left
+
     local wab = Instance.new("Frame", wa9)
     wab.Size = UDim2.new(1, -60, 0, 6)
     wab.Position = UDim2.new(0, 0, 0, 22)
     wab.BackgroundColor3 = Color3.fromRGB(45, 45, 52)
     wab.BorderSizePixel = 0
     w65(wab, 3)
-    local wac, wad = Instance.new("Frame", wab), wa6 or 0
-    local wae = (wa7 or 1) - wad
-    local waf = (wa4 - wad) / math.max(wae, 0.001)
-    wac.Size = UDim2.new(math.clamp(waf, 0, 1), 0, 1, 0)
+
+    local wac = Instance.new("Frame", wab)
+    wac.Size = UDim2.new(math.clamp(wa6 or 0, 0, 1), 0, 1, 0)
     wac.BackgroundColor3 = Color3.fromRGB(100, 150, 255)
     wac.BorderSizePixel = 0
     w65(wac, 3)
+
     local wag = Instance.new("TextButton", wab)
     wag.Size = UDim2.new(1, 0, 1, 0)
     wag.BackgroundTransparency = 1
     wag.Text = ""
+
     local wah = Instance.new("TextBox", wa9)
     wah.Size = UDim2.new(0, 50, 0, 24)
     wah.Position = UDim2.new(1, -50, 0, 16)
@@ -355,17 +391,18 @@ local function w74(wa1, wa2, wa3, wa4, wa5, wa6, wa7, wa8)
     wah.ClearTextOnFocus = false
     wah.BorderSizePixel = 0
     w65(wah, 5)
+
     return wa9, wab, wac, wag, wah
 end
 
-local function w91(wa1, wa2, wa3, wa4, wa5, wa6)
-    w48(wa1, w44.Fast, { Size = UDim2.new((wa3 - wa4) / (wa5 - wa4), 0, 1, 0) })
-    wa2.Text = string.format(wa6, wa3)
+local function w91(wa1, wa2, wa3, wa4)
+    w48(wa1, w44.Fast, { Size = UDim2.new(wa3, 0, 1, 0) })
+    wa2.Text = wa4
 end
 
-local function w18(wa1, wa2, wa3, wa4, wa5, wa6)
-    wa1.Size = UDim2.new((wa3 - wa4) / (wa5 - wa4), 0, 1, 0)
-    wa2.Text = string.format(wa6, wa3)
+local function w18(wa1, wa2, wa3, wa4)
+    wa1.Size = UDim2.new(wa3, 0, 1, 0)
+    wa2.Text = wa4
 end
 
 local function w98(wa1, wa2)
@@ -405,7 +442,10 @@ local function w24(wa1, wa2)
             wa6 = w3.InputChanged:Connect(function(wa8)
                 if (wa8.UserInputType == Enum.UserInputType.MouseMovement or wa8.UserInputType == Enum.UserInputType.Touch) and wa3 then
                     local wa9 = wa8.Position - wa4
-                    wa1.Position = UDim2.new(wa5.X.Scale, wa5.X.Offset + wa9.X, wa5.Y.Scale, wa5.Y.Offset + wa9.Y)
+                    local waa = w59()
+                    local wab = math.clamp(wa5.X.Offset + wa9.X, 0, math.max(0, waa.X - wa1.AbsoluteSize.X))
+                    local wac = math.clamp(wa5.Y.Offset + wa9.Y, 0, math.max(0, waa.Y - wa1.AbsoluteSize.Y))
+                    wa1.Position = UDim2.new(wa5.X.Scale, wab, wa5.Y.Scale, wac)
                 end
             end)
             wa7.Changed:Connect(function()
@@ -660,7 +700,6 @@ local function w26(wa1, wa2, wa3, wa4)
     end)
     return wa5, wa6, wa9, wab, wag
 end
-
 local wa1 = w6:FindFirstChild("UniversalUtility") or (gethui and gethui():FindFirstChild("UniversalUtility"))
 if wa1 then wa1:Destroy() end
 
@@ -776,6 +815,7 @@ w84.TextTransparency = 1
 
 local w85, w86, w87, w88, w89 = false, nil, nil, nil, false
 local w30, w27 = nil, false
+
 local function w28()
     if w30 then
         w30:Disconnect()
@@ -809,21 +849,24 @@ w83.InputBegan:Connect(function(wa1)
             if (wa2.UserInputType == Enum.UserInputType.MouseMovement or wa2.UserInputType == Enum.UserInputType.Touch) and w85 then
                 local wa3 = wa2.Position - w86
                 if math.abs(wa3.X) > 5 or math.abs(wa3.Y) > 5 then w89 = true end
-                w83.Position = UDim2.new(0, w87.X.Offset + wa3.X, 0, w87.Y.Offset + wa3.Y)
+                local wa4 = w59()
+                local wa5 = math.clamp(w87.X.Offset + wa3.X, 0, math.max(0, wa4.X - w83.Size.X.Offset))
+                local wa6 = math.clamp(w87.Y.Offset + wa3.Y, 0, math.max(0, wa4.Y - w83.Size.Y.Offset))
+                w83.Position = UDim2.new(0, wa5, 0, wa6)
             end
         end)
         wa1.Changed:Connect(function()
             if wa1.UserInputState == Enum.UserInputState.End or wa1.UserInputState == Enum.UserInputState.Cancel then
                 w85 = false
                 if w88 then w88:Disconnect(); w88 = nil end
-                local wa4, wa5, wa6, wa7 = math.floor(60 * w62), w3:GetMouseLocation(), w83.AbsolutePosition, w83.AbsoluteSize
-                local wa8 = wa5.X >= wa6.X and wa5.X <= wa6.X + wa7.X
-                    and wa5.Y >= wa6.Y and wa5.Y <= wa6.Y + wa7.Y
-                if wa8 then
-                    w48(w83, w44.Medium, { Size = UDim2.new(0, math.floor(wa4 * 1.17), 0, math.floor(wa4 * 1.17)) })
+                local wa7, wa8, wa9, waa = math.floor(60 * w62), w3:GetMouseLocation(), w83.AbsolutePosition, w83.AbsoluteSize
+                local wab = wa8.X >= wa9.X and wa8.X <= wa9.X + waa.X
+                    and wa8.Y >= wa9.Y and wa8.Y <= wa9.Y + waa.Y
+                if wab then
+                    w48(w83, w44.Medium, { Size = UDim2.new(0, math.floor(wa7 * 1.17), 0, math.floor(wa7 * 1.17)) })
                     w29()
                 else
-                    w48(w83, w44.Medium, { Size = UDim2.new(0, wa4, 0, wa4), Rotation = 0 })
+                    w48(w83, w44.Medium, { Size = UDim2.new(0, wa7, 0, wa7), Rotation = 0 })
                 end
                 task.wait(0.1)
                 if w89 then
@@ -835,6 +878,7 @@ w83.InputBegan:Connect(function(wa1)
         end)
     end
 end)
+
 w83.MouseEnter:Connect(function()
     if not w85 then
         local wa1 = math.floor(60 * w62)
@@ -842,6 +886,7 @@ w83.MouseEnter:Connect(function()
         w29()
     end
 end)
+
 w83.MouseLeave:Connect(function()
     if not w85 then
         w28()
@@ -849,12 +894,14 @@ w83.MouseLeave:Connect(function()
         w48(w83, w44.Medium, { Size = UDim2.new(0, wa1, 0, wa1), Rotation = 0 })
     end
 end)
+
 w83.MouseButton1Down:Connect(function()
     if not w85 then
         local wa1 = math.floor(60 * w62)
         w48(w83, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Size = UDim2.new(0, math.floor(wa1 * 0.92), 0, math.floor(wa1 * 0.92)) })
     end
 end)
+
 w83.MouseButton1Up:Connect(function()
     if not w85 then
         local wa1 = math.floor(60 * w62)
@@ -879,7 +926,6 @@ _G.UU.UI = {
     UIScale = w61,
     AllFrames = w93,
 }
-
 local function w94(wa1, wa2, wa3)
     local wa4 = Instance.new("TextButton", w77)
     wa4.Name = wa1.."Tab"
@@ -1228,7 +1274,6 @@ do
     w97.PingLabel = wa7
     w97.MemoryLabel = wa8
 end
-
 do
     local wa1 = w92["Anti-AFK"]
     local wa2 = w51(wa1, 450, 1)
@@ -1253,8 +1298,8 @@ do
     wad.TextColor3 = Color3.fromRGB(150, 150, 150)
     wad.TextXAlignment = Enum.TextXAlignment.Left
     w49(wa2, 233)
-    local _, wae, waf, wag, wah = w74(wa2, UDim2.new(1, -20, 0, 50), UDim2.new(0, 10, 0, 248), 10, "Jump Interval (seconds)")
-    local _, wai, waj, wak, wal = w74(wa2, UDim2.new(1, -20, 0, 50), UDim2.new(0, 10, 0, 315), 3, "Click Interval (seconds)")
+    local _, wae, waf, wag, wah = w74(wa2, UDim2.new(1, -20, 0, 50), UDim2.new(0, 10, 0, 248), w21.JumpDelay, "Jump Cooldown (1s - 10min)", wq7(w21.JumpDelay))
+    local _, wai, waj, wak, wal = w74(wa2, UDim2.new(1, -20, 0, 50), UDim2.new(0, 10, 0, 315), w21.ClickDelay, "Click Cooldown (1s - 10min)", wq7(w21.ClickDelay))
     local _, wam = w47(wa2, UDim2.new(1, -20, 0, 45), UDim2.new(0, 10, 0, 380), "Status: All Inactive")
     w99 = {
         JumpToggleBtn = wa5,
@@ -1299,7 +1344,7 @@ do
     w65(wa4, 8)
     Instance.new("UIStroke", wa4).Color = Color3.fromRGB(60, 60, 70)
     w49(wa2, 135)
-    local _, wa5, wa6, wa7, wa8 = w74(wa2, UDim2.new(1, -20, 0, 50), UDim2.new(0, 10, 0, 150), 0.1, "Spam Interval (seconds)")
+    local _, wa5, wa6, wa7, wa8 = w74(wa2, UDim2.new(1, -20, 0, 50), UDim2.new(0, 10, 0, 150), w21.SpamDelay, "Spam Interval (seconds)", (w21.SpamDelay - 0.05) / 4.95)
     local wa9, _ = w55(wa2, "Auto Spam", 215)
     local waa, _, _, wab = w58(wa9, UDim2.new(0, 56, 0, 28), UDim2.new(1, -28, 0.5, 0), w21.AutoSpamEnabled, nil)
     local _, wac = w47(wa2, UDim2.new(1, -20, 0, 45), UDim2.new(0, 10, 0, 265), "Status: Inactive")
@@ -1333,7 +1378,7 @@ do
     wa7.TextSize = 13
     wa7.TextColor3 = Color3.fromRGB(180, 180, 180)
     wa7.TextXAlignment = Enum.TextXAlignment.Center
-    local _, wa8, wa9, waa, wab = w74(wa2, UDim2.new(1, -20, 0, 50), UDim2.new(0, 10, 0, 135), 60, "Target FPS Limit")
+    local _, wa8, wa9, waa, wab = w74(wa2, UDim2.new(1, -20, 0, 50), UDim2.new(0, 10, 0, 135), w21.TargetFPS, "Target FPS Limit", (w21.TargetFPS - 15) / 345)
     w49(wa2, 200)
     w50(wa2, "Framerate Statistics", 210)
     local wac = Instance.new("Frame", wa2)
@@ -1414,7 +1459,6 @@ do
         Status = wa7,
     }
 end
-
 do
     local wa1 = w92["Script Loader"]
     local wa2 = w51(wa1, 660, 1)
@@ -1753,58 +1797,62 @@ local function wR(wa1)
 end
 
 local wS = { jump = false, click = false, spam = false, fps = false }
-local function w42(wa1, wa2, wa3, wa4, wa5, wa6, wa7, wa8, wa9, waa)
-    local function wab(wac)
-        w21[wa1] = wa2 + (wac * wa3)
-        if wa8 == "%d" then w21[wa1] = math.floor(w21[wa1]) end
-        w18(wa4(), wa5(), w21[wa1], wa6, wa7, wa8)
-        if waa then waa() end
+local function w42(wa1, wa2, wa3, wa4, wa5, wa6, wa7)
+    local wa8 = function(wa9)
+        local waa = wa2(wa9)
+        w21[wa1] = waa
+        w18(wa3(), wa4(), wa9, wa5(waa))
+        if wa7 then wa7() end
     end
-    local function wad(wac)
-        w21[wa1] = wa2 + (wac * wa3)
-        if wa8 == "%d" then w21[wa1] = math.floor(w21[wa1]) end
-        w91(wa4(), wa5(), w21[wa1], wa6, wa7, wa8)
-        if waa then waa() end
-        w17(string.format(wa9 .. " → " .. wa8, w21[wa1]))
+    local wab = function(wac)
+        local wad = wa2(wac)
+        w21[wa1] = wad
+        w91(wa3(), wa4(), wac, wa5(wad))
+        w17(wa6 .. " → " .. wa5(wad))
+        if wa7 then wa7() end
     end
-    return wab, wad
+    return wa8, wab
 end
 
-local wT, w78 = w42(
-    "JumpDelay", 5, 25,
+local wT, w78 = w42("JumpDelay", wq6,
     function() return w99.JumpSliderFill end, function() return w99.JumpDelayBox end,
-    5, 30, "%.1f", "Jump Interval")
-local wU, w79 = w42(
-    "ClickDelay", 1, 9,
+    wq4, "Jump Cooldown")
+local wU, w79 = w42("ClickDelay", wq6,
     function() return w99.ClickSliderFill end, function() return w99.ClickDelayBox end,
-    1, 10, "%.1f", "Click Interval")
-local wV, w80 = w42(
-    "SpamDelay", 0.05, 4.95,
+    wq4, "Click Cooldown")
+local wV, w80 = w42("SpamDelay",
+    function(wa1) return 0.05 + wa1 * 4.95 end,
     function() return wA.SpamSliderFill end, function() return wA.SpamDelayBox end,
-    0.05, 5, "%.2f", "Spam Interval")
-local wW, w81 = w42(
-    "TargetFPS", 15, 345,
+    function(wa1) return string.format("%.2f", wa1) end, "Spam Interval")
+local wW, w81 = w42("TargetFPS",
+    function(wa1) return math.floor(15 + wa1 * 345 + 0.5) end,
     function() return wB.FPSFill end, function() return wB.FPSValueBox end,
-    15, 360, "%d", "Target FPS",
+    function(wa1) return string.format("%d", wa1) end, "Target FPS",
     function()
         if w21.FPSUnlockEnabled and wF then
             pcall(setfpscap, w21.TargetFPS)
             wB.FPSUnlockStatus.Text = "Your target: "..w21.TargetFPS.." FPS"
         end
     end)
+
 w99.JumpSliderButton.MouseButton1Down:Connect(function() wS.jump = true; w98(w99.JumpSliderButton, 0.9) end)
 w99.ClickSliderButton.MouseButton1Down:Connect(function() wS.click = true; w98(w99.ClickSliderButton, 0.9) end)
 wA.SpamSliderButton.MouseButton1Down:Connect(function() wS.spam = true; w98(wA.SpamSliderButton, 0.9) end)
 wB.FPSButton.MouseButton1Down:Connect(function() wS.fps = true; w98(wB.FPSButton, 0.9) end)
+
 table.insert(_G.UU.Connections, w3.InputEnded:Connect(function(wa1)
     if wa1.UserInputType == Enum.UserInputType.MouseButton1 then
-        if wS.jump then w78((w21.JumpDelay - 5) / 25) end
-        if wS.click then w79((w21.ClickDelay - 1) / 9) end
-        if wS.spam then w80((w21.SpamDelay - 0.05) / 4.95) end
-        if wS.fps then w81((w21.TargetFPS - 15) / 345) end
-        wS.jump = false; wS.click = false; wS.spam = false; wS.fps = false
+        if wS.jump then w78(wq7(w21.JumpDelay)) end
+        if wS.click then w79(wq7(w21.ClickDelay)) end
+        if wS.spam then w80(math.clamp((w21.SpamDelay - 0.05) / 4.95, 0, 1)) end
+        if wS.fps then w81(math.clamp((w21.TargetFPS - 15) / 345, 0, 1)) end
+        wS.jump = false
+        wS.click = false
+        wS.spam = false
+        wS.fps = false
     end
 end))
+
 table.insert(_G.UU.Connections, w3.InputChanged:Connect(function(wa1)
     if wa1.UserInputType ~= Enum.UserInputType.MouseMovement then return end
     local wa2 = w3:GetMouseLocation().X
@@ -1818,18 +1866,27 @@ table.insert(_G.UU.Connections, w3.InputChanged:Connect(function(wa1)
         wW(math.clamp((wa2 - wB.FPSSlider.AbsolutePosition.X) / wB.FPSSlider.AbsoluteSize.X, 0, 1))
     end
 end))
+
 w99.JumpDelayBox.FocusLost:Connect(function()
-    w78((math.clamp(tonumber(w99.JumpDelayBox.Text) or w21.JumpDelay, 5, 30) - 5) / 25)
+    local wa1 = wq5(w99.JumpDelayBox.Text) or w21.JumpDelay
+    w78(wq7(math.clamp(wa1, 1, 600)))
 end)
+
 w99.ClickDelayBox.FocusLost:Connect(function()
-    w79((math.clamp(tonumber(w99.ClickDelayBox.Text) or w21.ClickDelay, 1, 10) - 1) / 9)
+    local wa1 = wq5(w99.ClickDelayBox.Text) or w21.ClickDelay
+    w79(wq7(math.clamp(wa1, 1, 600)))
 end)
+
 wA.SpamDelayBox.FocusLost:Connect(function()
-    w80((math.clamp(tonumber(wA.SpamDelayBox.Text) or w21.SpamDelay, 0.05, 5) - 0.05) / 4.95)
+    local wa1 = tonumber(wA.SpamDelayBox.Text) or w21.SpamDelay
+    w80(math.clamp((math.clamp(wa1, 0.05, 5) - 0.05) / 4.95, 0, 1))
 end)
+
 wB.FPSValueBox.FocusLost:Connect(function()
-    w81((math.clamp(tonumber(wB.FPSValueBox.Text) or w21.TargetFPS, 15, 360) - 15) / 345)
+    local wa1 = tonumber(wB.FPSValueBox.Text) or w21.TargetFPS
+    w81(math.clamp((math.clamp(wa1, 15, 360) - 15) / 345, 0, 1))
 end)
+
 wA.SpamInput.FocusLost:Connect(function()
     local wa1 = w21.SpamKey
     w21.SpamKey = wA.SpamInput.Text:upper()
@@ -1845,6 +1902,7 @@ w99.JumpToggleBtn.MouseButton1Click:Connect(function()
     wM()
     w17("Auto Jump → " .. (w21.JumpEnabled and "Enabled" or "Disabled"))
 end)
+
 w99.ClickToggleBtn.MouseButton1Click:Connect(function()
     if not w53("Click", 0.3) then return end
     w21.ClickEnabled = not w21.ClickEnabled
@@ -1853,6 +1911,7 @@ w99.ClickToggleBtn.MouseButton1Click:Connect(function()
     wM()
     w17("Auto Click → " .. (w21.ClickEnabled and "Enabled" or "Disabled"))
 end)
+
 wA.AutoSpamToggleBtn.MouseButton1Click:Connect(function()
     if not w53("Spam", 0.3) then return end
     w21.AutoSpamEnabled = not w21.AutoSpamEnabled
@@ -1890,6 +1949,7 @@ wA.AutoSpamToggleBtn.MouseButton1Click:Connect(function()
     end
     w17("Key Spam → " .. (w21.AutoSpamEnabled and ("Enabled (" .. w21.SpamKey .. ")") or "Disabled"))
 end)
+
 wB.FPSToggleBtn.MouseButton1Click:Connect(function()
     if not w53("FPS", 0.3) then return end
     if not wF then
@@ -1911,6 +1971,7 @@ wB.FPSToggleBtn.MouseButton1Click:Connect(function()
     end
     w17("FPS Unlock → " .. (w21.FPSUnlockEnabled and ("Enabled (" .. w21.TargetFPS .. " FPS)") or "Disabled"))
 end)
+
 wC.AutoRejoinToggleBtn.MouseButton1Click:Connect(function()
     if not w53("Rejoin", 0.3) then return end
     w21.AutoRejoinEnabled = not w21.AutoRejoinEnabled
@@ -1927,6 +1988,7 @@ wC.AutoRejoinToggleBtn.MouseButton1Click:Connect(function()
     end
     w17("Auto Rejoin → " .. (w21.AutoRejoinEnabled and "Enabled" or "Disabled"))
 end)
+
 wD.ExecuteButton.MouseButton1Click:Connect(function()
     if not w53("Execute", 0.5) then return end
     local wa1, wa2 = wD.LoadStringBox.Text, 0
@@ -1951,6 +2013,7 @@ wD.ExecuteButton.MouseButton1Click:Connect(function()
     wD.Status.TextColor3 = Color3.fromRGB(180, 180, 180)
     w48(wD.ExecuteButton, w44.Medium, { BackgroundColor3 = Color3.fromRGB(100, 150, 255) })
 end)
+
 wD.AutoLoadToggleBtn.MouseButton1Click:Connect(function()
     if not w53("AutoLoad", 0.3) then return end
     w21.AutoLoadEnabled = not w21.AutoLoadEnabled
@@ -2004,9 +2067,11 @@ wD.LoadStringBox:GetPropertyChangedSignal("Text"):Connect(function()
         end)
     end)
 end)
+
 wD.LoadStringScrollFrame:GetPropertyChangedSignal("CanvasPosition"):Connect(function()
     wD.LineNumbersScrollFrame.CanvasPosition = Vector2.new(0, wD.LoadStringScrollFrame.CanvasPosition.Y)
 end)
+
 wE.KeybindButton.MouseButton1Click:Connect(function()
     if not w53("Keybind", 0.5) or w21.IsChangingKeybind then return end
     w21.IsChangingKeybind = true
@@ -2047,6 +2112,7 @@ wE.KeybindButton.MouseButton1Click:Connect(function()
         end
     end)
 end)
+
 wE.AutoHideToggleBtn.MouseButton1Click:Connect(function()
     if not w53("AutoHide", 0.3) then return end
     w21.AutoHideEnabled = not w21.AutoHideEnabled
@@ -2128,11 +2194,6 @@ local function we(wa1, wa2)
     return math.max(0, (wa1.X - wa3) / 2), math.max(0, (wa1.Y - wa4) / 2)
 end
 
-local function wf(wa1, wa2)
-    local wa3 = math.floor(60 * wa2)
-    return wa3, math.max(0, (wa1.X - wa3) / 2), math.max(0, math.min(30, wa1.Y - wa3))
-end
-
 local function wg(wa1)
     if not w61 then return end
     w62 = wa1
@@ -2141,6 +2202,7 @@ local function wg(wa1)
 end
 
 local wh, wi = TweenInfo.new(0.45, Enum.EasingStyle.Back, Enum.EasingDirection.Out, 0, false, 0), TweenInfo.new(0.30, Enum.EasingStyle.Back, Enum.EasingDirection.In, 0, false, 0)
+
 local function wj()
     if not w53("UI", 0.6) then return end
     wd(function()
@@ -2154,52 +2216,54 @@ local function wj()
             local wa3, wa4 = w59(), math.floor(60 * w62)
             local wa5, wa6
             if w21.SavedReopenPosition then
-                wa5 = w21.SavedReopenPosition.X
-                wa6 = w21.SavedReopenPosition.Y
+                wa5 = math.clamp(w21.SavedReopenPosition.X, 0, math.max(0, wa3.X - wa4))
+                wa6 = math.clamp(w21.SavedReopenPosition.Y, 0, math.max(0, wa3.Y - wa4))
             else
-                local _, wa7, wa8 = wf(wa3, w62)
-                wa5, wa6 = wa7, wa8
+                wa5 = math.max(0, (wa3.X - wa4) / 2)
+                wa6 = math.max(0, math.min(30, wa3.Y - wa4))
             end
             w83.Size = UDim2.new(0, wa4, 0, wa4)
             w83.Position = UDim2.new(0, wa5, 0, wa6)
             w83.ImageTransparency = 1; w84.TextTransparency = 1
             w83.Rotation = -180; w83.Visible = true
-            local wa9 = w2:Create(w83, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+            local wa7 = w2:Create(w83, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
                 Size = UDim2.new(0, wa4, 0, wa4),
                 Position = UDim2.new(0, wa5, 0, wa6),
                 ImageTransparency = 0, Rotation = 0,
             })
-            local waa = w2:Create(w84, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { TextTransparency = 0 })
-            wa9:Play(); task.delay(0.15, function() waa:Play() end); wa9.Completed:Wait()
+            local wa8 = w2:Create(w84, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { TextTransparency = 0 })
+            wa7:Play(); task.delay(0.15, function() wa8:Play() end); wa7.Completed:Wait()
         else
             w28()
             w21.SavedReopenPosition = { X = w83.Position.X.Offset, Y = w83.Position.Y.Offset }
-            local wab = w2:Create(w83, TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
+            local wa9 = w2:Create(w83, TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
                 Size = UDim2.new(0, 0, 0, 0),
                 Position = UDim2.new(0, w83.Position.X.Offset, 0, w83.Position.Y.Offset),
                 ImageTransparency = 1, Rotation = 90,
             })
-            local wac = w2:Create(w84, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.In), { TextTransparency = 1 })
-            wac:Play(); wab:Play(); wab.Completed:Wait()
+            local waa = w2:Create(w84, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.In), { TextTransparency = 1 })
+            waa:Play(); wa9:Play(); wa9.Completed:Wait()
             w83.Visible = false; w83.Rotation = 0; w83.ImageTransparency = 0; w84.TextTransparency = 0; w33()
-            local wad, wae
+            local wab = w59()
+            local wac, wad
             if w21.SavedUIPosition then
-                wad = w21.SavedUIPosition.X; wae = w21.SavedUIPosition.Y
+                wac = math.clamp(w21.SavedUIPosition.X, 0, math.max(0, wab.X - w60.Width * w62))
+                wad = math.clamp(w21.SavedUIPosition.Y, 0, math.max(0, wab.Y - w60.Height * w62))
             else
-                wad, wae = we(w59(), w62)
+                wac, wad = we(wab, w62)
             end
             w72.Visible = true
             w72.Size = UDim2.new(0, w60.Width, 0, w60.Height)
-            w72.Position = UDim2.new(0, wad, 0, wae + 18)
+            w72.Position = UDim2.new(0, wac, 0, wad + 18)
             w72.BackgroundTransparency = 1
             w61.Scale = 0
-            local waf = w2:Create(w72, TweenInfo.new(0.45, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-                Position = UDim2.new(0, wad, 0, wae),
+            local wae = w2:Create(w72, TweenInfo.new(0.45, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                Position = UDim2.new(0, wac, 0, wad),
                 BackgroundTransparency = 0,
             })
-            local wag = w48(w61, wh, { Scale = w62 })
-            waf:Play()
-            wag.Completed:Wait()
+            local waf = w48(w61, wh, { Scale = w62 })
+            wae:Play()
+            waf.Completed:Wait()
             w72.BackgroundTransparency = 0
         end
     end)
@@ -2211,6 +2275,7 @@ w76.MouseLeave:Connect(function() w48(w76, w44.Fast, { BackgroundColor3 = Color3
 w76.MouseButton1Down:Connect(function() w48(w76, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Size = UDim2.new(0, 24, 0, 24) }) end)
 w76.MouseButton1Up:Connect(function() w48(w76, w44.Fast, { Size = UDim2.new(0, 28, 0, 28) }) end)
 w83.MouseButton1Click:Connect(function() if not w89 then wj() end end)
+
 table.insert(_G.UU.Connections, w3.InputBegan:Connect(function(wa1, wa2)
     if not wa2 and wa1.KeyCode == w21.Keybind and not w21.IsChangingKeybind then
         wj()
@@ -2237,12 +2302,14 @@ table.insert(_G.UU.Connections, w3.InputBegan:Connect(function(wa1, wa2)
         w17("Mouse Position → " .. (w21.MousePosEnabled and "Tracking" or "Locked"))
     end
 end))
+
 w99.MousePosToggleBtn.MouseButton1Click:Connect(function()
     w21.MousePosEnabled = not w21.MousePosEnabled
     w70(w99.MousePosToggleState, w21.MousePosEnabled)
     w66()
     w17("Mouse Position → " .. (w21.MousePosEnabled and "Tracking" or "Locked"))
 end)
+
 _G.UU.Threads.MousePosLabel = task.spawn(function()
     while true do
         task.wait(0.25)
@@ -2253,7 +2320,6 @@ _G.UU.Threads.MousePosLabel = task.spawn(function()
         end
     end
 end)
-
 local w67 = false
 local function w68()
     if w67 then return end
@@ -2264,8 +2330,12 @@ local function w68()
         if math.abs(wa1.X - wk.X) < 2 and math.abs(wa1.Y - wk.Y) < 2 then return end
         wk = wa1
         local wa2 = w63(wa1)
-        if _G.UU.UI.ResolutionLabel then _G.UU.UI.ResolutionLabel.Text = string.format("Resolution: %dx%d", wa1.X, wa1.Y) end
-        if _G.UU.UI.DeviceLabel then _G.UU.UI.DeviceLabel.Text = "Device: "..w19() end
+        if _G.UU.UI.ResolutionLabel then
+            _G.UU.UI.ResolutionLabel.Text = string.format("Resolution: %dx%d", wa1.X, wa1.Y)
+        end
+        if _G.UU.UI.DeviceLabel then
+            _G.UU.UI.DeviceLabel.Text = "Device: "..w19()
+        end
         wg(wa2)
         w21.SavedUIPosition = nil
         w21.SavedReopenPosition = nil
@@ -2289,6 +2359,7 @@ table.insert(_G.UU.Connections, workspace:GetPropertyChangedSignal("CurrentCamer
         table.insert(_G.UU.Connections, workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(w68))
     end
 end))
+
 table.insert(_G.UU.Connections, w5.RenderStepped:Connect(function()
     wK = wK + 1
     local wa1 = tick()
@@ -2351,8 +2422,8 @@ if wl then
     if wE.KeybindButton then wE.KeybindButton.Text = "Current Key: "..(w22[w21.Keybind] or w21.Keybind.Name) end
     if wA.SpamInput then wA.SpamInput.Text = w21.SpamKey end
     if wD.LoadStringBox then wD.LoadStringBox.Text = w21.SavedCode end
-    wT((w21.JumpDelay - 5) / 25)
-    wU((w21.ClickDelay - 1) / 9)
+    wT(wq7(w21.JumpDelay))
+    wU(wq7(w21.ClickDelay))
     wV((w21.SpamDelay - 0.05) / 4.95)
     wW((w21.TargetFPS - 15) / 345)
     w70(wD.AutoLoadToggleState, w21.AutoLoadEnabled)
@@ -2401,7 +2472,10 @@ if wl then
         w16("Config loaded for "..w12.." (Id: "..w13..")", Color3.fromRGB(100, 200, 255))
     end)
 else
-    wT(0.2); wU(0.22); wV(0.01); wW(0.13)
+    wT(wq7(w21.JumpDelay))
+    wU(wq7(w21.ClickDelay))
+    wV((w21.SpamDelay - 0.05) / 4.95)
+    wW((w21.TargetFPS - 15) / 345)
     w70(w99.JumpToggleState, false)
     w70(w99.ClickToggleState, false)
     w70(wA.AutoSpamToggleState, false)
@@ -2448,80 +2522,95 @@ w71.Destroying:Connect(function()
     end
     if w38 then pcall(function() w38:Disconnect() end); w38 = nil end
 end)
+
 for wa1, wa2 in pairs(w92) do wa2.Visible = false end
 
 do
     local wa1 = w59()
-    if wa1.X < 100 or wa1.Y < 100 then
-        repeat task.wait() until workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize.X > 100
+    local wa2 = tick()
+    while (wa1.X < 100 or wa1.Y < 100) and tick() - wa2 < 5 do
+        task.wait(0.05)
+        wa1 = w59()
     end
 
-    task.wait(0.1)
+    local wa3, wa4 = wa1, 0
+    while wa4 < 0.3 do
+        task.wait(0.05)
+        local wa5 = w59()
+        if wa5.X == wa3.X and wa5.Y == wa3.Y then
+            wa4 = wa4 + 0.05
+        else
+            wa3, wa4 = wa5, 0
+        end
+    end
+    wa1 = wa3
 
-    local wa2 = not w21.AutoHideEnabled
-    wa1 = w59()
     wk = wa1
     w62 = w63(wa1)
 
-    local wa3, wa4
+    local wa6, wa7
     if w21.SavedUIPosition and w21.SavedUIPosition.X and w21.SavedUIPosition.Y then
-        wa3 = w21.SavedUIPosition.X
-        wa4 = w21.SavedUIPosition.Y
+        wa6 = math.clamp(w21.SavedUIPosition.X, 0, math.max(0, wa1.X - w60.Width * w62))
+        wa7 = math.clamp(w21.SavedUIPosition.Y, 0, math.max(0, wa1.Y - w60.Height * w62))
+        w21.SavedUIPosition = { X = wa6, Y = wa7 }
     else
-        wa3, wa4 = we(wa1, w62)
+        wa6, wa7 = we(wa1, w62)
     end
 
-    local wa5, wa6, wa7
+    local wa8 = math.floor(60 * w62)
+    local wa9, waa
     if w21.SavedReopenPosition and w21.SavedReopenPosition.X and w21.SavedReopenPosition.Y then
-        wa5 = math.floor(60 * w62)
-        wa6 = w21.SavedReopenPosition.X
-        wa7 = w21.SavedReopenPosition.Y
+        wa9 = math.clamp(w21.SavedReopenPosition.X, 0, math.max(0, wa1.X - wa8))
+        waa = math.clamp(w21.SavedReopenPosition.Y, 0, math.max(0, wa1.Y - wa8))
+        w21.SavedReopenPosition = { X = wa9, Y = waa }
     else
-        wa5, wa6, wa7 = wf(wa1, w62)
+        wa9 = math.max(0, (wa1.X - wa8) / 2)
+        waa = math.max(0, math.min(30, wa1.Y - wa8))
     end
 
-    local wa8 = w21.CurrentTab or "Home"
-    for wa9, waa in pairs(w92) do
-        waa.Visible = (wa9 == wa8)
+    local wab = w21.CurrentTab or "Home"
+    if not w92[wab] then wab = "Home" end
+    for wac, wad in pairs(w92) do
+        wad.Visible = (wac == wab)
     end
 
-    w43(wa8)
-    w21.CurrentTab = wa8
+    w43(wab)
+    w21.CurrentTab = wab
     w33()
 
-    if wa2 then
+    if not w21.AutoHideEnabled then
         w72.Visible = true
         w72.Size = UDim2.new(0, w60.Width, 0, w60.Height)
-        w72.Position = UDim2.new(0, wa3, 0, wa4 + 24)
+        w72.Position = UDim2.new(0, wa6, 0, wa7 + 24)
         w72.BackgroundTransparency = 1
         w61.Scale = 0
         w83.Visible = false
-        local wab = w2:Create(w72, TweenInfo.new(0.55, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-            Position = UDim2.new(0, wa3, 0, wa4),
+        local wae = w2:Create(w72, TweenInfo.new(0.55, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+            Position = UDim2.new(0, wa6, 0, wa7),
             BackgroundTransparency = 0,
         })
-        local wac = w48(w61, TweenInfo.new(0.65, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = w62 })
-        wab:Play()
-        wac.Completed:Wait()
+        local waf = w48(w61, TweenInfo.new(0.65, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = w62 })
+        wae:Play()
+        waf.Completed:Wait()
         w72.BackgroundTransparency = 0
     else
         w72.Visible = false
         w83.Size = UDim2.new(0, 0, 0, 0)
-        w83.Position = UDim2.new(0, wa6 + wa5 / 2, 0, wa7 + wa5 / 2)
+        w83.Position = UDim2.new(0, wa9 + wa8 / 2, 0, waa + wa8 / 2)
         w83.ImageTransparency = 1
         w84.TextTransparency = 1
         w83.Rotation = -270
         w83.Visible = true
-        local wad = w2:Create(w83, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-            Size = UDim2.new(0, wa5, 0, wa5),
-            Position = UDim2.new(0, wa6, 0, wa7),
+        local wag = w2:Create(w83, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+            Size = UDim2.new(0, wa8, 0, wa8),
+            Position = UDim2.new(0, wa9, 0, waa),
             ImageTransparency = 0,
             Rotation = 0,
         })
-        local wae = w2:Create(w84, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { TextTransparency = 0 })
-        wad:Play()
-        task.delay(0.2, function() wae:Play() end)
-        wad.Completed:Wait()
+        local wah = w2:Create(w84, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { TextTransparency = 0 })
+        wag:Play()
+        task.delay(0.2, function() wah:Play() end)
+        wag.Completed:Wait()
     end
 end
 
