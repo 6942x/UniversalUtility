@@ -1595,7 +1595,7 @@ end
 
 do
     local wa1 = w92["Settings"]
-    local wa2 = w51(wa1, 560, 1)
+    local wa2 = w51(wa1, 670, 1)
     w93["Settings_Card"] = wa2
     local wa3 = w54(wa2, "⚙️ UI Configuration", 8)
     wa3.TextColor3 = Color3.fromRGB(255, 180, 100)
@@ -1635,12 +1635,34 @@ do
     waf.Position = UDim2.new(1, -35, 0, 297.5)
     waf.AnchorPoint = Vector2.new(0.5, 0.5)
     wad.Text = "No activity yet."
+    w49(wa2, 522)
+    local wah = w54(wa2, "⚠️ Danger Zone", 532)
+    wah.TextColor3 = Color3.fromRGB(255, 100, 100)
+    w52(wa2, "Fully remove UniversalUtility and stop everything it runs", 562)
+    local wai = Instance.new("TextButton", wa2)
+    wai.Size = UDim2.new(1, -20, 0, 40)
+    wai.Position = UDim2.new(0.5, 0, 0, 602)
+    wai.AnchorPoint = Vector2.new(0.5, 0.5)
+    wai.BackgroundColor3 = Color3.fromRGB(170, 50, 50)
+    wai.Text = "Uninject"
+    wai.Font = Enum.Font.GothamBold
+    wai.TextSize = 13
+    wai.TextColor3 = Color3.fromRGB(255, 255, 255)
+    wai.BorderSizePixel = 0
+    wai.AutoButtonColor = false
+    w65(wai, 8)
+    w25(wai,
+        { BackgroundColor3 = Color3.fromRGB(170, 50, 50), Size = UDim2.new(1, -20, 0, 40) },
+        { BackgroundColor3 = Color3.fromRGB(200, 65, 65), Size = UDim2.new(1, -15, 0, 44) },
+        { BackgroundColor3 = Color3.fromRGB(140, 40, 40), Size = UDim2.new(1, -25, 0, 36) }
+    )
     wE = {
         KeybindButton = wa5,
         AutoHideToggleBtn = wa7,
         AutoHideToggleState = wa8,
         Status = wa9,
         AddSettingsLog = wae,
+        UninjectButton = wai,
     }
     _G.UU.AddActivityLog = wae
     for _, wag in ipairs(w15) do
@@ -2132,6 +2154,66 @@ wE.AutoHideToggleBtn.MouseButton1Click:Connect(function()
     else
         w16("Auto Hide change → Save failed ✗", Color3.fromRGB(220, 80, 80))
     end
+end)
+
+wE.UninjectButton.MouseButton1Click:Connect(function()
+    if not w53("Uninject", 0.35) then return end
+    if not wE.UninjectArmed then
+        wE.UninjectArmed = true
+        wE.UninjectButton.Text = "Click again to confirm"
+        w16("Uninject → click again to confirm", Color3.fromRGB(255, 200, 100))
+        task.delay(3, function()
+            wE.UninjectArmed = false
+            if wE.UninjectButton and wE.UninjectButton.Parent then
+                wE.UninjectButton.Text = "Uninject"
+            end
+        end)
+        return
+    end
+    wE.UninjectArmed = false
+    wE.UninjectButton.Text = "Uninjecting..."
+    w16("Uninject → stopping everything...", Color3.fromRGB(255, 100, 100))
+    w33()
+    task.delay(0.15, function()
+        for wa1, wa2 in pairs(_G.UU.Threads) do
+            if wa2 and typeof(wa2) == "thread" and coroutine.status(wa2) ~= "dead" then
+                pcall(task.cancel, wa2)
+            end
+            _G.UU.Threads[wa1] = nil
+        end
+        for wa1, wa2 in pairs(_G.UU.Connections) do
+            pcall(function() wa2:Disconnect() end)
+        end
+        _G.UU.Connections = {}
+        if w38 then
+            pcall(function() w38:Disconnect() end)
+            w38 = nil
+        end
+        w28()
+        if wF then pcall(setfpscap, 60) end
+        pcall(function()
+            if typeof(dequeue_on_teleport) == "function" then dequeue_on_teleport() end
+        end)
+        if w71 then
+            pcall(function() w71:Destroy() end)
+        end
+        _G.UU.Threads = {}
+        _G.UU.Connections = {}
+        _G.UU.Debounces = {}
+        _G.UU.ButtonStates = {}
+        _G.UU.TeleportQueued = false
+        _G.UU.SavePending = false
+        _G.UU.LastSaveTime = 0
+        _G.UU.UI = nil
+        _G.UU.AddActivityLog = nil
+        _G.UU.SaveCFG = nil
+        _G.UU.DebouncedSave = nil
+        _G.UU.CFG = nil
+        _G.UU.KCN = nil
+        _G.UU.KCM = nil
+        _G.UU.Loaded = false
+        _G.UU.LoadLock = false
+    end)
 end)
 
 local function w43(wa1)
