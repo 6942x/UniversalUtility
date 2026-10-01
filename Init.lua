@@ -24,15 +24,9 @@ while not u10 or u10 == "" do
 end
 
 _G.UU = _G.UU or {}
-_G.UU.LogBuffer = {}
+_G.UU.LogBuffer = _G.UU.LogBuffer or {}
 
-if _G.UU.LoadLock == true and not _G.UU.Loaded and tick() - (_G.UU.LoadLockTime or 0) < 5 then
-        repeat
-                task.wait(0.1)
-        until _G.UU.LoadLock ~= true or tick() - (_G.UU.LoadLockTime or 0) >= 5
-end
-
-if _G.UU.Loaded or _G.UU.LoadLock == true then
+if _G.UU.Loaded or (_G.UU.LoadLock == true and ((tonumber(_G.UU.LoadLockTime) or 0) == 0 or os.clock() - tonumber(_G.UU.LoadLockTime) >= 5)) then
         for ua1, ua2 in pairs(_G.UU.Threads or {}) do
                 if typeof(ua2) == "thread" and coroutine.status(ua2) ~= "dead" then
                         pcall(task.cancel, ua2)
@@ -63,10 +57,20 @@ if _G.UU.Loaded or _G.UU.LoadLock == true then
         _G.UU.TeleportQueued = false
         _G.UU.Loaded = false
         _G.UU.LoadLock = false
+elseif _G.UU.LoadLock == true then
+        repeat
+                task.wait(0.1)
+        until _G.UU.LoadLock ~= true or (tonumber(_G.UU.LoadLockTime) or 0) == 0 or os.clock() - tonumber(_G.UU.LoadLockTime) >= 5
+
+        if _G.UU.LoadLock ~= true then
+                return _G.UU
+        end
+
+        _G.UU.LoadLock = false
 end
 
 _G.UU.LoadLock = true
-_G.UU.LoadLockTime = tick()
+_G.UU.LoadLockTime = os.clock()
 _G.UU.Threads = {}
 _G.UU.Connections = {}
 _G.UU.SavePending = false
@@ -118,26 +122,7 @@ local u63 = {
         White = "#F2F2F7",
 }
 
-u63.Light = {
-        [u63.White] = "#1D1D20",
-        [u63.Grey] = "#6D6D72",
-        [u63.Cyan] = "#0369A1",
-        [u63.Teal] = "#0E7490",
-        [u63.Mint] = "#0F766E",
-        [u63.Green] = "#15803D",
-        [u63.Lime] = "#4D7C0F",
-        [u63.Yellow] = "#9A6A00",
-        [u63.Orange] = "#C2410C",
-        [u63.Red] = "#D32F2F",
-        [u63.Pink] = "#C2185B",
-        [u63.Purple] = "#7E22CE",
-}
-
 local function u64(ua1, ua2)
-        if u12.ThemeMode == "Light" then
-                ua1 = u63.Light[ua1] or ua1
-        end
-
         return '<font color="' .. ua1 .. '">' .. tostring(ua2) .. "</font>"
 end
 
@@ -675,54 +660,26 @@ local function u25(ua1)
         end)
 end
 
-_G.UU.RenderLogs = function()
-        local ua1 = _G.UU.UI
-
-        if not ua1 then
-                return
-        end
-
-        if ua1.Loader then
-                for ua2 = 1, 3 do
-                        local ua3 = ua1.Loader.Output[ua2]
-                        local ua4 = ua1.Loader.History and ua1.Loader.History[ua2]
-
-                        if ua3 then
-                                if ua4 then
-                                        ua3.Text = u64(ua4[1], u67(ua4[2]))
-                                else
-                                        ua3.Text = u64(u63.Grey, "—")
-                                end
-                        end
-                end
-        end
-
-        if ua1.Settings then
-                for ua5 = 1, 6 do
-                        local ua6 = ua1.Settings.Activity[ua5]
-                        local ua7 = _G.UU.LogBuffer[ua5]
-
-                        if ua6 then
-                                if ua7 then
-                                        ua6.Text = "[" .. u64(u63.Cyan, ua7[1]) .. "] " .. u64(u66(ua7[2]), u67(ua7[2]))
-                                else
-                                        ua6.Text = u64(u63.Grey, "—")
-                                end
-                        end
-                end
-        end
-end
-
 local function u26(ua1)
         local ua2 = os.date and os.date("%H:%M:%S") or "--:--:--"
 
-        table.insert(_G.UU.LogBuffer, 1, { ua2, ua1 })
+        table.insert(_G.UU.LogBuffer, 1, "[" .. u64(u63.Cyan, ua2) .. "] " .. u64(u66(ua1), u67(ua1)))
 
         if #_G.UU.LogBuffer > 6 then
                 table.remove(_G.UU.LogBuffer, 7)
         end
 
-        _G.UU.RenderLogs()
+        local ua3 = _G.UU.UI
+
+        if ua3 and ua3.Settings then
+                for ua4 = 1, 6 do
+                        local ua5 = ua3.Settings.Activity[ua4]
+
+                        if ua5 then
+                                ua5.Text = _G.UU.LogBuffer[ua4] or u64(u63.Grey, "—")
+                        end
+                end
+        end
 end
 
 local function u27(ua1, ua2)
@@ -1016,212 +973,13 @@ local function u46(ua1, ua2, ua3)
 end
 
 local function u47(ua1, ua2)
-        local ua3 = ua2.ValueChanged
-        local ua4 = ua2.Minimum or 0
-        local ua5 = ua2.Maximum or 1
-        local ua6 = ua2.Scale
-        local ua7 = ua2.Precision or 2
-        local ua8 = ua2.Time == true
-        local ua9 = false
-        local ua10 = nil
-        local ua11 = ua6 and 68 or ua8 and 56 or 46
+        local ua3 = ua1:Right():Slider(ua2)
 
-        local function ua12(ua1)
-                local ua2
-
-                if ua6 then
-                        ua2 = u19(ua1)
-                else
-                        ua2 = string.format("%." .. ua7 .. "f", ua1)
-
-                        if string.find(ua2, ".", 1, true) then
-                                ua2 = ua2:gsub("0+$", "")
-                                ua2 = ua2:gsub("%.$", "")
-                        end
-
-                        if ua8 then
-                                ua2 = ua2 .. "s"
-                        end
-                end
-
-                return ua2
+        if ua3.Structures and ua3.Structures.Thumb then
+                ua3.Structures.Thumb.Position = UDim2.fromScale(1, 0.5)
         end
 
-        local function ua13(ua1)
-                local ua2 = string.lower(ua1)
-
-                ua2 = ua2:gsub("%s+", "")
-
-                if ua2 == "" then
-                        return nil
-                end
-
-                local ua3 = tonumber(ua2)
-
-                if ua3 then
-                        return ua3, "plain"
-                end
-
-                local ua4 = ua2:match("^(%d*%.?%d+)fps$")
-
-                if ua4 then
-                        return tonumber(ua4), "fps"
-                end
-
-                local ua5 = 0
-                local ua6 = false
-                local ua7 = ua2
-
-                while #ua7 > 0 do
-                        local ua8, ua9 = ua7:match("^(%d*%.?%d+)(%l*)")
-
-                        if not ua8 then
-                                return nil
-                        end
-
-                        local ua10 = tonumber(ua8)
-                        local ua11 = nil
-
-                        if ua9 == "ms" or ua9 == "msec" then
-                                ua11 = 0.001
-                        elseif ua9 == "s" or ua9 == "sec" or ua9 == "secs" or ua9 == "second" or ua9 == "seconds" then
-                                ua11 = 1
-                        elseif ua9 == "m" or ua9 == "min" or ua9 == "mins" or ua9 == "minute" or ua9 == "minutes" then
-                                ua11 = 60
-                        elseif ua9 == "h" or ua9 == "hr" or ua9 == "hrs" or ua9 == "hour" or ua9 == "hours" then
-                                ua11 = 3600
-                        elseif ua9 == "" then
-                                ua11 = 1
-                        end
-
-                        if not ua11 or not ua10 then
-                                return nil
-                        end
-
-                        ua5 = ua5 + ua10 * ua11
-                        ua6 = true
-                        ua7 = string.sub(ua7, #ua8 + #ua9 + 1)
-                end
-
-                if ua6 and ua5 > 0 then
-                        return ua5, "time"
-                end
-
-                return nil
-        end
-
-        ua2.ValueChanged = function(ua14, ua15)
-                if ua6 then
-                        if ua10 and not ua9 then
-                                ua10.Structures.Field.Text = ua12(u20(ua15))
-                        end
-
-                        if ua3 then
-                                ua3(ua14, ua15)
-                        end
-
-                        return
-                end
-
-                local ua16 = 10 ^ ua7
-                local ua17 = math.floor(ua15 * ua16 + 0.5) / ua16
-
-                if ua17 ~= ua15 then
-                        ua14.Value = ua17
-
-                        return
-                end
-
-                if ua10 and not ua9 then
-                        ua10.Structures.Field.Text = ua12(ua15)
-                end
-
-                if ua3 then
-                        ua3(ua14, ua15)
-                end
-        end
-
-        local ua18 = ua1:Right():Slider(ua2)
-
-        if ua18.Structures and ua18.Structures.Thumb then
-                ua18.Structures.Thumb.Position = UDim2.fromScale(1, 0.5)
-        end
-
-        ua10 = ua1:Right():TextField({
-                Placeholder = "",
-                Value = "",
-        })
-
-        ua10.Structures.Body.AutomaticSize = Enum.AutomaticSize.None
-        ua10.Structures.Body.Size = UDim2.new(0, ua11, 0, 23)
-        ua10.Structures.Field.AutomaticSize = Enum.AutomaticSize.None
-        ua10.Structures.Field.Size = UDim2.new(1, 0, 1, 0)
-        ua10.Structures.Field.TextTruncate = Enum.TextTruncate.None
-        ua10.Structures.Field.ClearTextOnFocus = false
-        ua10.Structures.Field.TextXAlignment = Enum.TextXAlignment.Center
-        ua10.Structures.Field.TextSize = 13
-        ua10.Structures.Field.TextWrapped = false
-
-        local ua21 = Instance.new("UISizeConstraint")
-
-        ua21.MinSize = Vector2.new(ua11, 23)
-        ua21.MaxSize = Vector2.new(ua11, 23)
-        ua21.Parent = ua10.Structures.Body.__instance
-
-        ua10.Structures.Body:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
-                if ua10.Structures.Body.AbsoluteSize.X ~= ua11 or ua10.Structures.Body.AbsoluteSize.Y ~= 23 then
-                        ua10.Structures.Body.AutomaticSize = Enum.AutomaticSize.None
-                        ua10.Structures.Body.Size = UDim2.new(0, ua11, 0, 23)
-                end
-        end)
-
-        if ua6 then
-                ua10.Structures.Field.Text = ua12(u20(ua18.Value))
-        else
-                ua10.Structures.Field.Text = ua12(ua18.Value)
-        end
-
-        ua10.Structures.Field.Focused:Connect(function()
-                ua9 = true
-                ua10.Structures.Body.AutomaticSize = Enum.AutomaticSize.None
-                ua10.Structures.Body.Size = UDim2.new(0, ua11, 0, 23)
-        end)
-
-        ua10.Structures.Field.FocusLost:Connect(function()
-                ua9 = false
-                ua10.Structures.Body.AutomaticSize = Enum.AutomaticSize.None
-                ua10.Structures.Body.Size = UDim2.new(0, ua11, 0, 23)
-
-                local ua22, ua23 = ua13(ua10.Structures.Field.Text)
-
-                if ua6 then
-                        if ua22 and ua23 ~= "fps" then
-                                ua18.Value = u21(ua22)
-                        else
-                                ua18.Value = ua18.Value
-                        end
-
-                        return
-                end
-
-                if ua8 then
-                        if ua22 and ua23 ~= "fps" then
-                                ua18.Value = math.clamp(ua22, ua4, ua5)
-                        else
-                                ua18.Value = ua18.Value
-                        end
-
-                        return
-                end
-
-                if ua22 and ua23 ~= "time" then
-                        ua18.Value = math.clamp(ua22, ua4, ua5)
-                else
-                        ua18.Value = ua18.Value
-                end
-        end)
-
-        return ua18
+        return ua3
 end
 
 local u48 = false
@@ -1432,8 +1190,6 @@ do
         local ua7 = u45(ua6, "Jump Cooldown")
 
         u47(ua7, {
-                Scale = 600,
-                Precision = 1,
                 Minimum = 0,
                 Maximum = 1,
                 Value = u21(u12.JumpDelay),
@@ -1455,8 +1211,6 @@ do
         local ua8 = u45(ua6, "Click Cooldown")
 
         u47(ua8, {
-                Scale = 600,
-                Precision = 1,
                 Minimum = 0,
                 Maximum = 1,
                 Value = u21(u12.ClickDelay),
@@ -1485,8 +1239,6 @@ do
         local ua3 = u45(ua2, "Spam Interval", "Delay between each simulated key press")
 
         u47(ua3, {
-                Precision = 2,
-                Time = true,
                 Minimum = 0.05,
                 Maximum = 5,
                 Value = u12.SpamDelay,
@@ -1656,39 +1408,19 @@ do
                 Minimized = true,
         })
 
-        local ua72 = false
-
-        u40.Structures.Body.__instance:GetPropertyChangedSignal("Position"):Connect(function()
-                if u40.Minimized then
-                        if not ua3.Minimized then
-                                ua72 = true
-
-                                ua3.Minimized = true
-                        end
-                elseif ua72 then
-                        ua72 = false
-
-                        ua3.Minimized = false
-                end
-        end)
-
         local ua5 = ua3:Section({ Title = "Code" })
         local ua6 = u46(ua5, "Editor", u38.Symbols.docPlaintext)
 
         ua6.Selected = true
 
         local ua7 = ua6.Structures.Page.__instance or ua6.Structures.Page
-
-        ua7.AutomaticCanvasSize = Enum.AutomaticSize.None
-        ua7.CanvasSize = UDim2.new()
-
         local ua8 = game:GetService("TextService")
         local ua9 = Font.fromEnum(Enum.Font.Code)
         local ua10 = ua8:GetTextSize("Ag", 14, Enum.Font.Code, Vector2.new(10000, 10000)).Y
         local ua11 = Instance.new("Frame")
 
         ua11.Name = "EditorPane"
-        ua11.Size = UDim2.new(1, 0, 0, 140)
+        ua11.Size = UDim2.new(1, 0, 0, 330)
         ua11.BackgroundColor3 = Color3.fromRGB(26, 28, 37)
         ua11.BorderSizePixel = 0
         ua11.ClipsDescendants = true
@@ -1712,7 +1444,7 @@ do
 
         ua13.Name = "Numbers"
         ua13.Size = UDim2.new(0, 34, 0, 240)
-        ua13.BackgroundColor3 = Color3.fromRGB(26, 28, 37)
+        ua13.BackgroundColor3 = Color3.fromRGB(21, 23, 30)
         ua13.BorderSizePixel = 0
         ua13.FontFace = ua9
         ua13.TextSize = 14
@@ -1760,9 +1492,8 @@ do
         ua16.TextWrapped = false
         ua16.MultiLine = true
         ua16.ClearTextOnFocus = false
-        ua16.Text = u12.SavedCode or ""
+        ua16.Text = ""
         ua16.ZIndex = 2
-        ua16.AutomaticSize = Enum.AutomaticSize.None
         ua16.Parent = ua14
 
         local ua17 = Instance.new("Frame")
@@ -1791,13 +1522,13 @@ do
 
         ua19.Name = "Count"
         ua19.Position = UDim2.new(0.62, 0, 0, 0)
-        ua19.Size = UDim2.new(0.38, -104, 1, 0)
+        ua19.Size = UDim2.new(0.38, -54, 1, 0)
         ua19.BackgroundTransparency = 1
         ua19.FontFace = ua9
         ua19.TextSize = 12
         ua19.TextColor3 = Color3.fromRGB(139, 147, 163)
         ua19.TextXAlignment = Enum.TextXAlignment.Right
-        ua19.Text = "1 / 250 lines"
+        ua19.Text = "1 / 50 lines"
         ua19.Parent = ua17
 
         local ua20 = Instance.new("TextButton")
@@ -1823,14 +1554,14 @@ do
         local function ua23(ua24)
                 local ua25 = select(2, ua24:gsub("\n", "")) + 1
 
-                if ua25 > 250 then
+                if ua25 > 50 then
                         local ua26, ua27 = 0, 0
 
                         for ua28 = 1, #ua24 do
                                 if ua24:sub(ua28, ua28) == "\n" then
                                         ua26 = ua26 + 1
 
-                                        if ua26 == 250 then
+                                        if ua26 == 50 then
                                                 ua27 = ua28 - 1
 
                                                 break
@@ -1844,7 +1575,7 @@ do
                                 ua22 = true
 
                                 if ua21 then
-                                        u26("Editor → 250 line limit reached")
+                                        u26("Editor → 50 line limit reached")
                                 end
                         end
 
@@ -1853,7 +1584,7 @@ do
                         return
                 end
 
-                if ua25 < 250 then
+                if ua25 < 50 then
                         ua22 = false
                 end
 
@@ -1873,8 +1604,8 @@ do
                         ua15.Text = u67 and u67(ua24) or ""
                 end
 
-                ua19.TextColor3 = ua22 and Color3.fromRGB(255, 69, 58) or ua25 >= 225 and Color3.fromRGB(255, 159, 10) or Color3.fromRGB(139, 147, 163)
-                ua19.Text = ua25 .. " / 250 lines"
+                ua19.TextColor3 = ua22 and Color3.fromRGB(255, 69, 58) or ua25 >= 45 and Color3.fromRGB(255, 159, 10) or Color3.fromRGB(139, 147, 163)
+                ua19.Text = ua25 .. " / 50 lines"
 
                 local ua31 = 0
 
@@ -1926,7 +1657,7 @@ do
 
         ua21 = true
 
-        local ua36 = u45(ua2, "Open Editor", "Popup window with Studio-style colors · 250 lines max")
+        local ua36 = u45(ua2, "Open Editor", "Popup window with Studio-style colors · 50 lines max")
 
         ua36:Right():Button({
                 Label = "Open",
@@ -1958,32 +1689,58 @@ do
                 end,
         })
 
-        local ua38 = u60:PageSection({ Title = "Output", Subtitle = "Newest line first" }):Form()
+        local ua38 = u45(ua2, "Clear Editor", "Empties the code field and the saved config")
 
-        for ua39 = 1, 3 do
-                ua1.Loader.Output[ua39] = u45(ua38, "Line " .. ua39):Right():Label({
+        ua38:Right():Button({
+                Label = "Clear",
+                State = "Destructive",
+                Pushed = function()
+                        ua16.Text = ""
+                        u12.SavedCode = ""
+
+                        u26("Script Loader → Editor cleared")
+                        u16()
+                end,
+        })
+
+        local ua39 = u60:Form()
+
+        u45(ua39, "Output", "Shows the results of your last script run, newest first"):Right():Button({
+                Label = "Clear",
+                State = "Destructive",
+                Pushed = function()
+                        ua1.Loader.History = {}
+
+                        for ua41 = 1, 3 do
+                                local ua42 = ua1.Loader.Output[ua41]
+
+                                if ua42 then
+                                        ua42.Text = u64(u63.Grey, "—")
+                                end
+                        end
+                end,
+        })
+
+        for ua40 = 1, 3 do
+                ua1.Loader.Output[ua40] = ua39:Row():Left():Label({
                         Text = u64(u63.Grey, "—"),
                 })
         end
 
-        ua1.Loader.PushOutput = function(ua40, ua41)
-                local ua42 = ua1.Loader.History
+        ua1.Loader.PushOutput = function(ua41, ua42)
+                local ua43 = ua1.Loader.History
 
-                table.insert(ua42, 1, { ua41 or u63.White, ua40 })
+                table.insert(ua43, 1, u64(ua42 or u63.White, u67(ua41)))
 
-                if #ua42 > 3 then
-                        table.remove(ua42, 4)
+                if #ua43 > 3 then
+                        table.remove(ua43, 4)
                 end
 
-                for ua43 = 1, 3 do
-                        local ua44 = ua1.Loader.Output[ua43]
+                for ua44 = 1, 3 do
+                        local ua45 = ua1.Loader.Output[ua44]
 
-                        if ua44 then
-                                if ua42[ua43] then
-                                        ua44.Text = u64(ua42[ua43][1], u67(ua42[ua43][2]))
-                                else
-                                        ua44.Text = u64(u63.Grey, "—")
-                                end
+                        if ua45 then
+                                ua45.Text = ua43[ua44] or u64(u63.Grey, "—")
                         end
                 end
         end
@@ -1992,56 +1749,36 @@ do
 
         ua52.Name = "Caret"
         ua52.Size = UDim2.fromOffset(2, math.max(ua10 - 4, 10))
-        ua52.BackgroundColor3 = u12.ThemeMode == "Light" and Color3.fromRGB(29, 29, 32) or Color3.fromRGB(240, 241, 245)
+        ua52.BackgroundColor3 = Color3.fromRGB(240, 241, 245)
         ua52.BorderSizePixel = 0
         ua52.Visible = false
         ua52.ZIndex = 2
         ua52.Parent = ua14
-        ua1.Loader.Caret = ua52
 
         local ua53 = nil
 
         local function ua54()
                 local ua56 = string.split(ua16.Text, "\n")
                 local ua57 = ua16.CursorPosition
+                local ua58 = math.clamp(ua57.Y, 1, #ua56)
+                local ua59 = ua56[ua58] or ""
+                local ua60 = ua8:GetTextSize(ua59:sub(1, math.max(math.min(ua57.X - 1, #ua59), 0)), 14, Enum.Font.Code, Vector2.new(10000, 10000)).X
 
-                if type(ua57) ~= "number" or ua57 < 1 then
-                        ua57 = 1
-                end
+                ua52.Position = UDim2.fromOffset(ua60, (ua58 - 1) * ua10 + 2)
 
-                local ua58, ua59 = #ua56, #(ua56[#ua56] or "") + 1
-                local ua60 = 0
+                local ua61 = ua12.AbsoluteWindowSize
 
-                for ua61 = 1, #ua56 do
-                        local ua62 = #ua56[ua61]
+                if ua61.X > 1 then
+                        local ua62 = ua12.CanvasPosition
 
-                        if ua57 <= ua60 + ua62 + 1 then
-                                ua58, ua59 = ua61, ua57 - ua60
-
-                                break
+                        if ua60 < ua62.X or ua60 > ua62.X + ua61.X - 60 then
+                                ua12.CanvasPosition = Vector2.new(math.max(ua60 - ua61.X + 120, 0), ua62.Y)
                         end
 
-                        ua60 = ua60 + ua62 + 1
-                end
+                        local ua63 = (ua58 - 1) * ua10
 
-                local ua61 = ua56[ua58] or ""
-                local ua62 = ua8:GetTextSize(ua61:sub(1, math.max(math.min(ua59 - 1, #ua61), 0)), 14, Enum.Font.Code, Vector2.new(10000, 10000)).X
-
-                ua52.Position = UDim2.fromOffset(ua62, (ua58 - 1) * ua10 + 2)
-
-                local ua63 = ua12.AbsoluteWindowSize
-
-                if ua63.X > 1 then
-                        local ua64 = ua12.CanvasPosition
-
-                        if ua62 < ua64.X or ua62 > ua64.X + ua63.X - 60 then
-                                ua12.CanvasPosition = Vector2.new(math.max(ua62 - ua63.X + 120, 0), ua64.Y)
-                        end
-
-                        local ua65 = (ua58 - 1) * ua10
-
-                        if ua65 < ua64.Y or ua65 > ua64.Y + ua63.Y - ua10 * 2 - 30 then
-                                ua12.CanvasPosition = Vector2.new(ua12.CanvasPosition.X, math.max(ua65 - ua64.Y + ua10 * 2 + 30, 0))
+                        if ua63 < ua62.Y or ua63 > ua62.Y + ua61.Y - ua10 * 2 - 30 then
+                                ua12.CanvasPosition = Vector2.new(ua12.CanvasPosition.X, math.max(ua63 - ua61.Y + ua10 * 2 + 30, 0))
                         end
                 end
         end
@@ -2056,47 +1793,45 @@ do
                 local ua56 = ua16.SelectionStart
                 local ua57 = ua16.CursorPosition
 
-                if not ua16:IsFocused() or type(ua56) ~= "number" or type(ua57) ~= "number" then
-                        return
-                end
-
-                if ua56 < 1 or ua57 < 1 or ua56 == ua57 then
+                if not ua16:IsFocused() or not ua56 or not ua57 then
                         return
                 end
 
                 local ua58 = string.split(ua16.Text, "\n")
-                local ua59 = math.min(ua56, ua57)
-                local ua60 = math.max(ua56, ua57)
-                local ua61 = 0
+                local ua59, ua60 = math.min(ua56.Y, ua57.Y), math.max(ua56.Y, ua57.Y)
 
-                for ua62 = 1, #ua58 do
-                        local ua63 = ua58[ua62] or ""
-                        local ua64 = #ua63
-                        local ua65 = math.max(ua59, ua61 + 1)
-                        local ua66 = math.min(ua60 - 1, ua61 + ua64)
-                        local ua67, ua68 = 0, 0
+                if ua59 < 1 or ua59 > #ua58 + 1 or (ua59 == ua60 and ua56.X == ua57.X) then
+                        return
+                end
 
-                        if ua65 <= ua66 then
-                                ua67 = ua8:GetTextSize(ua63:sub(1, math.max(math.min(ua65 - ua61 - 1, ua64), 0)), 14, Enum.Font.Code, Vector2.new(10000, 10000)).X
-                                ua68 = math.max(ua8:GetTextSize(ua63:sub(1, math.max(math.min(ua66 - ua61, ua64), 0)), 14, Enum.Font.Code, Vector2.new(10000, 10000)).X - ua67, 5)
-                        elseif ua64 == 0 and ua59 <= ua61 and ua60 >= ua61 + 2 then
-                                ua68 = 5
+                for ua61 = math.max(ua59, 1), math.min(ua60, #ua58) do
+                        local ua62, ua63 = 0, 0
+                        local ua64 = ua58[ua61] or ""
+
+                        if ua61 == ua59 and ua61 == ua60 then
+                                ua62 = math.min(ua56.X, ua57.X) - 1
+                                ua63 = math.max(ua56.X, ua57.X) - 1
+                        elseif ua61 == ua59 then
+                                ua62 = (ua56.Y <= ua57.Y and ua56.X or ua57.X) - 1
+                                ua63 = #ua64
+                        elseif ua61 == ua60 then
+                                ua63 = (ua56.Y <= ua57.Y and ua57.X or ua56.X) - 1
+                        else
+                                ua63 = #ua64
                         end
 
-                        if ua68 > 0 then
-                                local ua69 = Instance.new("Frame")
+                        local ua65 = ua8:GetTextSize(ua64:sub(1, math.max(math.min(ua62, #ua64), 0)), 14, Enum.Font.Code, Vector2.new(10000, 10000)).X
+                        local ua66 = ua8:GetTextSize(ua64:sub(1, math.max(math.min(ua63, #ua64), 0)), 14, Enum.Font.Code, Vector2.new(10000, 10000)).X
+                        local ua67 = Instance.new("Frame")
 
-                                ua69.Name = "SelRect"
-                                ua69.BackgroundColor3 = Color3.fromRGB(58, 110, 180)
-                                ua69.BackgroundTransparency = 0.5
-                                ua69.BorderSizePixel = 0
-                                ua69.Position = UDim2.fromOffset(ua67, (ua62 - 1) * ua10)
-                                ua69.Size = UDim2.fromOffset(ua68, ua10)
-                                ua69.ZIndex = 1
-                                ua69.Parent = ua14
-                        end
-
-                        ua61 = ua61 + ua64 + 1
+                        ua67.Name = "SelRect"
+                        ua67.BackgroundColor3 = Color3.fromRGB(58, 110, 180)
+                        ua67.BackgroundTransparency = 0.5
+                        ua67.BorderSizePixel = 0
+                        ua67.Position = UDim2.fromOffset(ua65, (ua61 - 1) * ua10)
+                        ua67.Size = UDim2.fromOffset(math.max(ua66 - ua65, 5), ua10)
+                        ua67.ZIndex = 1
+                        ua67.Parent = ua14
                 end
         end
 
@@ -2147,88 +1882,6 @@ do
                 ua54()
                 ua55()
         end)
-
-        local ua70 = Instance.new("TextButton")
-
-        ua70.Name = "Clear"
-        ua70.AnchorPoint = Vector2.new(1, 0.5)
-        ua70.Position = UDim2.new(1, -54, 0.5, 0)
-        ua70.Size = UDim2.fromOffset(44, 18)
-        ua70.BackgroundColor3 = Color3.fromRGB(44, 28, 28)
-        ua70.BorderSizePixel = 0
-        ua70.FontFace = ua9
-        ua70.TextSize = 12
-        ua70.TextColor3 = Color3.fromRGB(255, 95, 95)
-        ua70.Text = "Clear"
-
-        Instance.new("UICorner", ua70).CornerRadius = UDim.new(0, 5)
-
-        ua70.Parent = ua17
-
-        local ua71 = false
-
-        ua70.MouseButton1Click:Connect(function()
-                if not ua71 then
-                        ua71 = true
-                        ua70.Text = "Sure?"
-                        ua70.BackgroundColor3 = Color3.fromRGB(84, 30, 30)
-
-                        task.delay(2.5, function()
-                                if ua71 and ua70.Parent then
-                                        ua71 = false
-                                        ua70.Text = "Clear"
-                                        ua70.BackgroundColor3 = Color3.fromRGB(44, 28, 28)
-                                end
-                        end)
-
-                        return
-                end
-
-                ua71 = false
-                ua70.Text = "Clear"
-                ua70.BackgroundColor3 = Color3.fromRGB(44, 28, 28)
-                ua16.Text = ""
-                u12.SavedCode = ""
-                u26("Script Loader → Editor cleared")
-                u16()
-        end)
-
-        local function ua73()
-                ua11.Size = UDim2.new(1, 0, 0, math.max(ua7.AbsoluteWindowSize.Y - 34, 140))
-        end
-
-        ua73()
-
-        ua7:GetPropertyChangedSignal("AbsoluteWindowSize"):Connect(ua73)
-        ua7:GetPropertyChangedSignal("AbsoluteSize"):Connect(ua73)
-
-        local ua77 = u45(ua38, "Output", "Wipes the output history and resets every line")
-
-        ua77.Structures.RightAccessories.UIListLayout.VerticalAlignment = Enum.VerticalAlignment.Bottom
-
-        ua77:Right():Button({
-                Label = "Clear",
-                State = "Secondary",
-                Pushed = function(ua78)
-                        ua78.Label = "Cleared"
-
-                        ua1.Loader.History = {}
-
-                        for ua79 = 1, 3 do
-                                local ua80 = ua1.Loader.Output[ua79]
-
-                                if ua80 then
-                                        ua80.Text = u64(u63.Grey, "—")
-                                end
-                        end
-
-                        task.delay(1.2, function()
-                                if ua78.Parent then
-                                        ua78.Label = "Clear"
-                                end
-                        end)
-                end,
-        })
 end
 
 do
@@ -2244,7 +1897,6 @@ do
         local ua3 = u45(ua2, "Target FPS", "Custom framerate limit from 15 to 360")
 
         u47(ua3, {
-                Precision = 0,
                 Minimum = 15,
                 Maximum = 360,
                 Value = u12.TargetFPS,
@@ -2332,402 +1984,107 @@ do
         })
 end
 
-local u72 = function(ua1)
-        local ua2 = {}
-        local ua3 = 118
-        local ua4 = 8 + #ua1.Options * 22 + (#ua1.Options - 1) * 2
-
-        for ua5, ua6 in ipairs(ua1.Options) do
-                local ua7 = ua1.Measure:GetTextSize(ua6, 14, Enum.Font.GothamMedium, Vector2.new(10000, 10000)).X + 64
-
-                if ua7 > ua3 then
-                        ua3 = ua7
-                end
-        end
-
-        local ua8 = nil
-        local ua9 = 0
-        local ua10 = nil
-        local ua11 = nil
-        local ua12 = nil
-        local ua13 = nil
-        local ua14 = nil
-        local ua15 = ua1.Row.Structures.Body.__instance
-        local ua16 = ua1.Form.Structures.Body.__instance
-        local ua17 = ua16.Parent
-        local ua18 = ua15.ZIndex
-        local ua19 = ua16.ZIndex
-        local ua20 = ua17.ZIndex
-
-        ua10 = function()
-                if not ua2.Opened then
-                        return
-                end
-
-                ua2.Opened = false
-
-                if ua1.Registry.Open == ua2 then
-                        ua1.Registry.Open = nil
-                end
-
-                ua11.State = "Secondary"
-
-                if ua8 then
-                        ua8:Cancel()
-
-                        ua8 = nil
-                end
-
-                ua9 = ua9 + 1
-
-                local ua21 = ua9
-
-                ua15.ZIndex = ua18
-                ua16.ZIndex = ua19
-                ua17.ZIndex = ua20
-
-                ua8 = ua1.Tween:Create(ua12, TweenInfo.new(0.14, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Position = UDim2.new(0, 0, 1, -6) })
-                ua8:Play()
-                ua8.Completed:Connect(function(ua22)
-                        if ua22 == Enum.PlaybackState.Completed and ua9 == ua21 then
-                                ua12.Visible = false
-                        end
-                end)
-
-                ua1.Tween:Create(ua13, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Rotation = 0 }):Play()
-        end
-
-        ua11 = ua1.Row:Right():Button({
-                Label = ua1.Current(),
-                State = "Secondary",
-                Pushed = function()
-                        if not u48 then
-                                return
-                        end
-
-                        if ua2.Opened then
-                                ua10()
-
-                                return
-                        end
-
-                        if ua1.Registry.Open and ua1.Registry.Open ~= ua2 then
-                                ua1.Registry.Open.Close()
-                        end
-
-                        ua2.Opened = true
-                        ua1.Registry.Open = ua2
-                        ua11.State = "Primary"
-
-                        if ua8 then
-                                ua8:Cancel()
-
-                                ua8 = nil
-                        end
-
-                        ua15.ZIndex = 100
-                        ua16.ZIndex = 100
-                        ua17.ZIndex = 100
-                        ua12.Visible = true
-                        ua12.Position = UDim2.new(0, 0, 1, -6)
-
-                        ua8 = ua1.Tween:Create(ua12, TweenInfo.new(0.16, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Position = UDim2.new(0, 0, 1, 4) })
-                        ua8:Play()
-
-                        ua1.Tween:Create(ua13, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Rotation = 180 }):Play()
-                end,
-        })
-
-        local ua23 = ua11.Structures.Body.__instance
-
-        ua23.AutomaticSize = Enum.AutomaticSize.None
-        ua23.Size = UDim2.new(0, ua3, 0, 26)
-        ua23.ClipsDescendants = false
-
-        local ua24 = ua11.Structures.Label
-
-        ua24.AutomaticSize = Enum.AutomaticSize.None
-        ua24.TextWrapped = false
-        ua24.TextTruncate = Enum.TextTruncate.None
-
-        ua13 = Instance.new("ImageLabel")
-
-        ua13.Name = "Chevron"
-        ua13.Image = "rbxassetid://86693411280110"
-        ua13.BackgroundTransparency = 1
-        ua13.AnchorPoint = Vector2.new(0.5, 0.5)
-        ua13.Position = UDim2.new(1, -14, 0.5, 0)
-        ua13.Size = UDim2.fromOffset(16, 16)
-        ua13.ImageColor3 = Color3.fromRGB(152, 152, 157)
-        ua13.Parent = ua23
-
-        if ua1.Dot then
-                ua14 = Instance.new("Frame")
-
-                ua14.Name = "HeadDot"
-                ua14.AnchorPoint = Vector2.new(0, 0.5)
-                ua14.Position = UDim2.new(0, 14, 0.5, 0)
-                ua14.Size = UDim2.fromOffset(8, 8)
-                ua14.BorderSizePixel = 0
-                ua14.BackgroundColor3 = ua1.Colors(ua1.Current())
-                ua14.Parent = ua23
-
-                local ua25 = Instance.new("UICorner")
-
-                ua25.CornerRadius = UDim.new(1, 0)
-                ua25.Parent = ua14
-        end
-
-        ua12 = Instance.new("Frame")
-
-        ua12.Name = "DropdownList"
-        ua12.AnchorPoint = Vector2.new(0, 0)
-        ua12.Position = UDim2.new(0, 0, 1, 4)
-        ua12.Size = UDim2.new(0, ua3, 0, ua4)
-        ua12.BorderSizePixel = 0
-        ua12.Active = true
-        ua12.BackgroundColor3 = u39.Theme.Controls.MenuButton.MenuBackground[1].Value
-        ua12.BackgroundTransparency = u39.Theme.Controls.MenuButton.MenuBackground[2].Value
-        ua12.ZIndex = 10
-        ua12.Visible = false
-        ua12.Parent = ua23
-
-        local ua26 = Instance.new("UICorner")
-
-        ua26.CornerRadius = UDim.new(0, 6)
-        ua26.Parent = ua12
-
-        local ua27 = Instance.new("UIStroke")
-
-        ua27.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-        ua27.Thickness = 1
-        ua27.Transparency = 0.85
-        ua27.Color = u39.Theme.Controls.ViewBorder[1].Value
-        ua27.Parent = ua12
-
-        local ua28 = Instance.new("UIPadding")
-
-        ua28.PaddingTop = UDim.new(0, 4)
-        ua28.PaddingBottom = UDim.new(0, 4)
-        ua28.PaddingLeft = UDim.new(0, 4)
-        ua28.PaddingRight = UDim.new(0, 4)
-        ua28.Parent = ua12
-
-        local ua29 = Instance.new("UIListLayout")
-
-        ua29.SortOrder = Enum.SortOrder.LayoutOrder
-        ua29.Padding = UDim.new(0, 2)
-        ua29.Parent = ua12
-
-        local ua30 = {}
-        local ua31 = {}
-
-        for ua32, ua33 in ipairs(ua1.Options) do
-                ua30[ua33] = ua1.Row.Button({
-                        __container = ua12,
-                        Theme = ua1.Row.Theme,
-                }, {
-                        Label = ua33,
-                        State = ua33 == ua1.Current() and "Primary" or "Secondary",
-                        Pushed = function()
-                                if not u48 then
-                                        return
-                                end
-
-                                if ua33 ~= ua1.Current() then
-                                        ua1.Pick(ua33)
-
-                                        ua11.Label = ua33
-
-                                        for ua34, ua35 in pairs(ua30) do
-                                                ua35.State = ua34 == ua33 and "Primary" or "Secondary"
-                                        end
-
-                                        if ua1.Dot then
-                                                ua14.BackgroundColor3 = ua1.Colors(ua33)
-                                        end
-                                end
-
-                                ua10()
-                        end,
-                })
-
-                local ua36 = ua30[ua33].Structures.Body
-
-                ua36.AutomaticSize = Enum.AutomaticSize.None
-                ua36.Size = UDim2.new(1, 0, 0, 22)
-
-                local ua37 = ua30[ua33].Structures.Label
-
-                ua37.AutomaticSize = Enum.AutomaticSize.None
-                ua37.TextWrapped = false
-                ua37.TextTruncate = Enum.TextTruncate.None
-
-                if ua1.Dot then
-                        local ua38 = Instance.new("Frame")
-
-                        ua38.Name = "OptionDot"
-                        ua38.AnchorPoint = Vector2.new(0, 0.5)
-                        ua38.Position = UDim2.new(0, 14, 0.5, 0)
-                        ua38.Size = UDim2.fromOffset(8, 8)
-                        ua38.BorderSizePixel = 0
-                        ua38.BackgroundColor3 = ua1.Colors(ua33)
-                        ua38.Parent = ua36.__instance
-
-                        local ua39 = Instance.new("UICorner")
-
-                        ua39.CornerRadius = UDim.new(1, 0)
-                        ua39.Parent = ua38
-
-                        ua31[ua33] = ua38
-                end
-        end
-
-        ua2.Opened = false
-        ua2.Close = ua10
-        ua2.Head = ua23
-        ua2.List = ua12
-
-        ua2.Refresh = function()
-                ua12.BackgroundColor3 = u39.Theme.Controls.MenuButton.MenuBackground[1].Value
-                ua12.BackgroundTransparency = u39.Theme.Controls.MenuButton.MenuBackground[2].Value
-                ua27.Color = u39.Theme.Controls.ViewBorder[1].Value
-
-                if ua1.Dot then
-                        if ua14 then
-                                ua14.BackgroundColor3 = ua1.Colors(ua1.Current())
-                        end
-
-                        for ua40, ua41 in pairs(ua31) do
-                                ua41.BackgroundColor3 = ua1.Colors(ua40)
-                        end
-                end
-        end
-
-        return ua2
-end
-
 do
         local ua1 = _G.UU.UI
         local ua2 = u62:PageSection({ Title = "Appearance", Subtitle = "Theme and accent apply instantly across the whole interface" }):Form()
 
         ua1.Settings = { Activity = {} }
 
-        local ua3 = { Open = nil }
-        local ua4 = u45(ua2, "Theme", "Pick between the light and the dark appearance")
+        local ua3 = u45(ua2, "Theme", "Pick between the light and the dark appearance")
+        local ua4 = u12.ThemeMode == "Dark" and 2 or 1
 
-        ua1.Settings.Theme = u72({
-                Row = ua4,
-                Form = ua2,
+        ua1.Settings.Theme = ua3:Right():RadioButtonGroup({
                 Options = { "Light", "Dark" },
-                Current = function()
-                        return u12.ThemeMode
-                end,
-                Pick = function(ua5)
-                        u12.ThemeMode = ua5
-                        u39.Theme = ua5 == "Dark" and u38.Themes.Dark or u38.Themes.Light
-                        u71.Theme = u39.Theme
-                        u26("Theme → " .. ua5)
-                        u16()
-                        _G.UU.RenderLogs()
-
-                        if _G.UU.UI.Loader and _G.UU.UI.Loader.Caret then
-                                _G.UU.UI.Loader.Caret.BackgroundColor3 = u12.ThemeMode == "Light" and Color3.fromRGB(29, 29, 32) or Color3.fromRGB(240, 241, 245)
-                        end
-
-                        ua1.Settings.Theme.Refresh()
-                        ua1.Settings.Accent.Refresh()
-                end,
-                Registry = ua3,
-                Tween = game:GetService("TweenService"),
-                Measure = game:GetService("TextService"),
-        })
-
-        local ua6 = u45(ua2, "Accent Color", "Highlight color used by switches, buttons and selections")
-        local ua7 = { "Blue", "Purple", "Pink", "Red", "Orange", "Yellow", "Green", "Graphite" }
-        local ua8 = false
-
-        for ua9, ua10 in ipairs(ua7) do
-                if ua10 == u12.AccentName then
-                        ua8 = true
-                end
-        end
-
-        if not ua8 then
-                u12.AccentName = "Blue"
-        end
-
-        ua1.Settings.Accent = u72({
-                Row = ua6,
-                Form = ua2,
-                Options = ua7,
-                Current = function()
-                        return u12.AccentName
-                end,
-                Pick = function(ua11)
-                        u12.AccentName = ua11
-                        u39.Accent = u38.Accents[ua11]
-                        u71.Accent = u39.Accent
-                        u26("Accent → " .. ua11)
-                        u16()
-                end,
-                Dot = true,
-                Colors = function(ua12)
-                        return u38.Accents[ua12][u12.ThemeMode].SelectionFocused
-                end,
-                Registry = ua3,
-                Tween = game:GetService("TweenService"),
-                Measure = game:GetService("TextService"),
-        })
-
-        table.insert(_G.UU.Connections, u3.InputBegan:Connect(function(ua13, ua14)
-                if ua13.UserInputType ~= Enum.UserInputType.MouseButton1 and ua13.UserInputType ~= Enum.UserInputType.Touch then
-                        return
-                end
-
-                local ua15 = u3:GetMouseLocation()
-                local ua16 = game:GetService("GuiService"):GetGuiInset()
-
-                for ua17, ua18 in ipairs({ ua1.Settings.Theme, ua1.Settings.Accent }) do
-                        if ua18.Opened then
-                                local ua19 = false
-
-                                for ua20, ua21 in ipairs({ ua18.Head, ua18.List }) do
-                                        if ua21 and ua21.Visible and ua21.Parent then
-                                                local ua22 = ua21.AbsolutePosition
-                                                local ua23 = ua21.AbsoluteSize
-                                                local ua24 = ua15.Y - ua16.Y
-
-                                                if ua15.X >= ua22.X and ua15.X <= ua22.X + ua23.X and ((ua24 >= ua22.Y and ua24 <= ua22.Y + ua23.Y) or (ua15.Y >= ua22.Y and ua15.Y <= ua22.Y + ua23.Y)) then
-                                                        ua19 = true
-                                                end
-                                        end
-                                end
-
-                                if not ua19 then
-                                        ua18.Close()
-                                end
-                        end
-                end
-        end))
-
-        local ua24 = u62:PageSection({ Title = "Interface" }):Form()
-
-        local ua25 = u45(ua24, "Toggle Keybind", "Show or hide the window")
-
-        ua25:Right():KeybindField({
-                Value = u12.Keybind,
-                ValueChanged = function(ua26, ua27)
+                ValueChanged = function(ua5, ua6)
                         if not u48 then
                                 return
                         end
 
-                        u12.Keybind = ua27
-                        u26("Keybind → " .. ua27.Name)
+                        local ua7 = ua6 == 2 and "Dark" or "Light"
+
+                        if ua7 == u12.ThemeMode then
+                                return
+                        end
+
+                        u12.ThemeMode = ua7
+                        u39.Theme = ua7 == "Dark" and u38.Themes.Dark or u38.Themes.Light
+                        u71.Theme = u39.Theme
+
+                        u26("Theme → " .. ua7)
                         u16()
                 end,
-                BindPressed = function(ua26, ua27, ua28, ua29)
-                        if not ua28 or ua29 then
+        })
+
+        ua1.Settings.Theme.Value = ua4
+
+        local ua6 = u45(ua2, "Accent Color", "Highlight color used by switches, buttons and selections")
+        local ua7 = { "Blue", "Purple", "Pink", "Red", "Orange", "Yellow", "Green", "Graphite" }
+        local ua8 = 0
+
+        for ua9, ua10 in ipairs(ua7) do
+                if ua10 == u12.AccentName then
+                        ua8 = ua9
+                end
+        end
+
+        if ua8 == 0 then
+                ua8 = 1
+                u12.AccentName = "Blue"
+        end
+
+        ua1.Settings.Accent = ua6:Right():PullDownButton({
+                Options = ua7,
+                Value = ua8,
+                Label = u64(u63[u12.AccentName] or u63.Blue, u12.AccentName),
+                ValueChanged = function(ua11, ua12)
+                        if not u48 then
+                                return
+                        end
+
+                        local ua13 = ua7[ua12]
+
+                        if not ua13 then
+                                return
+                        end
+
+                        u12.AccentName = ua13
+                        u39.Accent = u38.Accents[ua13]
+                        u71.Accent = u39.Accent
+
+                        ua11.Label = u64(u63[ua13] or u63.Blue, ua13)
+
+                        u26("Accent → " .. ua13)
+                        u16()
+                end,
+        })
+
+        do
+                local ua28 = ua1.Settings.Accent.Structures.PullDownIndicator
+
+                ua28.Indicators.Image = u38.Symbols.chevronDown
+                ua28.Indicators.Size = UDim2.fromOffset(14, 14)
+                ua28.Indicators.AnchorPoint = Vector2.new(0.5, 0.5)
+                ua28.Indicators.Position = UDim2.fromScale(0.5, 0.5)
+                ua28.Indicators.ScaleType = Enum.ScaleType.Fit
+        end
+
+        local ua14 = u62:PageSection({ Title = "Interface" }):Form()
+
+        local ua15 = u45(ua14, "Toggle Keybind", "Show or hide the window")
+
+        ua15:Right():KeybindField({
+                Value = u12.Keybind,
+                ValueChanged = function(ua16, ua17)
+                        if not u48 then
+                                return
+                        end
+
+                        u12.Keybind = ua17
+                        u26("Keybind → " .. ua17.Name)
+                        u16()
+                end,
+                BindPressed = function(ua16, ua17, ua18, ua19)
+                        if not ua18 or ua19 then
                                 return
                         end
 
@@ -2735,47 +2092,61 @@ do
                 end,
         })
 
-        local ua30 = u45(ua24, "Auto Hide UI", "Starts minimized on the next injection")
+        local ua20 = u45(ua14, "Auto Hide UI", "Starts minimized on the next injection")
 
-        ua30:Right():Toggle({
+        ua20:Right():Toggle({
                 Value = u12.AutoHideEnabled,
-                ValueChanged = function(ua26, ua27)
+                ValueChanged = function(ua16, ua17)
                         if not u48 then
                                 return
                         end
 
-                        u12.AutoHideEnabled = ua27
-                        u26("Auto Hide UI → " .. (ua27 and "Enabled" or "Disabled"))
+                        u12.AutoHideEnabled = ua17
+                        u26("Auto Hide UI → " .. (ua17 and "Enabled" or "Disabled"))
                         u16()
                 end,
         })
 
-        local ua31 = u62:PageSection({ Title = "Activity", Subtitle = "Newest entry first" }):Form()
+        local ua21 = u62:Form()
 
-        for ua32 = 1, 6 do
-                ua1.Settings.Activity[ua32] = u45(ua31, "Entry " .. ua32):Right():Label({
-                        Text = u64(u63.Grey, "—"),
+        u45(ua21, "Activity", "Tracks every action with a timestamp, newest first"):Right():Button({
+                Label = "Clear",
+                State = "Destructive",
+                Pushed = function()
+                        _G.UU.LogBuffer = {}
+
+                        for ua23 = 1, 6 do
+                                local ua24 = ua1.Settings.Activity[ua23]
+
+                                if ua24 then
+                                        ua24.Text = u64(u63.Grey, "—")
+                                end
+                        end
+                end,
+        })
+
+        for ua22 = 1, 6 do
+                ua1.Settings.Activity[ua22] = ua21:Row():Left():Label({
+                        Text = _G.UU.LogBuffer[ua22] or u64(u63.Grey, "—"),
                 })
         end
 
-        _G.UU.RenderLogs()
+        local ua23 = u62:PageSection({ Title = "Danger Zone", Subtitle = "Fully removes Universal Utility and stops everything it runs" }):Form()
 
-        local ua33 = u62:PageSection({ Title = "Danger Zone", Subtitle = "Fully removes Universal Utility and stops everything it runs" }):Form()
-
-        local ua34 = u45(ua33, "Uninject", "Press twice to confirm the removal"):Right():Button({
+        local ua24 = u45(ua23, "Uninject", "Press twice to confirm the removal"):Right():Button({
                 Label = "Uninject",
                 State = "Destructive",
-                Pushed = function(ua35)
+                Pushed = function(ua25)
                         if not u54 then
                                 u54 = true
-                                ua35.Label = "Click again to confirm"
+                                ua25.Label = "Click again to confirm"
                                 u26("Uninject → click again to confirm")
 
                                 task.delay(3, function()
                                         u54 = false
 
-                                        if ua35.Parent then
-                                                ua35.Label = "Uninject"
+                                        if ua25.Parent then
+                                                ua25.Label = "Uninject"
                                         end
                                 end)
 
@@ -2783,22 +2154,22 @@ do
                         end
 
                         u54 = false
-                        ua35.Label = "Uninjecting..."
+                        ua25.Label = "Uninjecting..."
                         u26("Uninject → stopping everything")
                         u15()
 
                         task.delay(0.15, function()
-                                for ua36, ua37 in pairs(_G.UU.Threads) do
-                                        if typeof(ua37) == "thread" and coroutine.status(ua37) ~= "dead" then
-                                                pcall(task.cancel, ua37)
+                                for ua26, ua27 in pairs(_G.UU.Threads) do
+                                        if typeof(ua27) == "thread" and coroutine.status(ua27) ~= "dead" then
+                                                pcall(task.cancel, ua27)
                                         end
 
-                                        _G.UU.Threads[ua36] = nil
+                                        _G.UU.Threads[ua26] = nil
                                 end
 
-                                for ua36, ua37 in pairs(_G.UU.Connections) do
+                                for ua26, ua27 in pairs(_G.UU.Connections) do
                                         pcall(function()
-                                                ua37:Disconnect()
+                                                ua27:Disconnect()
                                         end)
                                 end
 
@@ -2827,34 +2198,6 @@ do
                                 _G.UU.DebouncedSave = nil
                                 _G.UU.Loaded = false
                                 _G.UU.LoadLock = false
-                        end)
-                end,
-        })
-
-        local ua41 = u45(ua31, "Activity", "Wipes every recorded activity entry")
-
-        ua41.Structures.RightAccessories.UIListLayout.VerticalAlignment = Enum.VerticalAlignment.Bottom
-
-        ua41:Right():Button({
-                Label = "Clear",
-                State = "Secondary",
-                Pushed = function(ua42)
-                        ua42.Label = "Cleared"
-
-                        table.clear(_G.UU.LogBuffer)
-
-                        for ua43 = 1, 6 do
-                                local ua44 = ua1.Settings.Activity[ua43]
-
-                                if ua44 then
-                                        ua44.Text = u64(u63.Grey, "—")
-                                end
-                        end
-
-                        task.delay(1.2, function()
-                                if ua42.Parent then
-                                        ua42.Label = "Clear"
-                                end
                         end)
                 end,
         })
