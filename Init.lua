@@ -2724,7 +2724,6 @@ do
                         if not u54 then
                                 u54 = true
                                 ua25.Label = "Click again to confirm"
-                                u26("Uninject → click again to confirm")
 
                                 task.delay(3, function()
                                         u54 = false
@@ -2739,7 +2738,6 @@ do
 
                         u54 = false
                         ua25.Label = "Uninjecting..."
-                        u26("Uninject → stopping everything")
                         u15()
 
                         task.delay(0.15, function()
@@ -2777,6 +2775,7 @@ do
                                 _G.UU.Threads = {}
                                 _G.UU.Connections = {}
                                 _G.UU.UI = {}
+                                _G.UU.LogBuffer = {}
                                 _G.UU.App = nil
                                 _G.UU.EditorApp = nil
                                 _G.UU.CFG = nil
