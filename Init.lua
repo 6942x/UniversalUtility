@@ -515,7 +515,7 @@ local function u17()
         u12.MousePosEnabled = ua3.MousePosEnabled or false
         u12.TargetFPS = math.clamp(tonumber(ua3.TargetFPS) or 60, 15, 360)
         u12.JumpDelay = math.clamp(tonumber(ua3.JumpDelay) or 10, 1, 600)
-        u12.ClickDelay = math.clamp(tonumber(ua3.ClickDelay) or 3, 1, 600)
+        u12.ClickDelay = math.clamp(tonumber(ua3.ClickDelay) or 3, 0.01, 600)
         u12.SpamDelay = math.clamp(tonumber(ua3.SpamDelay) or 0.1, 0.05, 5)
         u12.SpamKey = ua3.SpamKey or "Q"
         u12.SavedCode = ua3.SavedCode or ""
@@ -530,7 +530,11 @@ end
 local u18 = u17()
 
 local function u19(ua1)
-        ua1 = math.floor(ua1 * 10 + 0.5) / 10
+        ua1 = ua1 < 1 and math.floor(ua1 * 100 + 0.5) / 100 or math.floor(ua1 * 10 + 0.5) / 10
+
+        if ua1 < 1 then
+                return string.format("%.2fs", ua1)
+        end
 
         if ua1 < 60 then
                 if ua1 % 1 == 0 then
@@ -561,6 +565,21 @@ end
 local function u21(ua1)
         ua1 = math.clamp(ua1, 1, 600)
         return math.clamp(math.log(ua1) / math.log(600), 0, 1)
+end
+
+local function u75(ua1)
+        local ua2 = 0.01 * 60000 ^ math.clamp(ua1, 0, 1)
+
+        if ua2 < 1 then
+                return math.floor(ua2 * 100 + 0.5) / 100
+        end
+
+        return math.floor(ua2 * 10 + 0.5) / 10
+end
+
+local function u76(ua1)
+        ua1 = math.clamp(ua1, 0.01, 600)
+        return math.clamp(math.log(ua1 / 0.01) / math.log(60000), 0, 1)
 end
 
 local function u22()
@@ -784,7 +803,7 @@ end
 local function u32()
         u29("Click", function()
                 while u12.ClickEnabled do
-                        task.wait(math.max(u12.ClickDelay, 0.05))
+                        task.wait(math.max(u12.ClickDelay, 0.01))
 
                         if u12.ClickEnabled then
                                 local ua1, ua2
@@ -797,11 +816,32 @@ local function u32()
                                 end
 
                                 u4:SendMouseButtonEvent(ua1, ua2, 0, true, game, 0)
-                                task.wait(0.05)
+                                task.wait(math.min(0.05, u12.ClickDelay * 0.5))
                                 u4:SendMouseButtonEvent(ua1, ua2, 0, false, game, 0)
                         end
                 end
         end)
+end
+
+local function u74(ua1, ua2)
+        u12.ClickEnabled = ua1
+
+        local ua3 = _G.UU.UI
+
+        if not ua2 and ua3 and ua3.AntiAFK and ua3.AntiAFK.ClickToggle then
+                ua3.SyncClick = true
+                ua3.AntiAFK.ClickToggle.Value = ua1
+                ua3.SyncClick = false
+        end
+
+        if ua1 then
+                task.defer(u32)
+        else
+                u28("Click")
+        end
+
+        u26("Auto Click → " .. (ua1 and "Enabled" or "Disabled"))
+        u16()
 end
 
 local function u33()
@@ -1189,25 +1229,16 @@ do
                 end,
         })
 
-        local ua4 = u45(ua2, "Auto Click", "Simulates mouse clicks at the chosen position")
+        local ua4 = u45(ua2, "Auto Click", "Simulates mouse clicks at the chosen position · F4 toggles")
 
-        ua4:Right():Toggle({
+        ua1.AntiAFK.ClickToggle = ua4:Right():Toggle({
                 Value = u12.ClickEnabled,
                 ValueChanged = function(ua8, ua9)
-                        if not u48 then
+                        if ua1.SyncClick or not u48 then
                                 return
                         end
 
-                        u12.ClickEnabled = ua9
-
-                        if ua9 then
-                                task.defer(u32)
-                        else
-                                u28("Click")
-                        end
-
-                        u26("Auto Click → " .. (ua9 and "Enabled" or "Disabled"))
-                        u16()
+                        u74(ua9, true)
                 end,
         })
 
@@ -1228,7 +1259,7 @@ do
                 Text = u65(u12.MousePosEnabled, u12.MousePosSaved.X, u12.MousePosSaved.Y),
         })
 
-        local ua6 = u57:PageSection({ Title = "Cooldowns", Subtitle = "Exponential scale from 1 second to 10 minutes" }):Form()
+        local ua6 = u57:PageSection({ Title = "Cooldowns", Subtitle = "Exponential scale from 0.01 seconds to 10 minutes" }):Form()
 
         ua1.AntiAFK.JumpValue = u45(ua6, "Jump Delay"):Right():Label({
                 Text = u64(u63.Green, u19(u12.JumpDelay)),
@@ -1260,9 +1291,9 @@ do
         u47(ua8, {
                 Minimum = 0,
                 Maximum = 1,
-                Value = u21(u12.ClickDelay),
+                Value = u76(u12.ClickDelay),
                 ValueChanged = function(ua8, ua9)
-                        u12.ClickDelay = u20(ua9)
+                        u12.ClickDelay = u75(ua9)
 
                         if ua1.AntiAFK.ClickValue then
                                 ua1.AntiAFK.ClickValue.Text = u64(u63.Orange, u19(u12.ClickDelay))
@@ -1313,7 +1344,7 @@ do
                         u12.SpamKey = ua9.Name
 
                         if u12.AutoSpamEnabled then
-                                local ua11 = ua9 == Enum.KeyCode.P or ua9.Name == "F5" or ua9 == u12.Keybind
+                                local ua11 = ua9 == Enum.KeyCode.P or ua9.Name == "F4" or ua9.Name == "F5" or ua9 == u12.Keybind
 
                                 if ua11 then
                                         u12.AutoSpamEnabled = false
@@ -1354,7 +1385,7 @@ do
 
                         if ua9 then
                                 local ua10 = Enum.KeyCode[u12.SpamKey]
-                                local ua11 = ua10 and (ua10 == Enum.KeyCode.P or ua10.Name == "F5" or ua10 == u12.Keybind)
+                                local ua11 = ua10 and (ua10 == Enum.KeyCode.P or ua10.Name == "F4" or ua10.Name == "F5" or ua10 == u12.Keybind)
 
                                 if not ua10 or ua11 then
                                         u12.AutoSpamEnabled = false
@@ -2808,6 +2839,10 @@ table.insert(_G.UU.Connections, u3.InputBegan:Connect(function(ua2, ua3)
         if ua2.KeyCode == Enum.KeyCode.F5 and ua2.KeyCode ~= u12.Keybind then
                 u30(not u12.MousePosEnabled, false)
         end
+
+        if ua2.KeyCode == Enum.KeyCode.F4 and ua2.KeyCode ~= u12.Keybind then
+                u74(not u12.ClickEnabled, false)
+        end
 end))
 
 table.insert(_G.UU.Connections, u1.PlayerAdded:Connect(function()
@@ -2982,14 +3017,21 @@ if u12.ClickEnabled then
         task.defer(u32)
 end
 
-if u12.AutoSpamEnabled and not u33() then
-        u12.AutoSpamEnabled = false
+if u12.AutoSpamEnabled then
+        local ua2 = Enum.KeyCode[u12.SpamKey]
+        local ua3 = ua2 and (ua2 == Enum.KeyCode.P or ua2.Name == "F4" or ua2.Name == "F5" or ua2 == u12.Keybind)
 
-        _G.UU.UI.SyncSpam = true
-        _G.UU.UI.Spam.Toggle.Value = false
-        _G.UU.UI.SyncSpam = false
+        if not ua2 or ua3 then
+                u12.AutoSpamEnabled = false
 
-        u26("Key Spam → Invalid key '" .. u12.SpamKey .. "' saved in config")
+                _G.UU.UI.SyncSpam = true
+                _G.UU.UI.Spam.Toggle.Value = false
+                _G.UU.UI.SyncSpam = false
+
+                u26("Key Spam → " .. (not ua2 and "Invalid key '" .. u12.SpamKey .. "' saved in config" or "Key '" .. ua2.Name .. "' is reserved"))
+        else
+                u33()
+        end
 end
 
 if u12.AutoRejoinEnabled then
