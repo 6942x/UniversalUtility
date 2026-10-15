@@ -11,76 +11,89 @@ local u8 = game:GetService("Stats")
 local u9 = u1.LocalPlayer
 
 while not u9 do
-        task.wait()
-        u9 = u1.LocalPlayer
+    task.wait()
+    u9 = u1.LocalPlayer
 end
 
 local u10 = u9.Name
 local u11 = u9.UserId
 
 while not u10 or u10 == "" do
-        task.wait()
-        u10 = u9.Name
+    task.wait()
+    u10 = u9.Name
 end
 
-local u73 = _G
+local u12 = _G
 
 pcall(function()
-        local ua1 = getgenv()
+    local u13 = getgenv()
 
-        if typeof(ua1) == "table" then
-                u73 = ua1
-        end
+    if typeof(u13) == "table" then
+        u12 = u13
+    end
 end)
 
-u73.UU = u73.UU or {}
-_G.UU = u73.UU
+u12.UU = u12.UU or {}
+_G.UU = u12.UU
 _G.UU.LogBuffer = _G.UU.LogBuffer or {}
 
 while true do
-        local ua1 = tonumber(_G.UU.LoadLockTime) or 0
-        local ua2 = os.clock() - ua1
+    local u13 = tonumber(_G.UU.LoadLockTime) or 0
+    local u14 = os.clock() - u13
 
-        if _G.UU.Loaded or (_G.UU.LoadLock == true and (ua1 == 0 or ua2 >= 5 or ua2 < 0)) then
-                for ua3, ua4 in pairs(_G.UU.Threads or {}) do
-                        if typeof(ua4) == "thread" and coroutine.status(ua4) ~= "dead" then
-                                pcall(task.cancel, ua4)
-                        end
+    if _G.UU.Loaded or (_G.UU.LoadLock == true and (u13 == 0 or u14 >= 5 or u14 < 0)) then
+        for u15, u16 in pairs(_G.UU.Threads or {}) do
+            if typeof(u16) == "thread" and coroutine.status(u16) ~= "dead" then
+                pcall(task.cancel, u16)
+            end
 
-                        _G.UU.Threads[ua3] = nil
-                end
-
-                for ua3, ua4 in pairs(_G.UU.Connections or {}) do
-                        pcall(function()
-                                ua4:Disconnect()
-                        end)
-                end
-
-                if _G.UU.EditorApp then
-                        pcall(function()
-                                _G.UU.EditorApp:Destroy()
-                        end)
-                end
-
-                if _G.UU.App then
-                        pcall(function()
-                                _G.UU.App:Destroy()
-                        end)
-                end
-
-                _G.UU.Connections = {}
-                _G.UU.TeleportQueued = false
-                _G.UU.Loaded = false
-                _G.UU.LoadLock = false
-
-                break
+            _G.UU.Threads[u15] = nil
         end
 
-        if _G.UU.LoadLock ~= true then
-                break
+        for u15, u16 in pairs(_G.UU.Connections or {}) do
+            pcall(function()
+                u16:Disconnect()
+            end)
         end
 
-        task.wait(0.1)
+        if _G.UU.HeldMouse then
+            pcall(function()
+                u4:SendMouseButtonEvent(0, 0, 0, false, game, 0)
+            end)
+        end
+        if _G.UU.HeldKey then
+            pcall(function()
+                u4:SendKeyEvent(false, _G.UU.HeldKey, false, game)
+            end)
+        end
+        _G.UU.HeldMouse = false
+        _G.UU.HeldKey = nil
+
+        if _G.UU.EditorApp then
+            pcall(function()
+                _G.UU.EditorApp:Destroy()
+            end)
+        end
+
+        if _G.UU.App then
+            pcall(function()
+                _G.UU.App:Destroy()
+            end)
+        end
+
+        _G.UU.Connections = {}
+        _G.UU.TeleportQueued = false
+        _G.UU.Loaded = false
+        _G.UU.LoadLock = false
+
+        break
+    end
+
+    if _G.UU.LoadLock ~= true then
+        break
+    end
+
+    task.wait(0.1)
 end
 
 _G.UU.LoadLock = true
@@ -89,3033 +102,3216 @@ _G.UU.Threads = {}
 _G.UU.Connections = {}
 _G.UU.SavePending = false
 _G.UU.LastSaveTime = 0
+_G.UU.Session = {}
+local u17 = _G.UU.Session
 
-local u12 = {
-        Keybind = Enum.KeyCode.G,
+local function u18()
+    return _G.UU.Session == u17
+end
 
-        JumpEnabled = false,
-        ClickEnabled = false,
-        AutoSpamEnabled = false,
-        AutoLoadEnabled = false,
-        AutoRejoinEnabled = false,
-        AutoHideEnabled = false,
-        FPSUnlockEnabled = false,
-        MousePosEnabled = false,
+local u19 = {
+    Keybind = Enum.KeyCode.G,
 
-        TargetFPS = 60,
-        JumpDelay = 10,
-        ClickDelay = 3,
-        SpamDelay = 0.1,
+    JumpEnabled = false,
+    ClickEnabled = false,
+    AutoSpamEnabled = false,
+    AutoLoadEnabled = false,
+    AutoRejoinEnabled = false,
+    AutoHideEnabled = false,
+    FPSUnlockEnabled = false,
+    MousePosEnabled = false,
 
-        SpamKey = "Q",
-        SavedCode = "",
-        CurrentTab = "Home",
+    TargetFPS = 60,
+    JumpDelay = 10,
+    ClickDelay = 3,
+    SpamDelay = 0.1,
 
-        MousePosSaved = { X = 960, Y = 540 },
+    SpamKey = "Q",
+    SavedCode = "",
+    CurrentTab = "Home",
 
-        ThemeMode = "Dark",
-        AccentName = "Blue",
+    MousePosSaved = { X = 960, Y = 540 },
+
+    ThemeMode = "Dark",
+    AccentName = "Blue",
 }
 
-_G.UU.CFG = u12
+_G.UU.CFG = u19
 
-local u63 = {
-        Blue = "#0A84FF",
-        Indigo = "#5E5CE6",
-        Purple = "#BF5AF2",
-        Pink = "#FF375F",
-        Red = "#FF453A",
-        Orange = "#FF9F0A",
-        Yellow = "#FFD60A",
-        Green = "#32D74B",
-        Mint = "#66D4CF",
-        Cyan = "#64D2FF",
-        Teal = "#6AC4DC",
-        Lime = "#B5E655",
-        Grey = "#98989D",
-        White = "#F2F2F7",
+local u20 = {
+    Blue = "#0A84FF",
+    Indigo = "#5E5CE6",
+    Purple = "#BF5AF2",
+    Pink = "#FF375F",
+    Red = "#FF453A",
+    Orange = "#FF9F0A",
+    Yellow = "#FFD60A",
+    Green = "#32D74B",
+    Mint = "#66D4CF",
+    Cyan = "#64D2FF",
+    Teal = "#6AC4DC",
+    Lime = "#B5E655",
+    Grey = "#98989D",
+    White = "#F2F2F7",
 }
 
-local function u64(ua1, ua2)
-        return '<font color="' .. ua1 .. '">' .. tostring(ua2) .. "</font>"
+local function u21(u13, u14)
+    return '<font color="' .. u13 .. '">' .. tostring(u14) .. "</font>"
 end
 
-local function u65(ua1, ua2, ua3)
-        return "[" .. u64(ua1 and u63.Mint or u63.Yellow, ua1 and "Tracking" or "Locked") .. "] F5 · " .. u64(u63.Grey, math.floor(ua2) .. ", " .. math.floor(ua3))
+local function u22(u13, u14, u15)
+    return "["
+        .. u21(u13 and u20.Mint or u20.Yellow, u13 and "Tracking" or "Locked")
+        .. "] F5 · "
+        .. u21(u20.Grey, math.floor(u14) .. ", " .. math.floor(u15))
 end
 
-local function u66(ua1)
-        ua1 = tostring(ua1)
+local function u23(u13)
+    u13 = tostring(u13)
 
-        if ua1:find("error", 1, true) or ua1:find("failed", 1, true) or ua1:find("Invalid", 1, true) or ua1:find("reserved", 1, true) or ua1:find("Not supported", 1, true) or ua1:find("Uninject", 1, true) then
-                return u63.Red
+    if
+        u13:find("error", 1, true)
+        or u13:find("failed", 1, true)
+        or u13:find("Invalid", 1, true)
+        or u13:find("reserved", 1, true)
+        or u13:find("Not supported", 1, true)
+        or u13:find("Uninject", 1, true)
+    then
+        return u20.Red
+    end
+
+    if u13:find("✓", 1, true) then
+        return u20.Green
+    end
+
+    local u14 = {
+        { "Auto Jump", u20.Green },
+        { "Auto Click", u20.Orange },
+        { "Key Spam", u20.Yellow },
+        { "Auto Rejoin", u20.Cyan },
+        { "Mouse", u20.Mint },
+        { "Auto Load", u20.Blue },
+        { "Script", u20.Blue },
+        { "FPS", u20.Pink },
+        { "Keybind", u20.Purple },
+        { "Accent", u20.Pink },
+        { "Theme", u20.Indigo },
+        { "Config", u20.Lime },
+        { "Fresh", u20.Lime },
+        { "Defaults", u20.Lime },
+    }
+
+    for u15, u16 in ipairs(u14) do
+        if u13:find(u16[1], 1, true) then
+            return u16[2]
         end
+    end
 
-        if ua1:find("✓", 1, true) then
-                return u63.Green
-        end
-
-        local ua2 = {
-                { "Auto Jump", u63.Green },
-                { "Auto Click", u63.Orange },
-                { "Key Spam", u63.Yellow },
-                { "Auto Rejoin", u63.Cyan },
-                { "Mouse", u63.Mint },
-                { "Auto Load", u63.Blue },
-                { "Script", u63.Blue },
-                { "FPS", u63.Pink },
-                { "Keybind", u63.Purple },
-                { "Accent", u63.Pink },
-                { "Theme", u63.Indigo },
-                { "Config", u63.Lime },
-                { "Fresh", u63.Lime },
-                { "Defaults", u63.Lime },
-        }
-
-        for ua3, ua4 in ipairs(ua2) do
-                if ua1:find(ua4[1], 1, true) then
-                        return ua4[2]
-                end
-        end
-
-        return u63.White
+    return u20.White
 end
 
-local function u67(ua1)
-        local ua2 = tostring(ua1)
+local function u24(u13)
+    local u14 = tostring(u13)
 
-        ua2 = ua2:gsub("&", "&amp;")
-        ua2 = ua2:gsub("<", "&lt;")
-        ua2 = ua2:gsub(">", "&gt;")
+    u14 = u14:gsub("&", "&amp;")
+    u14 = u14:gsub("<", "&lt;")
+    u14 = u14:gsub(">", "&gt;")
 
-        return ua2
+    return u14
 end
 
-local function u68(ua1)
-        if ua1 < 50 then
-                return u63.Green
-        end
+local function u25(u13)
+    if u13 < 50 then
+        return u20.Green
+    end
 
-        if ua1 < 100 then
-                return u63.Mint
-        end
+    if u13 < 100 then
+        return u20.Mint
+    end
 
-        if ua1 < 200 then
-                return u63.Yellow
-        end
+    if u13 < 200 then
+        return u20.Yellow
+    end
 
-        if ua1 < 300 then
-                return u63.Orange
-        end
+    if u13 < 300 then
+        return u20.Orange
+    end
 
-        return u63.Red
+    return u20.Red
 end
 
-local function u69(ua1)
-        local ua2 = {}
-        local ua3 = 1
-        local ua4 = #ua1
-        local ua5 = false
-        local ua6 = {
-                Keyword = "#EA6C98",
-                Number = "#FFC600",
-                String = "#02B875",
-                Comment = "#6E7681",
-                Builtin = "#01A2E2",
-                Func = "#C7A5FF",
-                Prop = "#B5BFC8",
-        }
-        local ua7 = {
-                ["and"] = true,
-                ["break"] = true,
-                ["continue"] = true,
-                ["do"] = true,
-                ["else"] = true,
-                ["elseif"] = true,
-                ["end"] = true,
-                ["false"] = true,
-                ["for"] = true,
-                ["function"] = true,
-                ["if"] = true,
-                ["in"] = true,
-                ["local"] = true,
-                ["nil"] = true,
-                ["not"] = true,
-                ["or"] = true,
-                ["repeat"] = true,
-                ["return"] = true,
-                ["then"] = true,
-                ["true"] = true,
-                ["until"] = true,
-                ["while"] = true,
-        }
-        local ua8 = {
-                print = true,
-                warn = true,
-                error = true,
-                assert = true,
-                pcall = true,
-                xpcall = true,
-                select = true,
-                type = true,
-                typeof = true,
-                ipairs = true,
-                pairs = true,
-                next = true,
-                tonumber = true,
-                tostring = true,
-                unpack = true,
-                rawget = true,
-                rawset = true,
-                rawequal = true,
-                rawlen = true,
-                setmetatable = true,
-                getmetatable = true,
-                require = true,
-                loadstring = true,
-                load = true,
-                tick = true,
-                wait = true,
-                spawn = true,
-                delay = true,
-                game = true,
-                workspace = true,
-                script = true,
-                shared = true,
-                task = true,
-                math = true,
-                string = true,
-                table = true,
-                os = true,
-                coroutine = true,
-                bit32 = true,
-                utf8 = true,
-                debug = true,
-                getgenv = true,
-                gethui = true,
-                setfpscap = true,
-                identifyexecutor = true,
-                getexecutorname = true,
-                writefile = true,
-                readfile = true,
-                isfile = true,
-                listfiles = true,
-                queue_on_teleport = true,
-                newproxy = true,
-                collectgarbage = true,
-                ["_G"] = true,
-                ["_VERSION"] = true,
-        }
+local function u26(u13)
+    local u14 = {}
+    local u15 = 1
+    local u16 = #u13
+    local u27 = false
+    local u28 = {
+        Keyword = "#EA6C98",
+        Number = "#FFC600",
+        String = "#02B875",
+        Comment = "#6E7681",
+        Builtin = "#01A2E2",
+        Func = "#C7A5FF",
+        Prop = "#B5BFC8",
+    }
+    local u29 = {
+        ["and"] = true,
+        ["break"] = true,
+        ["continue"] = true,
+        ["do"] = true,
+        ["else"] = true,
+        ["elseif"] = true,
+        ["end"] = true,
+        ["false"] = true,
+        ["for"] = true,
+        ["function"] = true,
+        ["if"] = true,
+        ["in"] = true,
+        ["local"] = true,
+        ["nil"] = true,
+        ["not"] = true,
+        ["or"] = true,
+        ["repeat"] = true,
+        ["return"] = true,
+        ["then"] = true,
+        ["true"] = true,
+        ["until"] = true,
+        ["while"] = true,
+    }
+    local u30 = {
+        print = true,
+        warn = true,
+        error = true,
+        assert = true,
+        pcall = true,
+        xpcall = true,
+        select = true,
+        type = true,
+        typeof = true,
+        ipairs = true,
+        pairs = true,
+        next = true,
+        tonumber = true,
+        tostring = true,
+        unpack = true,
+        rawget = true,
+        rawset = true,
+        rawequal = true,
+        rawlen = true,
+        setmetatable = true,
+        getmetatable = true,
+        require = true,
+        loadstring = true,
+        load = true,
+        tick = true,
+        wait = true,
+        spawn = true,
+        delay = true,
+        game = true,
+        workspace = true,
+        script = true,
+        shared = true,
+        task = true,
+        math = true,
+        string = true,
+        table = true,
+        os = true,
+        coroutine = true,
+        bit32 = true,
+        utf8 = true,
+        debug = true,
+        getgenv = true,
+        gethui = true,
+        setfpscap = true,
+        identifyexecutor = true,
+        getexecutorname = true,
+        writefile = true,
+        readfile = true,
+        isfile = true,
+        listfiles = true,
+        queue_on_teleport = true,
+        newproxy = true,
+        collectgarbage = true,
+        ["_G"] = true,
+        ["_VERSION"] = true,
+    }
 
-        while ua3 <= ua4 do
-                local ua9 = ua1:match("^%-%-%[=*%[", ua3)
+    while u15 <= u16 do
+        local u31 = u13:match("^%-%-%[=*%[", u15)
 
-                if ua9 then
-                        local ua10, ua11 = ua1:find("]" .. ua9:match("%[(=*)%[") .. "]", ua3 + #ua9, true)
-                        local ua12 = ua11 or ua4
+        if u31 then
+            local u32, u33 = u13:find("]" .. u31:match("%[(=*)%[") .. "]", u15 + #u31, true)
+            local u34 = u33 or u16
 
-                        ua2[#ua2 + 1] = '<font color="' .. ua6.Comment .. '">' .. u67(ua1:sub(ua3, ua12)) .. "</font>"
+            u14[#u14 + 1] = '<font color="' .. u28.Comment .. '">' .. u24(u13:sub(u15, u34)) .. "</font>"
 
-                        ua3 = ua12 + 1
-                elseif ua1:sub(ua3, ua3 + 1) == "--" then
-                        local ua9 = ua1:find("\n", ua3, true) or ua4 + 1
+            u15 = u34 + 1
+        elseif u13:sub(u15, u15 + 1) == "--" then
+            local u31 = u13:find("\n", u15, true) or u16 + 1
 
-                        ua2[#ua2 + 1] = '<font color="' .. ua6.Comment .. '">' .. u67(ua1:sub(ua3, ua9 - 1)) .. "</font>"
+            u14[#u14 + 1] = '<font color="' .. u28.Comment .. '">' .. u24(u13:sub(u15, u31 - 1)) .. "</font>"
 
-                        ua3 = ua9
-                elseif ua1:match("^%[=*%[", ua3) then
-                        local ua9 = ua1:match("^%[=*%[", ua3)
-                        local ua10, ua11 = ua1:find("]" .. ua9:match("%[(=*)%[") .. "]", ua3 + #ua9, true)
-                        local ua12 = ua11 or ua4
+            u15 = u31
+        elseif u13:match("^%[=*%[", u15) then
+            local u31 = u13:match("^%[=*%[", u15)
+            local u32, u33 = u13:find("]" .. u31:match("%[(=*)%[") .. "]", u15 + #u31, true)
+            local u34 = u33 or u16
 
-                        ua2[#ua2 + 1] = '<font color="' .. ua6.String .. '">' .. u67(ua1:sub(ua3, ua12)) .. "</font>"
+            u14[#u14 + 1] = '<font color="' .. u28.String .. '">' .. u24(u13:sub(u15, u34)) .. "</font>"
 
-                        ua3 = ua12 + 1
-                elseif ua1:sub(ua3, ua3) == '"' or ua1:sub(ua3, ua3) == "'" then
-                        local ua9 = ua1:sub(ua3, ua3)
-                        local ua10 = ua3 + 1
+            u15 = u34 + 1
+        elseif u13:sub(u15, u15) == '"' or u13:sub(u15, u15) == "'" then
+            local u31 = u13:sub(u15, u15)
+            local u32 = u15 + 1
 
-                        while ua10 <= ua4 do
-                                local ua11 = ua1:sub(ua10, ua10)
+            while u32 <= u16 do
+                local u33 = u13:sub(u32, u32)
 
-                                if ua11 == "\\" then
-                                        ua10 = ua10 + 2
-                                elseif ua11 == ua9 then
-                                        ua10 = ua10 + 1
+                if u33 == "\\" then
+                    u32 = u32 + 2
+                elseif u33 == u31 then
+                    u32 = u32 + 1
 
-                                        break
-                                else
-                                        ua10 = ua10 + 1
-                                end
-                        end
-
-                        ua10 = math.min(ua10, ua4 + 1)
-
-                        ua2[#ua2 + 1] = '<font color="' .. ua6.String .. '">' .. u67(ua1:sub(ua3, ua10 - 1)) .. "</font>"
-
-                        ua3 = ua10
+                    break
                 else
-                        local ua9 = ua1:match("^0[xX]%x+", ua3) or ua1:match("^%d*%.?%d+[eE][+-]?%d+", ua3) or ua1:match("^%d*%.?%d+", ua3) or ua1:match("^%.%d+", ua3)
-
-                        if ua9 then
-                                ua2[#ua2 + 1] = '<font color="' .. ua6.Number .. '">' .. ua9 .. "</font>"
-
-                                ua3 = ua3 + #ua9
-                        else
-                                local ua9 = ua1:match("^[%a_][%w_]*", ua3)
-
-                                if ua9 then
-                                        local ua10 = ua1:sub(ua3 - 1, ua3 - 1)
-
-                                        if ua7[ua9] then
-                                                ua2[#ua2 + 1] = '<font color="' .. ua6.Keyword .. '">' .. ua9 .. "</font>"
-
-                                                ua5 = ua9 == "function"
-                                        elseif ua5 then
-                                                ua2[#ua2 + 1] = '<font color="' .. ua6.Func .. '">' .. ua9 .. "</font>"
-
-                                                ua5 = false
-                                        elseif ua8[ua9] then
-                                                ua2[#ua2 + 1] = '<font color="' .. ua6.Builtin .. '">' .. ua9 .. "</font>"
-                                        elseif ua10 == "." or ua10 == ":" then
-                                                ua2[#ua2 + 1] = '<font color="' .. ua6.Prop .. '">' .. ua9 .. "</font>"
-                                        else
-                                                ua2[#ua2 + 1] = ua9
-                                        end
-
-                                        ua3 = ua3 + #ua9
-                                else
-                                        local ua9 = ua1:sub(ua3, ua3)
-
-                                        ua2[#ua2 + 1] = u67(ua9)
-
-                                        if ua9 ~= " " and ua9 ~= "\t" and ua9 ~= "\n" and ua9 ~= "\r" then
-                                                ua5 = false
-                                        end
-
-                                        ua3 = ua3 + 1
-                                end
-                        end
+                    u32 = u32 + 1
                 end
-        end
+            end
 
-        return table.concat(ua2)
-end
+            u32 = math.min(u32, u16 + 1)
 
-local function u13()
-        return "UniversalUtility/Accounts/" .. u10 .. ".json"
-end
+            u14[#u14 + 1] = '<font color="' .. u28.String .. '">' .. u24(u13:sub(u15, u32 - 1)) .. "</font>"
 
-local function u14()
-        if makefolder and isfolder then
-                if not isfolder("UniversalUtility") then
-                        makefolder("UniversalUtility")
-                end
-
-                if not isfolder("UniversalUtility/Accounts") then
-                        makefolder("UniversalUtility/Accounts")
-                end
-        end
-end
-
-local function u15()
-        if not writefile then
-                return false
-        end
-
-        u14()
-
-        local ua1 = pcall(function()
-                writefile(u13(), u:JSONEncode({
-                        UserId = u11,
-                        Username = u10,
-                        Keybind = u12.Keybind.Name,
-                        JumpEnabled = u12.JumpEnabled,
-                        ClickEnabled = u12.ClickEnabled,
-                        AutoSpamEnabled = u12.AutoSpamEnabled,
-                        AutoLoadEnabled = u12.AutoLoadEnabled,
-                        AutoRejoinEnabled = u12.AutoRejoinEnabled,
-                        AutoHideEnabled = u12.AutoHideEnabled,
-                        FPSUnlockEnabled = u12.FPSUnlockEnabled,
-                        MousePosEnabled = u12.MousePosEnabled,
-                        TargetFPS = u12.TargetFPS,
-                        JumpDelay = u12.JumpDelay,
-                        ClickDelay = u12.ClickDelay,
-                        SpamDelay = u12.SpamDelay,
-                        SpamKey = u12.SpamKey,
-                        SavedCode = u12.SavedCode,
-                        CurrentTab = u12.CurrentTab,
-                        ThemeMode = u12.ThemeMode,
-                        AccentName = u12.AccentName,
-                        MousePosSaved = u12.MousePosSaved,
-                }))
-        end)
-
-        if ua1 then
-                _G.UU.LastSaveTime = tick()
-                _G.UU.SavePending = false
-        end
-
-        return ua1
-end
-
-_G.UU.SaveCFG = u15
-
-local function u16()
-        if _G.UU.SavePending then
-                return
-        end
-
-        _G.UU.SavePending = true
-
-        local ua1 = tick() - _G.UU.LastSaveTime
-
-        if ua1 >= 0.1 then
-                _G.UU.SavePending = false
-                u15()
+            u15 = u32
         else
-                task.delay(0.1 - ua1, function()
-                        if _G.UU.SavePending then
-                                _G.UU.SavePending = false
-                                u15()
-                        end
-                end)
-        end
-end
+            local u31 = u13:match("^0[xX]%x+", u15)
+                or u13:match("^%d*%.?%d+[eE][+-]?%d+", u15)
+                or u13:match("^%d*%.?%d+", u15)
+                or u13:match("^%.%d+", u15)
 
-_G.UU.DebouncedSave = u16
+            if u31 then
+                u14[#u14 + 1] = '<font color="' .. u28.Number .. '">' .. u31 .. "</font>"
 
-local function u17()
-        if not (readfile and isfile) then
-                return false
-        end
+                u15 = u15 + #u31
+            else
+                local u31 = u13:match("^[%a_][%w_]*", u15)
 
-        local ua1 = u13()
+                if u31 then
+                    local u32 = u13:sub(u15 - 1, u15 - 1)
 
-        if not isfile(ua1) then
-                return false
-        end
+                    if u29[u31] then
+                        u14[#u14 + 1] = '<font color="' .. u28.Keyword .. '">' .. u31 .. "</font>"
 
-        local ua2, ua3 = pcall(function()
-                return u:JSONDecode(readfile(ua1))
-        end)
+                        u27 = u31 == "function"
+                    elseif u27 then
+                        u14[#u14 + 1] = '<font color="' .. u28.Func .. '">' .. u31 .. "</font>"
 
-        if not ua2 or type(ua3) ~= "table" or ua3.UserId ~= u11 then
-                return false
-        end
+                        u27 = false
+                    elseif u30[u31] then
+                        u14[#u14 + 1] = '<font color="' .. u28.Builtin .. '">' .. u31 .. "</font>"
+                    elseif u32 == "." or u32 == ":" then
+                        u14[#u14 + 1] = '<font color="' .. u28.Prop .. '">' .. u31 .. "</font>"
+                    else
+                        u14[#u14 + 1] = u31
+                    end
 
-        u12.Keybind = Enum.KeyCode[ua3.Keybind] or Enum.KeyCode.G
-        u12.JumpEnabled = ua3.JumpEnabled or false
-        u12.ClickEnabled = ua3.ClickEnabled or false
-        u12.AutoSpamEnabled = ua3.AutoSpamEnabled or false
-        u12.AutoLoadEnabled = ua3.AutoLoadEnabled or false
-        u12.AutoRejoinEnabled = ua3.AutoRejoinEnabled or false
-        u12.AutoHideEnabled = ua3.AutoHideEnabled or false
-        u12.FPSUnlockEnabled = ua3.FPSUnlockEnabled or false
-        u12.MousePosEnabled = ua3.MousePosEnabled or false
-        u12.TargetFPS = math.clamp(tonumber(ua3.TargetFPS) or 60, 15, 360)
-        u12.JumpDelay = math.clamp(tonumber(ua3.JumpDelay) or 10, 1, 600)
-        u12.ClickDelay = math.clamp(tonumber(ua3.ClickDelay) or 3, 0.01, 600)
-        u12.SpamDelay = math.clamp(tonumber(ua3.SpamDelay) or 0.1, 0.05, 5)
-        u12.SpamKey = ua3.SpamKey or "Q"
-        u12.SavedCode = ua3.SavedCode or ""
-        u12.CurrentTab = ua3.CurrentTab or "Home"
-        u12.ThemeMode = ua3.ThemeMode == "Light" and "Light" or "Dark"
-        u12.AccentName = type(ua3.AccentName) == "string" and ua3.AccentName or "Blue"
-        u12.MousePosSaved = ua3.MousePosSaved or { X = 960, Y = 540 }
+                    u15 = u15 + #u31
+                else
+                    local u31 = u13:sub(u15, u15)
 
-        return true
-end
+                    u14[#u14 + 1] = u24(u31)
 
-local u18 = u17()
+                    if u31 ~= " " and u31 ~= "\t" and u31 ~= "\n" and u31 ~= "\r" then
+                        u27 = false
+                    end
 
-local function u19(ua1)
-        ua1 = ua1 < 1 and math.floor(ua1 * 100 + 0.5) / 100 or math.floor(ua1 * 10 + 0.5) / 10
-
-        if ua1 < 1 then
-                return string.format("%.2fs", ua1)
-        end
-
-        if ua1 < 60 then
-                if ua1 % 1 == 0 then
-                        return string.format("%ds", ua1)
+                    u15 = u15 + 1
                 end
-
-                return string.format("%.1fs", ua1)
+            end
         end
+    end
 
-        local ua2 = math.floor(ua1 / 60 + 0.001)
-        local ua3 = math.floor(ua1 - ua2 * 60 + 0.5)
-
-        if ua3 >= 60 then
-                ua2, ua3 = ua2 + 1, 0
-        end
-
-        if ua3 == 0 then
-                return string.format("%dm", ua2)
-        end
-
-        return string.format("%dm %02ds", ua2, ua3)
+    return table.concat(u14)
 end
 
-local function u20(ua1)
-        return math.floor((600 ^ math.clamp(ua1, 0, 1)) * 10 + 0.5) / 10
+local function u35()
+    return "UniversalUtility/Accounts/" .. u10 .. ".json"
 end
 
-local function u21(ua1)
-        ua1 = math.clamp(ua1, 1, 600)
-        return math.clamp(math.log(ua1) / math.log(600), 0, 1)
-end
-
-local function u75(ua1)
-        local ua2 = 0.01 * 60000 ^ math.clamp(ua1, 0, 1)
-
-        if ua2 < 1 then
-                return math.floor(ua2 * 100 + 0.5) / 100
+local function u36()
+    if makefolder and isfolder then
+        if not isfolder("UniversalUtility") then
+            makefolder("UniversalUtility")
         end
 
-        return math.floor(ua2 * 10 + 0.5) / 10
-end
-
-local function u76(ua1)
-        ua1 = math.clamp(ua1, 0.01, 600)
-        return math.clamp(math.log(ua1 / 0.01) / math.log(60000), 0, 1)
-end
-
-local function u22()
-        if u3.TouchEnabled and not u3.KeyboardEnabled and not u3.MouseEnabled then
-                return "Mobile"
+        if not isfolder("UniversalUtility/Accounts") then
+            makefolder("UniversalUtility/Accounts")
         end
-
-        if u3.GamepadEnabled and not u3.KeyboardEnabled then
-                return "Console"
-        end
-
-        if u3.KeyboardEnabled and u3.MouseEnabled then
-                return "PC"
-        end
-
-        local ua1 = u3:GetLastInputType()
-
-        if ua1 == Enum.UserInputType.Touch then
-                return "Mobile"
-        end
-
-        if ua1 == Enum.UserInputType.Gamepad1 or ua1 == Enum.UserInputType.Gamepad2 then
-                return "Console"
-        end
-
-        return "PC"
-end
-
-local function u23(ua1)
-        if type(ua1) ~= "string" or #ua1 ~= 2 then
-                return "🌐"
-        end
-
-        local ua2, ua3 = ua1:upper():byte(1, 2)
-
-        if ua2 < 65 or ua2 > 90 or ua3 < 65 or ua3 > 90 then
-                return "🌐"
-        end
-
-        return utf8.char(0x1F1E6 + ua2 - 65, 0x1F1E6 + ua3 - 65)
-end
-
-local u24 = {
-        ["us-east-1"] = "US, N. Virginia",
-        ["us-east-2"] = "US, Ohio",
-        ["us-west-1"] = "US, N. California",
-        ["us-west-2"] = "US, Oregon",
-        ["eu-west-1"] = "IE, Ireland",
-        ["eu-west-2"] = "GB, London",
-        ["eu-west-3"] = "FR, Paris",
-        ["eu-central-1"] = "DE, Frankfurt",
-        ["eu-central-2"] = "CH, Zurich",
-        ["eu-north-1"] = "SE, Stockholm",
-        ["eu-south-1"] = "IT, Milan",
-        ["eu-south-2"] = "ES, Spain",
-        ["ap-southeast-1"] = "SG, Singapore",
-        ["ap-southeast-2"] = "AU, Sydney",
-        ["ap-southeast-3"] = "ID, Jakarta",
-        ["ap-southeast-4"] = "AU, Melbourne",
-        ["ap-northeast-1"] = "JP, Tokyo",
-        ["ap-northeast-2"] = "KR, Seoul",
-        ["ap-northeast-3"] = "JP, Osaka",
-        ["ap-south-1"] = "IN, Mumbai",
-        ["ap-south-2"] = "IN, Hyderabad",
-        ["ap-east-1"] = "HK, Hong Kong",
-        ["sa-east-1"] = "BR, São Paulo",
-        ["ca-central-1"] = "CA, Montreal",
-        ["ca-west-1"] = "CA, Calgary",
-        ["me-south-1"] = "BH, Bahrain",
-        ["me-central-1"] = "AE, UAE",
-        ["af-south-1"] = "ZA, Cape Town",
-        ["il-central-1"] = "IL, Tel Aviv",
-        ["mx-central-1"] = "MX, Mexico City",
-}
-
-local function u25(ua1)
-        task.spawn(function()
-                local ua2 = nil
-                local ua3 = game.JobId
-
-                if ua3 ~= "" then
-                        for ua4, ua5 in pairs(u24) do
-                                if ua3:lower():find(ua4, 1, true) then
-                                        ua2 = u23(ua4:sub(1, 2)) .. " " .. ua5
-                                        break
-                                end
-                        end
-                end
-
-                if not ua2 then
-                        local ua6, ua7 = pcall(function()
-                                return u:JSONDecode(game:HttpGet("https://ipinfo.io/json", true))
-                        end)
-
-                        if ua6 and type(ua7) == "table" and ua7.country then
-                                ua2 = u23(ua7.country) .. " " .. ua7.country
-
-                                if ua7.region and ua7.region ~= "" then
-                                        ua2 = ua2 .. " - " .. ua7.region
-                                end
-
-                                if ua7.city and ua7.city ~= "" then
-                                        ua2 = ua2 .. ", " .. ua7.city
-                                end
-                        end
-                end
-
-                if ua1 and ua1.Parent then
-                        ua1.Text = u64(u63.Grey, "Server Region: ") .. u64(u63.Mint, u67(ua2 or "Unknown"))
-                end
-        end)
-end
-
-local function u26(ua1)
-        local ua2 = os.date and os.date("%H:%M:%S") or "--:--:--"
-
-        table.insert(_G.UU.LogBuffer, 1, "[" .. u64(u63.Cyan, ua2) .. "] " .. u64(u66(ua1), u67(ua1)))
-
-        if #_G.UU.LogBuffer > 6 then
-                table.remove(_G.UU.LogBuffer, 7)
-        end
-
-        local ua3 = _G.UU.UI
-
-        if ua3 and ua3.Settings then
-                for ua4 = 1, 6 do
-                        local ua5 = ua3.Settings.Activity[ua4]
-
-                        if ua5 then
-                                ua5.Text = _G.UU.LogBuffer[ua4] or u64(u63.Grey, "—")
-                        end
-                end
-        end
-end
-
-local function u27(ua1, ua2)
-        local ua3 = _G.UU.App
-
-        if not ua3 then
-                return
-        end
-
-        pcall(function()
-                ua3:Notification({
-                        App = "Universal Utility",
-                        Title = ua1,
-                        Subtitle = ua2,
-                        Duration = 4,
-                })
-        end)
-end
-
-local function u28(ua1)
-        local ua2 = _G.UU.Threads[ua1]
-        _G.UU.Threads[ua1] = nil
-
-        if ua2 and typeof(ua2) == "thread" and coroutine.status(ua2) ~= "dead" then
-                pcall(task.cancel, ua2)
-        end
-end
-
-local function u29(ua1, ua2)
-        u28(ua1)
-        _G.UU.Threads[ua1] = task.spawn(ua2)
-end
-local function u30(ua1, ua2)
-        u12.MousePosEnabled = ua1
-
-        local ua3 = _G.UU.UI
-
-        if not ua2 and ua3 and ua3.AntiAFK and ua3.AntiAFK.MouseToggle then
-                ua3.SyncMouse = true
-                ua3.AntiAFK.MouseToggle.Value = ua1
-                ua3.SyncMouse = false
-        end
-
-        if ua3 and ua3.TrackingConnection then
-                local ua4 = ua3.TrackingConnection
-                ua3.TrackingConnection = nil
-
-                pcall(function()
-                        ua4:Disconnect()
-                end)
-        end
-
-        if ua1 then
-                local ua5 = u2.RenderStepped:Connect(function()
-                        local ua6 = u3:GetMouseLocation()
-                        u12.MousePosSaved.X = ua6.X
-                        u12.MousePosSaved.Y = ua6.Y
-                end)
-
-                ua3.TrackingConnection = ua5
-                table.insert(_G.UU.Connections, ua5)
-        end
-
-        if ua3 and ua3.AntiAFK and ua3.AntiAFK.MouseState then
-                ua3.AntiAFK.MouseState.Text = u65(ua1, u12.MousePosSaved.X, u12.MousePosSaved.Y)
-        end
-
-        u26("Mouse Position → " .. (ua1 and "Tracking" or "Locked"))
-        u16()
-end
-
-local function u31()
-        u29("Jump", function()
-                while u12.JumpEnabled do
-                        task.wait(math.max(u12.JumpDelay, 0.05))
-
-                        if u12.JumpEnabled and u9.Character then
-                                local ua1 = u9.Character:FindFirstChildOfClass("Humanoid")
-
-                                if ua1 then
-                                        ua1:ChangeState(Enum.HumanoidStateType.Jumping)
-                                end
-                        end
-                end
-        end)
-end
-
-local function u32()
-        u29("Click", function()
-                while u12.ClickEnabled do
-                        task.wait(math.max(u12.ClickDelay, 0.01))
-
-                        if u12.ClickEnabled then
-                                local ua1, ua2
-
-                                if u12.MousePosEnabled then
-                                        local ua3 = u3:GetMouseLocation()
-                                        ua1, ua2 = ua3.X, ua3.Y
-                                else
-                                        ua1, ua2 = u12.MousePosSaved.X, u12.MousePosSaved.Y
-                                end
-
-                                u4:SendMouseButtonEvent(ua1, ua2, 0, true, game, 0)
-                                task.wait(math.min(0.05, u12.ClickDelay * 0.5))
-                                u4:SendMouseButtonEvent(ua1, ua2, 0, false, game, 0)
-                        end
-                end
-        end)
-end
-
-local function u74(ua1, ua2)
-        u12.ClickEnabled = ua1
-
-        local ua3 = _G.UU.UI
-
-        if not ua2 and ua3 and ua3.AntiAFK and ua3.AntiAFK.ClickToggle then
-                ua3.SyncClick = true
-                ua3.AntiAFK.ClickToggle.Value = ua1
-                ua3.SyncClick = false
-        end
-
-        if ua1 then
-                task.defer(u32)
-        else
-                u28("Click")
-        end
-
-        u26("Auto Click → " .. (ua1 and "Enabled" or "Disabled"))
-        u16()
-end
-
-local function u33()
-        local ua1 = Enum.KeyCode[u12.SpamKey]
-
-        if not ua1 then
-                return false
-        end
-
-        u29("Spam", function()
-                while u12.AutoSpamEnabled do
-                        task.wait(math.max(u12.SpamDelay, 0.05))
-
-                        if u12.AutoSpamEnabled then
-                                u4:SendKeyEvent(true, ua1, false, game)
-                                task.wait(0.05)
-                                u4:SendKeyEvent(false, ua1, false, game)
-                        end
-                end
-        end)
-
-        return true
-end
-
-local function u34()
-        u29("RejoinWait", function()
-                local ua1 = u5:FindFirstChild("RobloxPromptGui")
-
-                if not ua1 then
-                        local ua2, ua3 = pcall(function()
-                                return u5:WaitForChild("RobloxPromptGui", 10)
-                        end)
-
-                        if not ua2 or not ua3 then
-                                return
-                        end
-
-                        ua1 = ua3
-                end
-
-                local ua4 = ua1:FindFirstChild("promptOverlay")
-
-                if not ua4 then
-                        local ua5, ua6 = pcall(function()
-                                return ua1:WaitForChild("promptOverlay", 10)
-                        end)
-
-                        if not ua5 or not ua6 then
-                                return
-                        end
-
-                        ua4 = ua6
-                end
-
-                local ua7 = ua4.ChildAdded:Connect(function(ua8)
-                        if ua8.Name == "ErrorPrompt" and u12.AutoRejoinEnabled then
-                                u26("Disconnected detected → rejoining")
-                                u27("Rejoining", "Disconnected from the server")
-
-                                u29("Rejoin", function()
-                                        while u12.AutoRejoinEnabled do
-                                                u6:Teleport(game.PlaceId, u9)
-                                                task.wait(2)
-                                        end
-                                end)
-                        end
-                end)
-
-                table.insert(_G.UU.Connections, ua7)
-        end)
-end
-
-local function u35(ua1)
-        if type(ua1) ~= "string" or ua1 == "" then
-                return false, "No code to execute"
-        end
-
-        local ua2, ua3 = pcall(function()
-                local ua4, ua5 = loadstring(ua1)
-
-                if not ua4 then
-                        error(ua5, 0)
-                end
-
-                ua4()
-        end)
-
-        if ua2 then
-                return true, nil
-        end
-
-        return false, tostring(ua3)
-end
-
-local u36 = typeof(setfpscap) == "function"
-
-if u36 then
-        u36 = pcall(setfpscap, 60)
+    end
 end
 
 local function u37()
-        if not u36 then
-                return
+    if not u18() then
+        return false
+    end
+    if not writefile then
+        return false
+    end
+
+    u36()
+
+    local u13 = pcall(function()
+        writefile(
+            u35(),
+            u:JSONEncode({
+                UserId = u11,
+                Username = u10,
+                Keybind = u19.Keybind.Name,
+                JumpEnabled = u19.JumpEnabled,
+                ClickEnabled = u19.ClickEnabled,
+                AutoSpamEnabled = u19.AutoSpamEnabled,
+                AutoLoadEnabled = u19.AutoLoadEnabled,
+                AutoRejoinEnabled = u19.AutoRejoinEnabled,
+                AutoHideEnabled = u19.AutoHideEnabled,
+                FPSUnlockEnabled = u19.FPSUnlockEnabled,
+                MousePosEnabled = u19.MousePosEnabled,
+                TargetFPS = u19.TargetFPS,
+                JumpDelay = u19.JumpDelay,
+                ClickDelay = u19.ClickDelay,
+                SpamDelay = u19.SpamDelay,
+                SpamKey = u19.SpamKey,
+                SavedCode = u19.SavedCode,
+                CurrentTab = u19.CurrentTab,
+                ThemeMode = u19.ThemeMode,
+                AccentName = u19.AccentName,
+                MousePosSaved = u19.MousePosSaved,
+            })
+        )
+    end)
+
+    if u13 then
+        _G.UU.LastSaveTime = tick()
+        _G.UU.SavePending = false
+    end
+
+    return u13
+end
+
+_G.UU.SaveCFG = u37
+
+local function u38()
+    if not u18() then
+        return
+    end
+    if _G.UU.SavePending then
+        return
+    end
+
+    _G.UU.SavePending = true
+
+    local u13 = tick() - _G.UU.LastSaveTime
+
+    if u13 >= 0.1 then
+        _G.UU.SavePending = false
+        u37()
+    else
+        task.delay(0.1 - u13, function()
+            if _G.UU.SavePending then
+                _G.UU.SavePending = false
+                u37()
+            end
+        end)
+    end
+end
+
+_G.UU.DebouncedSave = u38
+
+local function u39()
+    if not (readfile and isfile) then
+        return false
+    end
+
+    local u13 = u35()
+
+    if not isfile(u13) then
+        return false
+    end
+
+    local u14, u15 = pcall(function()
+        return u:JSONDecode(readfile(u13))
+    end)
+
+    if not u14 or type(u15) ~= "table" or u15.UserId ~= u11 then
+        return false
+    end
+
+    u19.Keybind = Enum.KeyCode[u15.Keybind] or Enum.KeyCode.G
+    u19.JumpEnabled = u15.JumpEnabled or false
+    u19.ClickEnabled = u15.ClickEnabled or false
+    u19.AutoSpamEnabled = u15.AutoSpamEnabled or false
+    u19.AutoLoadEnabled = u15.AutoLoadEnabled or false
+    u19.AutoRejoinEnabled = u15.AutoRejoinEnabled or false
+    u19.AutoHideEnabled = u15.AutoHideEnabled or false
+    u19.FPSUnlockEnabled = u15.FPSUnlockEnabled or false
+    u19.MousePosEnabled = u15.MousePosEnabled or false
+    u19.TargetFPS = math.clamp(tonumber(u15.TargetFPS) or 60, 15, 360)
+    u19.JumpDelay = math.clamp(tonumber(u15.JumpDelay) or 10, 1, 600)
+    u19.ClickDelay = math.clamp(tonumber(u15.ClickDelay) or 3, 0.01, 600)
+    u19.SpamDelay = math.clamp(tonumber(u15.SpamDelay) or 0.1, 0.05, 5)
+    u19.SpamKey = u15.SpamKey or "Q"
+    u19.SavedCode = u15.SavedCode or ""
+    u19.CurrentTab = u15.CurrentTab or "Home"
+    u19.ThemeMode = u15.ThemeMode == "Light" and "Light" or "Dark"
+    u19.AccentName = type(u15.AccentName) == "string" and u15.AccentName or "Blue"
+    u19.MousePosSaved = u15.MousePosSaved or { X = 960, Y = 540 }
+
+    return true
+end
+
+local u40 = u39()
+
+local function u41(u13)
+    u13 = u13 < 1 and math.floor(u13 * 100 + 0.5) / 100 or math.floor(u13 * 10 + 0.5) / 10
+
+    if u13 < 1 then
+        return string.format("%.2fs", u13)
+    end
+
+    if u13 < 60 then
+        if u13 % 1 == 0 then
+            return string.format("%ds", u13)
         end
 
-        if u12.FPSUnlockEnabled then
-                pcall(setfpscap, u12.TargetFPS)
-        else
-                pcall(setfpscap, 60)
+        return string.format("%.1fs", u13)
+    end
+
+    local u14 = math.floor(u13 / 60 + 0.001)
+    local u15 = math.floor(u13 - u14 * 60 + 0.5)
+
+    if u15 >= 60 then
+        u14, u15 = u14 + 1, 0
+    end
+
+    if u15 == 0 then
+        return string.format("%dm", u14)
+    end
+
+    return string.format("%dm %02ds", u14, u15)
+end
+
+local function u42(u13)
+    return math.floor((600 ^ math.clamp(u13, 0, 1)) * 10 + 0.5) / 10
+end
+
+local function u43(u13)
+    u13 = math.clamp(u13, 1, 600)
+    return math.clamp(math.log(u13) / math.log(600), 0, 1)
+end
+
+local function u44(u13)
+    local u14 = 0.01 * 60000 ^ math.clamp(u13, 0, 1)
+
+    if u14 < 1 then
+        return math.floor(u14 * 100 + 0.5) / 100
+    end
+
+    return math.floor(u14 * 10 + 0.5) / 10
+end
+
+local function u45(u13)
+    u13 = math.clamp(u13, 0.01, 600)
+    return math.clamp(math.log(u13 / 0.01) / math.log(60000), 0, 1)
+end
+
+local function u46()
+    if u3.TouchEnabled and not u3.KeyboardEnabled and not u3.MouseEnabled then
+        return "Mobile"
+    end
+
+    if u3.GamepadEnabled and not u3.KeyboardEnabled then
+        return "Console"
+    end
+
+    if u3.KeyboardEnabled and u3.MouseEnabled then
+        return "PC"
+    end
+
+    local u13 = u3:GetLastInputType()
+
+    if u13 == Enum.UserInputType.Touch then
+        return "Mobile"
+    end
+
+    if u13 == Enum.UserInputType.Gamepad1 or u13 == Enum.UserInputType.Gamepad2 then
+        return "Console"
+    end
+
+    return "PC"
+end
+
+local function u47(u13)
+    if type(u13) ~= "string" or #u13 ~= 2 then
+        return "🌐"
+    end
+
+    local u14, u15 = u13:upper():byte(1, 2)
+
+    if u14 < 65 or u14 > 90 or u15 < 65 or u15 > 90 then
+        return "🌐"
+    end
+
+    return utf8.char(0x1F1E6 + u14 - 65, 0x1F1E6 + u15 - 65)
+end
+
+local u48 = {
+    ["us-east-1"] = "US, N. Virginia",
+    ["us-east-2"] = "US, Ohio",
+    ["us-west-1"] = "US, N. California",
+    ["us-west-2"] = "US, Oregon",
+    ["eu-west-1"] = "IE, Ireland",
+    ["eu-west-2"] = "GB, London",
+    ["eu-west-3"] = "FR, Paris",
+    ["eu-central-1"] = "DE, Frankfurt",
+    ["eu-central-2"] = "CH, Zurich",
+    ["eu-north-1"] = "SE, Stockholm",
+    ["eu-south-1"] = "IT, Milan",
+    ["eu-south-2"] = "ES, Spain",
+    ["ap-southeast-1"] = "SG, Singapore",
+    ["ap-southeast-2"] = "AU, Sydney",
+    ["ap-southeast-3"] = "ID, Jakarta",
+    ["ap-southeast-4"] = "AU, Melbourne",
+    ["ap-northeast-1"] = "JP, Tokyo",
+    ["ap-northeast-2"] = "KR, Seoul",
+    ["ap-northeast-3"] = "JP, Osaka",
+    ["ap-south-1"] = "IN, Mumbai",
+    ["ap-south-2"] = "IN, Hyderabad",
+    ["ap-east-1"] = "HK, Hong Kong",
+    ["sa-east-1"] = "BR, São Paulo",
+    ["ca-central-1"] = "CA, Montreal",
+    ["ca-west-1"] = "CA, Calgary",
+    ["me-south-1"] = "BH, Bahrain",
+    ["me-central-1"] = "AE, UAE",
+    ["af-south-1"] = "ZA, Cape Town",
+    ["il-central-1"] = "IL, Tel Aviv",
+    ["mx-central-1"] = "MX, Mexico City",
+}
+
+local function u49(u13)
+    task.spawn(function()
+        local u14 = nil
+        local u15 = game.JobId
+
+        if u15 ~= "" then
+            for u16, u27 in pairs(u48) do
+                if u15:lower():find(u16, 1, true) then
+                    u14 = u47(u16:sub(1, 2)) .. " " .. u27
+                    break
+                end
+            end
         end
+
+        if not u14 then
+            local u28, u29 = pcall(function()
+                return u:JSONDecode(game:HttpGet("https://ipinfo.io/json", true))
+            end)
+
+            if u28 and type(u29) == "table" and u29.country then
+                u14 = u47(u29.country) .. " " .. u29.country
+
+                if u29.region and u29.region ~= "" then
+                    u14 = u14 .. " - " .. u29.region
+                end
+
+                if u29.city and u29.city ~= "" then
+                    u14 = u14 .. ", " .. u29.city
+                end
+            end
+        end
+
+        if u13 and u13.Parent then
+            u13.Text = u21(u20.Grey, "Server Region: ") .. u21(u20.Mint, u24(u14 or "Unknown"))
+        end
+    end)
+end
+
+local function u50(u13)
+    if not u18() then
+        return
+    end
+    local u14 = os.date and os.date("%H:%M:%S") or "--:--:--"
+
+    table.insert(_G.UU.LogBuffer, 1, "[" .. u21(u20.Cyan, u14) .. "] " .. u21(u23(u13), u24(u13)))
+
+    if #_G.UU.LogBuffer > 6 then
+        table.remove(_G.UU.LogBuffer, 7)
+    end
+
+    local u15 = _G.UU.UI
+
+    if u15 and u15.Settings then
+        for u16 = 1, 6 do
+            local u27 = u15.Settings.Activity[u16]
+
+            if u27 then
+                u27.Text = _G.UU.LogBuffer[u16] or u21(u20.Grey, "—")
+            end
+        end
+    end
+end
+
+local function u51(u13, u14)
+    local u15 = _G.UU.App
+
+    if not u15 then
+        return
+    end
+
+    pcall(function()
+        u15:Notification({
+            App = "Universal Utility",
+            Title = u13,
+            Subtitle = u14,
+            Duration = 4,
+        })
+    end)
+end
+
+local function u52(u13)
+    if u13 == "Click" and _G.UU.HeldMouse then
+        pcall(function()
+            u4:SendMouseButtonEvent(u19.MousePosSaved.X, u19.MousePosSaved.Y, 0, false, game, 0)
+        end)
+        _G.UU.HeldMouse = false
+    elseif u13 == "Spam" and _G.UU.HeldKey then
+        pcall(function()
+            u4:SendKeyEvent(false, _G.UU.HeldKey, false, game)
+        end)
+        _G.UU.HeldKey = nil
+    end
+    local u14 = _G.UU.Threads[u13]
+    _G.UU.Threads[u13] = nil
+
+    if u14 and typeof(u14) == "thread" and coroutine.status(u14) ~= "dead" then
+        pcall(task.cancel, u14)
+    end
+end
+
+local function u53(u13, u14)
+    if not u18() then
+        return
+    end
+    u52(u13)
+    _G.UU.Threads[u13] = task.spawn(function()
+        if u18() then
+            u14()
+        end
+    end)
+end
+local function u54(u13, u14)
+    u19.MousePosEnabled = u13
+
+    local u15 = _G.UU.UI
+
+    if not u14 and u15 and u15.AntiAFK and u15.AntiAFK.MouseToggle then
+        u15.SyncMouse = true
+        u15.AntiAFK.MouseToggle.Value = u13
+        u15.SyncMouse = false
+    end
+
+    if u15 and u15.TrackingConnection then
+        local u16 = u15.TrackingConnection
+        u15.TrackingConnection = nil
+
+        pcall(function()
+            u16:Disconnect()
+        end)
+    end
+
+    if u13 then
+        local u27 = u2.RenderStepped:Connect(function()
+            local u28 = u3:GetMouseLocation()
+            u19.MousePosSaved.X = u28.X
+            u19.MousePosSaved.Y = u28.Y
+        end)
+
+        u15.TrackingConnection = u27
+        table.insert(_G.UU.Connections, u27)
+    end
+
+    if u15 and u15.AntiAFK and u15.AntiAFK.MouseState then
+        u15.AntiAFK.MouseState.Text = u22(u13, u19.MousePosSaved.X, u19.MousePosSaved.Y)
+    end
+
+    u50("Mouse Position → " .. (u13 and "Tracking" or "Locked"))
+    u38()
+end
+
+local function u55()
+    u53("Jump", function()
+        while u19.JumpEnabled do
+            task.wait(math.max(u19.JumpDelay, 0.05))
+
+            if u19.JumpEnabled and u9.Character then
+                local u13 = u9.Character:FindFirstChildOfClass("Humanoid")
+
+                if u13 then
+                    u13:ChangeState(Enum.HumanoidStateType.Jumping)
+                end
+            end
+        end
+    end)
+end
+
+local function u56()
+    u53("Click", function()
+        while u19.ClickEnabled do
+            task.wait(math.max(u19.ClickDelay, 0.01))
+
+            if u19.ClickEnabled then
+                local u13, u14
+
+                if u19.MousePosEnabled then
+                    local u15 = u3:GetMouseLocation()
+                    u13, u14 = u15.X, u15.Y
+                else
+                    u13, u14 = u19.MousePosSaved.X, u19.MousePosSaved.Y
+                end
+
+                _G.UU.HeldMouse = true
+                u4:SendMouseButtonEvent(u13, u14, 0, true, game, 0)
+                task.wait(math.min(0.05, u19.ClickDelay * 0.5))
+                u4:SendMouseButtonEvent(u13, u14, 0, false, game, 0)
+                _G.UU.HeldMouse = false
+            end
+        end
+    end)
+end
+
+local function u57(u13, u14)
+    u19.ClickEnabled = u13
+
+    local u15 = _G.UU.UI
+
+    if not u14 and u15 and u15.AntiAFK and u15.AntiAFK.ClickToggle then
+        u15.SyncClick = true
+        u15.AntiAFK.ClickToggle.Value = u13
+        u15.SyncClick = false
+    end
+
+    if u13 then
+        task.defer(u56)
+    else
+        u52("Click")
+    end
+
+    u50("Auto Click → " .. (u13 and "Enabled" or "Disabled"))
+    u38()
+end
+
+local function u58()
+    local u13 = Enum.KeyCode[u19.SpamKey]
+
+    if not u13 then
+        return false
+    end
+
+    u53("Spam", function()
+        while u19.AutoSpamEnabled do
+            task.wait(math.max(u19.SpamDelay, 0.05))
+
+            if u19.AutoSpamEnabled then
+                _G.UU.HeldKey = u13
+                u4:SendKeyEvent(true, u13, false, game)
+                task.wait(0.05)
+                u4:SendKeyEvent(false, u13, false, game)
+                _G.UU.HeldKey = nil
+            end
+        end
+    end)
+
+    return true
+end
+
+local function u59()
+    if _G.UU.RejoinConnection then
+        _G.UU.RejoinConnection:Disconnect()
+        _G.UU.RejoinConnection = nil
+    end
+    u53("RejoinWait", function()
+        local u13 = u5:FindFirstChild("RobloxPromptGui")
+
+        if not u13 then
+            local u14, u15 = pcall(function()
+                return u5:WaitForChild("RobloxPromptGui", 10)
+            end)
+
+            if not u14 or not u15 then
+                return
+            end
+
+            u13 = u15
+        end
+
+        local u16 = u13:FindFirstChild("promptOverlay")
+
+        if not u16 then
+            local u27, u28 = pcall(function()
+                return u13:WaitForChild("promptOverlay", 10)
+            end)
+
+            if not u27 or not u28 then
+                return
+            end
+
+            u16 = u28
+        end
+
+        local u29 = u16.ChildAdded:Connect(function(u30)
+            if u30.Name == "ErrorPrompt" and u19.AutoRejoinEnabled then
+                u50("Disconnected detected → rejoining")
+                u51("Rejoining", "Disconnected from the server")
+
+                u53("Rejoin", function()
+                    while u19.AutoRejoinEnabled do
+                        pcall(function()
+                            u6:Teleport(game.PlaceId, u9)
+                        end)
+                        task.wait(2)
+                    end
+                end)
+            end
+        end)
+
+        _G.UU.RejoinConnection = u29
+        table.insert(_G.UU.Connections, u29)
+    end)
+end
+
+local function u60(u13)
+    if type(u13) ~= "string" or u13 == "" then
+        return false, "No code to execute"
+    end
+
+    local u14, u15 = pcall(function()
+        local u16, u27 = loadstring(u13)
+
+        if not u16 then
+            error(u27, 0)
+        end
+
+        u16()
+    end)
+
+    if u14 then
+        return true, nil
+    end
+
+    return false, tostring(u15)
+end
+
+local u61 = typeof(setfpscap) == "function"
+
+if u61 then
+    u61 = pcall(setfpscap, 60)
+end
+
+local function u62()
+    if not u61 then
+        return
+    end
+
+    if u19.FPSUnlockEnabled then
+        pcall(setfpscap, u19.TargetFPS)
+    else
+        pcall(setfpscap, 60)
+    end
 end
 
 _G.UU.UI = {}
 
-local u38 = loadstring(game:HttpGet("https://github.com/cascadeui/Cascade/releases/latest/download/dist.luau"))()
+local u63 =
+    loadstring(game:HttpGet("https://github.com/cascadeui/Cascade/releases/latest/download/dist.luau"))()
+if not u18() then
+    return
+end
 
-local function u72(ua1, ua2)
-        local ua3 = Vector2.new(1280, 720)
+local function u64(u13, u14)
+    local u15 = Vector2.new(1280, 720)
 
-        pcall(function()
-                local ua4 = workspace.CurrentCamera
+    pcall(function()
+        local u16 = workspace.CurrentCamera
 
-                if ua4 then
-                        ua3 = ua4.ViewportSize
-                end
-        end)
+        if u16 then
+            u15 = u16.ViewportSize
+        end
+    end)
 
-        return UDim2.fromOffset(math.max(320, math.min(ua1, math.floor(ua3.X) - 24)), math.max(240, math.min(ua2, math.floor(ua3.Y) - 64)))
+    return UDim2.fromOffset(
+        math.max(320, math.min(u13, math.floor(u15.X) - 24)),
+        math.max(240, math.min(u14, math.floor(u15.Y) - 64))
+    )
 end
 
 pcall(function()
-        for ua1, ua2 in pairs(u5:GetChildren()) do
-                if ua2.Name == "Cascade" then
-                        ua2:Destroy()
-                end
+    for u13, u14 in pairs(u5:GetChildren()) do
+        if u14.Name == "Cascade" then
+            u14:Destroy()
         end
+    end
 
-        local ua1 = u9:FindFirstChild("PlayerGui")
+    local u13 = u9:FindFirstChild("PlayerGui")
 
-        if ua1 then
-                for ua2, ua3 in pairs(ua1:GetChildren()) do
-                        if ua3.Name == "Cascade" then
-                                ua3:Destroy()
-                        end
-                end
+    if u13 then
+        for u14, u15 in pairs(u13:GetChildren()) do
+            if u15.Name == "Cascade" then
+                u15:Destroy()
+            end
         end
+    end
 end)
 
-local u39 = u38.New({
-        WindowPill = true,
-        Theme = u38.Themes[u12.ThemeMode] or u38.Themes.Dark,
-        Accent = u38.Accents[u12.AccentName] or u38.Accents.Blue,
+local u65 = u63.New({
+    WindowPill = true,
+    Theme = u63.Themes[u19.ThemeMode] or u63.Themes.Dark,
+    Accent = u63.Accents[u19.AccentName] or u63.Accents.Blue,
 })
 
-_G.UU.App = u39
+_G.UU.App = u65
 
-local u40 = u39:Window({
-        Title = "Universal Utility",
-        Subtitle = u10,
-        Size = u72(850, 530),
-        Draggable = true,
-        Resizable = true,
-        Dropshadow = true,
-        CanExit = false,
-        CanMinimize = true,
-        CanZoom = true,
-        Minimized = u12.AutoHideEnabled,
+local u66 = u65:Window({
+    Title = "Universal Utility",
+    Subtitle = u10,
+    Size = u64(850, 530),
+    Draggable = true,
+    Resizable = true,
+    Dropshadow = true,
+    CanExit = false,
+    CanMinimize = true,
+    CanZoom = true,
+    Minimized = u19.AutoHideEnabled,
 })
 
-local u41 = u40:Section({ Title = "General" })
-local u42 = u40:Section({ Title = "Automation" })
-local u43 = u40:Section({ Title = "Session" })
-local u44 = u40:Section({ Title = "System" })
+local u67 = u66:Section({ Title = "General" })
+local u68 = u66:Section({ Title = "Automation" })
+local u69 = u66:Section({ Title = "Session" })
+local u70 = u66:Section({ Title = "System" })
 
-local function u45(ua1, ua2, ua3)
-        local ua4 = ua1:Row()
+local function u71(u13, u14, u15)
+    local u16 = u13:Row()
 
-        ua4:Left():TitleStack({
-                Title = ua2,
-                Subtitle = ua3,
-        })
+    u16:Left():TitleStack({
+        Title = u14,
+        Subtitle = u15,
+    })
 
-        return ua4
+    return u16
 end
 
-local function u70(ua1)
-        local ua2 = ua1.Structures
+local function u72(u13)
+    local u14 = u13.Structures
 
-        ua2.Gradient.Enabled = false
-        ua2.Surface.BackgroundTransparency = 1
-        ua2.Surface.Size = UDim2.fromOffset(38, 38)
-        ua2.Image.Size = UDim2.fromOffset(36, 36)
-        ua2.Body.Size = UDim2.fromOffset(40, 40)
+    u14.Gradient.Enabled = false
+    u14.Surface.BackgroundTransparency = 1
+    u14.Surface.Size = UDim2.fromOffset(38, 38)
+    u14.Image.Size = UDim2.fromOffset(36, 36)
+    u14.Body.Size = UDim2.fromOffset(40, 40)
 
-        return ua1
+    return u13
 end
 
-local function u46(ua1, ua2, ua3)
-        local ua4 = ua1:Tab({
-                Title = ua2,
-                Icon = ua3,
-        })
+local function u73(u13, u14, u15)
+    local u16 = u13:Tab({
+        Title = u14,
+        Icon = u15,
+    })
 
-        local ua5 = ua4.Structures
-        local ua6 = ua5.Leading:FindFirstChild("UIListLayout")
+    local u27 = u16.Structures
+    local u28 = u27.Leading:FindFirstChild("UIListLayout")
 
-        ua5.Symbol.ScaleType = Enum.ScaleType.Fit
-        ua5.Symbol.Size = UDim2.fromOffset(18, 18)
+    u27.Symbol.ScaleType = Enum.ScaleType.Fit
+    u27.Symbol.Size = UDim2.fromOffset(18, 18)
 
-        if ua6 then
-                ua6.Padding = UDim.new(0, 6)
-                ua6.VerticalAlignment = Enum.VerticalAlignment.Center
-        end
+    if u28 then
+        u28.Padding = UDim.new(0, 6)
+        u28.VerticalAlignment = Enum.VerticalAlignment.Center
+    end
 
-        return ua4
+    return u16
 end
 
-local function u47(ua1, ua2)
-        local ua3 = ua1:Right():Slider(ua2)
+local function u74(u13, u14)
+    local u15 = u13:Right():Slider(u14)
 
-        if ua3.Structures and ua3.Structures.Thumb then
-                ua3.Structures.Thumb.Position = UDim2.fromScale(1, 0.5)
-        end
+    if u15.Structures and u15.Structures.Thumb then
+        u15.Structures.Thumb.Position = UDim2.fromScale(1, 0.5)
+    end
 
-        return ua3
+    return u15
 end
 
-local u48 = false
+local u75 = false
 
-local u49, u50 = {}, {}
+local u76, u77 = {}, {}
 
-for ua1 = 1, 60 do
-        u49[ua1] = 60
-        u50[ua1] = 0
-end
+local u78, u79 = 0, tick()
+local u80 = 0
+local u81 = false
+local u82 = nil
 
-local u51, u52 = 0, tick()
-local u53 = 0
-local u54 = false
-local u55 = nil
-
-local u56 = u46(u41, "Home", u38.Symbols.house)
-local u57 = u46(u42, "Anti-AFK", u38.Symbols.bolt)
-local u58 = u46(u42, "Key Spam", u38.Symbols.keyboard)
-local u59 = u46(u43, "Auto Rejoin", u38.Symbols.arrowClockwise)
-local u60 = u46(u43, "Script Loader", u38.Symbols.docPlaintext)
-local u61 = u46(u44, "Performance", u38.Symbols.waveform)
-local u62 = u46(u44, "Settings", u38.Symbols.gearshape)
+local u83 = u73(u67, "Home", u63.Symbols.house)
+local u84 = u73(u68, "Anti-AFK", u63.Symbols.bolt)
+local u85 = u73(u68, "Key Spam", u63.Symbols.keyboard)
+local u86 = u73(u69, "Auto Rejoin", u63.Symbols.arrowClockwise)
+local u87 = u73(u69, "Script Loader", u63.Symbols.docPlaintext)
+local u88 = u73(u70, "Performance", u63.Symbols.waveform)
+local u89 = u73(u70, "Settings", u63.Symbols.gearshape)
 
 _G.UU.UI.Tabs = {
-        Home = u56,
-        AntiAFK = u57,
-        KeySpam = u58,
-        Rejoin = u59,
-        Loader = u60,
-        Performance = u61,
-        Settings = u62,
+    Home = u83,
+    AntiAFK = u84,
+    KeySpam = u85,
+    Rejoin = u86,
+    Loader = u87,
+    Performance = u88,
+    Settings = u89,
 }
 
 do
-        local ua1 = _G.UU.UI
-        local ua2 = u56:PageSection({ Title = "Player" }):Form()
+    local u13 = _G.UU.UI
+    local u14 = u83:PageSection({ Title = "Player" }):Form()
 
-        local ua3 = ua2:Row()
+    local u15 = u14:Row()
 
-        u70(ua3:Left():ImageSurface({
-                Image = "rbxthumb://type=AvatarHeadShot&id=" .. u11 .. "&w=150&h=150",
-        }))
+    u72(u15:Left():ImageSurface({
+        Image = "rbxthumb://type=AvatarHeadShot&id=" .. u11 .. "&w=150&h=150",
+    }))
 
-        ua3:Right():TitleStack({
-                Title = u10,
-                Subtitle = u64(u63.Grey, "User ID: ") .. u64(u63.Cyan, u11),
-        })
+    u15:Right():TitleStack({
+        Title = u10,
+        Subtitle = u21(u20.Grey, "User ID: ") .. u21(u20.Cyan, u11),
+    })
 
-        local ua4, ua5 = "Unknown", ""
+    local u16, u27 = "Unknown", ""
 
+    pcall(function()
+        if identifyexecutor then
+            u16, u27 = identifyexecutor()
+        elseif getexecutorname then
+            u16 = getexecutorname()
+        end
+    end)
+
+    u13.Home = {
+        Executor = u71(u14, "Executor"):Right():Label({
+            Text = u21(u20.Blue, u16 .. (u27 ~= "" and (" " .. u27) or "")),
+        }),
+        Device = u71(u14, "Device"):Right():Label({
+            Text = u21(u20.Mint, u46()),
+        }),
+        Resolution = u71(u14, "Resolution"):Right():Label({
+            Text = u21(u20.Cyan, "Detecting..."),
+        }),
+        FPS = u71(u14, "FPS"):Right():Label({
+            Text = u21(u20.Grey, "—"),
+        }),
+        Ping = u71(u14, "Ping"):Right():Label({
+            Text = u21(u20.Grey, "—"),
+        }),
+        Memory = u71(u14, "Memory"):Right():Label({
+            Text = u21(u20.Grey, "—"),
+        }),
+    }
+
+    local u28 = u83:PageSection({ Title = "Game" }):Form()
+    local u29 = u28:Row()
+
+    u13.GameIcon = u29:Left():ImageSurface({
+        Image = u63.Symbols.docPlaintext,
+    })
+
+    u72(u13.GameIcon)
+
+    u13.GameName = u29:Right():TitleStack({
+        Title = "Loading game info...",
+        Subtitle = u21(u20.Blue, "Universal Utility"),
+    })
+
+    u13.Home.PlaceId = u71(u28, "Place Id"):Right():Label({
+        Text = u21(u20.Indigo, tostring(game.PlaceId)),
+    })
+
+    u13.Home.UniverseId = u71(u28, "Universe Id"):Right():Label({
+        Text = u21(u20.Teal, tostring(game.GameId)),
+    })
+
+    u13.Home.Players = u71(u28, "Server Players"):Right():Label({
+        Text = u21(u20.Lime, #u1:GetPlayers() .. " / " .. u1.MaxPlayers),
+    })
+
+    u13.Home.PlaceVersion = u71(u28, "Place Version"):Right():Label({
+        Text = u21(u20.Orange, tostring(game.PlaceVersion)),
+    })
+
+    u13.Home.Region = u71(u28, "Server Region"):Right():Label({
+        Text = u21(u20.Grey, "Server Region: ") .. u21(u20.Mint, "Detecting..."),
+    })
+
+    u13.Home.JobId = u71(u28, "Job Id"):Right():Label({
+        Text = u21(u20.Grey, game.JobId ~= "" and game.JobId or "N/A"),
+        TextTruncate = Enum.TextTruncate.AtEnd,
+    })
+
+    task.spawn(function()
         pcall(function()
-                if identifyexecutor then
-                        ua4, ua5 = identifyexecutor()
-                elseif getexecutorname then
-                        ua4 = getexecutorname()
+            local u30 = u7:GetProductInfo(game.PlaceId)
+
+            _G.UU.UI.GameName.Title = u30.Name
+
+            if u30.IconImageAssetId and u30.IconImageAssetId ~= 0 then
+                _G.UU.UI.GameIcon.Image = "rbxthumb://type=Asset&id="
+                    .. u30.IconImageAssetId
+                    .. "&w=150&h=150"
+            end
+        end)
+    end)
+
+    u49(u13.Home.Region)
+end
+
+do
+    local u13 = _G.UU.UI
+    local u14 = u84:PageSection({ Title = "Automation" }):Form()
+
+    u13.AntiAFK = {}
+
+    local u15 = u71(u14, "Auto Jump", "Simulates jumping to keep the session alive")
+
+    u15:Right():Toggle({
+        Value = u19.JumpEnabled,
+        ValueChanged = function(u30, u31)
+            if not u75 then
+                return
+            end
+
+            u19.JumpEnabled = u31
+
+            if u31 then
+                task.defer(u55)
+            else
+                u52("Jump")
+            end
+
+            u50("Auto Jump → " .. (u31 and "Enabled" or "Disabled"))
+            u38()
+        end,
+    })
+
+    local u16 = u71(u14, "Auto Click", "Simulates mouse clicks at the chosen position · F4 toggles")
+
+    u13.AntiAFK.ClickToggle = u16:Right():Toggle({
+        Value = u19.ClickEnabled,
+        ValueChanged = function(u30, u31)
+            if u13.SyncClick or not u75 then
+                return
+            end
+
+            u57(u31, true)
+        end,
+    })
+
+    local u27 = u71(u14, "Mouse Position", "Track the live cursor or lock a saved position")
+
+    u13.AntiAFK.MouseToggle = u27:Right():Toggle({
+        Value = u19.MousePosEnabled,
+        ValueChanged = function(u30, u31)
+            if u13.SyncMouse or not u75 then
+                return
+            end
+
+            u54(u31, true)
+        end,
+    })
+
+    u13.AntiAFK.MouseState = u71(u14, "Mouse State", "F5 toggles between tracking and locked"):Right():Label({
+        Text = u22(u19.MousePosEnabled, u19.MousePosSaved.X, u19.MousePosSaved.Y),
+    })
+
+    local u28 = u84:PageSection({
+        Title = "Cooldowns",
+        Subtitle = "Exponential scale from 0.01 seconds to 10 minutes",
+    }):Form()
+
+    u13.AntiAFK.JumpValue = u71(u28, "Jump Delay"):Right():Label({
+        Text = u21(u20.Green, u41(u19.JumpDelay)),
+    })
+
+    local u29 = u71(u28, "Jump Cooldown")
+
+    u74(u29, {
+        Minimum = 0,
+        Maximum = 1,
+        Value = u43(u19.JumpDelay),
+        ValueChanged = function(u30, u31)
+            u19.JumpDelay = u42(u31)
+
+            if u13.AntiAFK.JumpValue then
+                u13.AntiAFK.JumpValue.Text = u21(u20.Green, u41(u19.JumpDelay))
+            end
+
+            u38()
+        end,
+    })
+
+    u13.AntiAFK.ClickValue = u71(u28, "Click Delay"):Right():Label({
+        Text = u21(u20.Orange, u41(u19.ClickDelay)),
+    })
+
+    local u30 = u71(u28, "Click Cooldown")
+
+    u74(u30, {
+        Minimum = 0,
+        Maximum = 1,
+        Value = u45(u19.ClickDelay),
+        ValueChanged = function(u30, u31)
+            u19.ClickDelay = u44(u31)
+
+            if u13.AntiAFK.ClickValue then
+                u13.AntiAFK.ClickValue.Text = u21(u20.Orange, u41(u19.ClickDelay))
+            end
+
+            u38()
+        end,
+    })
+end
+
+do
+    local u13 = _G.UU.UI
+    local u14 = u85:PageSection({ Title = "Input" }):Form()
+
+    u13.Spam = {}
+
+    u13.Spam.Interval = u71(u14, "Selected Interval"):Right():Label({
+        Text = u21(u20.Yellow, string.format("%.2fs", u19.SpamDelay)),
+    })
+
+    local u15 = u71(u14, "Spam Interval", "Delay between each simulated key press")
+
+    u74(u15, {
+        Minimum = 0.05,
+        Maximum = 5,
+        Value = u19.SpamDelay,
+        ValueChanged = function(u30, u31)
+            u19.SpamDelay = math.floor(u31 * 100 + 0.5) / 100
+
+            if u13.Spam.Interval then
+                u13.Spam.Interval.Text = u21(u20.Yellow, string.format("%.2fs", u19.SpamDelay))
+            end
+
+            u38()
+        end,
+    })
+
+    local u16 = u71(u14, "Target Key", "The key that gets pressed automatically")
+
+    u16:Right():KeybindField({
+        Value = Enum.KeyCode[u19.SpamKey] or Enum.KeyCode.Q,
+        ValueChanged = function(u30, u31)
+            if not u75 then
+                return
+            end
+
+            local u32 = u19.SpamKey
+            u19.SpamKey = u31.Name
+
+            if u19.AutoSpamEnabled then
+                local u33 = u31 == Enum.KeyCode.P
+                    or u31.Name == "F4"
+                    or u31.Name == "F5"
+                    or u31 == u19.Keybind
+
+                if u33 then
+                    u19.AutoSpamEnabled = false
+                    u52("Spam")
+
+                    u13.SyncSpam = true
+                    u13.Spam.Toggle.Value = false
+                    u13.SyncSpam = false
+
+                    u50("Key Spam → Key '" .. u31.Name .. "' is reserved")
+                    u51("Key Spam", "Key '" .. u31.Name .. "' is reserved")
+                    u38()
+                    return
                 end
-        end)
 
-        ua1.Home = {
-                Executor = u45(ua2, "Executor"):Right():Label({
-                        Text = u64(u63.Blue, ua4 .. (ua5 ~= "" and (" " .. ua5) or "")),
-                }),
-                Device = u45(ua2, "Device"):Right():Label({
-                        Text = u64(u63.Mint, u22()),
-                }),
-                Resolution = u45(ua2, "Resolution"):Right():Label({
-                        Text = u64(u63.Cyan, "Detecting..."),
-                }),
-                FPS = u45(ua2, "FPS"):Right():Label({
-                        Text = u64(u63.Grey, "—"),
-                }),
-                Ping = u45(ua2, "Ping"):Right():Label({
-                        Text = u64(u63.Grey, "—"),
-                }),
-                Memory = u45(ua2, "Memory"):Right():Label({
-                        Text = u64(u63.Grey, "—"),
-                }),
-        }
+                u58()
+            end
 
-        local ua6 = u56:PageSection({ Title = "Game" }):Form()
-        local ua7 = ua6:Row()
+            if u32 ~= u31.Name then
+                u50("Spam Key → " .. u31.Name)
+            end
 
-        ua1.GameIcon = ua7:Left():ImageSurface({
-                Image = u38.Symbols.docPlaintext,
-        })
+            u38()
+        end,
+    })
 
-        u70(ua1.GameIcon)
+    local u27 = u85:PageSection({ Title = "Control" }):Form()
+    local u28 = u71(u27, "Auto Spam", "Repeatedly presses the target key")
 
-        ua1.GameName = ua7:Right():TitleStack({
-                Title = "Loading game info...",
-                Subtitle = u64(u63.Blue, "Universal Utility"),
-        })
+    u13.Spam.Toggle = u28:Right():Toggle({
+        Value = u19.AutoSpamEnabled,
+        ValueChanged = function(u30, u31)
+            if u13.SyncSpam or not u75 then
+                return
+            end
 
-        ua1.Home.PlaceId = u45(ua6, "Place Id"):Right():Label({
-                Text = u64(u63.Indigo, tostring(game.PlaceId)),
-        })
+            u19.AutoSpamEnabled = u31
 
-        ua1.Home.UniverseId = u45(ua6, "Universe Id"):Right():Label({
-                Text = u64(u63.Teal, tostring(game.GameId)),
-        })
+            if u31 then
+                local u32 = Enum.KeyCode[u19.SpamKey]
+                local u33 = u32
+                    and (u32 == Enum.KeyCode.P or u32.Name == "F4" or u32.Name == "F5" or u32 == u19.Keybind)
 
-        ua1.Home.Players = u45(ua6, "Server Players"):Right():Label({
-                Text = u64(u63.Lime, #u1:GetPlayers() .. " / " .. u1.MaxPlayers),
-        })
+                if not u32 or u33 then
+                    u19.AutoSpamEnabled = false
 
-        ua1.Home.PlaceVersion = u45(ua6, "Place Version"):Right():Label({
-                Text = u64(u63.Orange, tostring(game.PlaceVersion)),
-        })
+                    u13.SyncSpam = true
+                    u30.Value = false
+                    u13.SyncSpam = false
 
-        ua1.Home.Region = u45(ua6, "Server Region"):Right():Label({
-                Text = u64(u63.Grey, "Server Region: ") .. u64(u63.Mint, "Detecting..."),
-        })
+                    u50(
+                        "Key Spam → "
+                            .. (
+                                not u32 and "Invalid key '" .. u19.SpamKey .. "'"
+                                or "Key '" .. u32.Name .. "' is reserved"
+                            )
+                    )
+                    u51("Key Spam", not u32 and "Invalid key" or "Key reserved")
+                    return
+                end
 
-        ua1.Home.JobId = u45(ua6, "Job Id"):Right():Label({
-                Text = u64(u63.Grey, game.JobId ~= "" and game.JobId or "N/A"),
-                TextTruncate = Enum.TextTruncate.AtEnd,
-        })
+                u58()
+                u50("Key Spam → Enabled (" .. u32.Name .. ")")
+            else
+                u52("Spam")
+                u50("Key Spam → Disabled")
+            end
 
-        task.spawn(function()
-                pcall(function()
-                        local ua8 = u7:GetProductInfo(game.PlaceId)
-
-                        _G.UU.UI.GameName.Title = ua8.Name
-
-                        if ua8.IconImageAssetId and ua8.IconImageAssetId ~= 0 then
-                                _G.UU.UI.GameIcon.Image = "rbxthumb://type=Asset&id=" .. ua8.IconImageAssetId .. "&w=150&h=150"
-                        end
-                end)
-        end)
-
-        u25(ua1.Home.Region)
+            u38()
+        end,
+    })
 end
 
 do
-        local ua1 = _G.UU.UI
-        local ua2 = u57:PageSection({ Title = "Automation" }):Form()
+    local u13 = _G.UU.UI
+    local u14 = u86:PageSection({ Title = "Watcher" }):Form()
 
-        ua1.AntiAFK = {}
+    u13.Rejoin = {}
 
-        local ua3 = u45(ua2, "Auto Jump", "Simulates jumping to keep the session alive")
+    local u15 = u71(u14, "Auto Rejoin", "Reconnects automatically when disconnected")
 
-        ua3:Right():Toggle({
-                Value = u12.JumpEnabled,
-                ValueChanged = function(ua8, ua9)
-                        if not u48 then
-                                return
-                        end
+    u13.Rejoin.Toggle = u15:Right():Toggle({
+        Value = u19.AutoRejoinEnabled,
+        ValueChanged = function(u30, u31)
+            if not u75 then
+                return
+            end
 
-                        u12.JumpEnabled = ua9
+            u19.AutoRejoinEnabled = u31
 
-                        if ua9 then
-                                task.defer(u31)
-                        else
-                                u28("Jump")
-                        end
+            if u31 then
+                u59()
+                u50("Auto Rejoin → Enabled")
+            else
+                u52("Rejoin")
+                u52("RejoinWait")
+                if _G.UU.RejoinConnection then
+                    _G.UU.RejoinConnection:Disconnect()
+                    _G.UU.RejoinConnection = nil
+                end
+                u50("Auto Rejoin → Disabled")
+            end
 
-                        u26("Auto Jump → " .. (ua9 and "Enabled" or "Disabled"))
-                        u16()
-                end,
-        })
-
-        local ua4 = u45(ua2, "Auto Click", "Simulates mouse clicks at the chosen position · F4 toggles")
-
-        ua1.AntiAFK.ClickToggle = ua4:Right():Toggle({
-                Value = u12.ClickEnabled,
-                ValueChanged = function(ua8, ua9)
-                        if ua1.SyncClick or not u48 then
-                                return
-                        end
-
-                        u74(ua9, true)
-                end,
-        })
-
-        local ua5 = u45(ua2, "Mouse Position", "Track the live cursor or lock a saved position")
-
-        ua1.AntiAFK.MouseToggle = ua5:Right():Toggle({
-                Value = u12.MousePosEnabled,
-                ValueChanged = function(ua8, ua9)
-                        if ua1.SyncMouse or not u48 then
-                                return
-                        end
-
-                        u30(ua9, true)
-                end,
-        })
-
-        ua1.AntiAFK.MouseState = u45(ua2, "Mouse State", "F5 toggles between tracking and locked"):Right():Label({
-                Text = u65(u12.MousePosEnabled, u12.MousePosSaved.X, u12.MousePosSaved.Y),
-        })
-
-        local ua6 = u57:PageSection({ Title = "Cooldowns", Subtitle = "Exponential scale from 0.01 seconds to 10 minutes" }):Form()
-
-        ua1.AntiAFK.JumpValue = u45(ua6, "Jump Delay"):Right():Label({
-                Text = u64(u63.Green, u19(u12.JumpDelay)),
-        })
-
-        local ua7 = u45(ua6, "Jump Cooldown")
-
-        u47(ua7, {
-                Minimum = 0,
-                Maximum = 1,
-                Value = u21(u12.JumpDelay),
-                ValueChanged = function(ua8, ua9)
-                        u12.JumpDelay = u20(ua9)
-
-                        if ua1.AntiAFK.JumpValue then
-                                ua1.AntiAFK.JumpValue.Text = u64(u63.Green, u19(u12.JumpDelay))
-                        end
-
-                        u16()
-                end,
-        })
-
-        ua1.AntiAFK.ClickValue = u45(ua6, "Click Delay"):Right():Label({
-                Text = u64(u63.Orange, u19(u12.ClickDelay)),
-        })
-
-        local ua8 = u45(ua6, "Click Cooldown")
-
-        u47(ua8, {
-                Minimum = 0,
-                Maximum = 1,
-                Value = u76(u12.ClickDelay),
-                ValueChanged = function(ua8, ua9)
-                        u12.ClickDelay = u75(ua9)
-
-                        if ua1.AntiAFK.ClickValue then
-                                ua1.AntiAFK.ClickValue.Text = u64(u63.Orange, u19(u12.ClickDelay))
-                        end
-
-                        u16()
-                end,
-        })
+            u38()
+        end,
+    })
 end
 
-do
-        local ua1 = _G.UU.UI
-        local ua2 = u58:PageSection({ Title = "Input" }):Form()
-
-        ua1.Spam = {}
-
-        ua1.Spam.Interval = u45(ua2, "Selected Interval"):Right():Label({
-                Text = u64(u63.Yellow, string.format("%.2fs", u12.SpamDelay)),
-        })
-
-        local ua3 = u45(ua2, "Spam Interval", "Delay between each simulated key press")
-
-        u47(ua3, {
-                Minimum = 0.05,
-                Maximum = 5,
-                Value = u12.SpamDelay,
-                ValueChanged = function(ua8, ua9)
-                        u12.SpamDelay = math.floor(ua9 * 100 + 0.5) / 100
-
-                        if ua1.Spam.Interval then
-                                ua1.Spam.Interval.Text = u64(u63.Yellow, string.format("%.2fs", u12.SpamDelay))
-                        end
-
-                        u16()
-                end,
-        })
-
-        local ua4 = u45(ua2, "Target Key", "The key that gets pressed automatically")
-
-        ua4:Right():KeybindField({
-                Value = Enum.KeyCode[u12.SpamKey] or Enum.KeyCode.Q,
-                ValueChanged = function(ua8, ua9)
-                        if not u48 then
-                                return
-                        end
-
-                        local ua10 = u12.SpamKey
-                        u12.SpamKey = ua9.Name
-
-                        if u12.AutoSpamEnabled then
-                                local ua11 = ua9 == Enum.KeyCode.P or ua9.Name == "F4" or ua9.Name == "F5" or ua9 == u12.Keybind
-
-                                if ua11 then
-                                        u12.AutoSpamEnabled = false
-                                        u28("Spam")
-
-                                        ua1.SyncSpam = true
-                                        ua1.Spam.Toggle.Value = false
-                                        ua1.SyncSpam = false
-
-                                        u26("Key Spam → Key '" .. ua9.Name .. "' is reserved")
-                                        u27("Key Spam", "Key '" .. ua9.Name .. "' is reserved")
-                                        u16()
-                                        return
-                                end
-
-                                u33()
-                        end
-
-                        if ua10 ~= ua9.Name then
-                                u26("Spam Key → " .. ua9.Name)
-                        end
-
-                        u16()
-                end,
-        })
-
-        local ua5 = u58:PageSection({ Title = "Control" }):Form()
-        local ua6 = u45(ua5, "Auto Spam", "Repeatedly presses the target key")
-
-        ua1.Spam.Toggle = ua6:Right():Toggle({
-                Value = u12.AutoSpamEnabled,
-                ValueChanged = function(ua8, ua9)
-                        if ua1.SyncSpam or not u48 then
-                                return
-                        end
-
-                        u12.AutoSpamEnabled = ua9
-
-                        if ua9 then
-                                local ua10 = Enum.KeyCode[u12.SpamKey]
-                                local ua11 = ua10 and (ua10 == Enum.KeyCode.P or ua10.Name == "F4" or ua10.Name == "F5" or ua10 == u12.Keybind)
-
-                                if not ua10 or ua11 then
-                                        u12.AutoSpamEnabled = false
-
-                                        ua1.SyncSpam = true
-                                        ua8.Value = false
-                                        ua1.SyncSpam = false
-
-                                        u26("Key Spam → " .. (not ua10 and "Invalid key '" .. u12.SpamKey .. "'" or "Key '" .. ua10.Name .. "' is reserved"))
-                                        u27("Key Spam", not ua10 and "Invalid key" or "Key reserved")
-                                        return
-                                end
-
-                                u33()
-                                u26("Key Spam → Enabled (" .. ua10.Name .. ")")
-                        else
-                                u28("Spam")
-                                u26("Key Spam → Disabled")
-                        end
-
-                        u16()
-                end,
-        })
-end
-
-do
-        local ua1 = _G.UU.UI
-        local ua2 = u59:PageSection({ Title = "Watcher" }):Form()
-
-        ua1.Rejoin = {}
-
-        local ua3 = u45(ua2, "Auto Rejoin", "Reconnects automatically when disconnected")
-
-        ua1.Rejoin.Toggle = ua3:Right():Toggle({
-                Value = u12.AutoRejoinEnabled,
-                ValueChanged = function(ua8, ua9)
-                        if not u48 then
-                                return
-                        end
-
-                        u12.AutoRejoinEnabled = ua9
-
-                        if ua9 then
-                                u34()
-                                u26("Auto Rejoin → Enabled")
-                        else
-                                u28("Rejoin")
-                                u28("RejoinWait")
-                                u26("Auto Rejoin → Disabled")
-                        end
-
-                        u16()
-                end,
-        })
-end
-
-local u71 = u38.New({
-        WindowPill = false,
-        Theme = u38.Themes[u12.ThemeMode] or u38.Themes.Dark,
-        Accent = u38.Accents[u12.AccentName] or u38.Accents.Blue,
+local u90 = u63.New({
+    WindowPill = false,
+    Theme = u63.Themes[u19.ThemeMode] or u63.Themes.Dark,
+    Accent = u63.Accents[u19.AccentName] or u63.Accents.Blue,
 })
 
-_G.UU.EditorApp = u71
+_G.UU.EditorApp = u90
 
 do
-        local ua1 = _G.UU.UI
-        local ua2 = u60:PageSection({ Title = "Editor" }):Form()
+    local u13 = _G.UU.UI
+    local u14 = u87:PageSection({ Title = "Editor" }):Form()
 
-        ua1.Loader = { Output = {}, History = {} }
+    u13.Loader = { Output = {}, History = {} }
 
-        ua1.Loader.AutoLoad = u45(ua2, "Auto Load", "Executes the saved code on every injection"):Right():Toggle({
-                Value = u12.AutoLoadEnabled,
-                ValueChanged = function(ua8, ua9)
-                        if not u48 then
-                                return
-                        end
+    u13.Loader.AutoLoad = u71(u14, "Auto Load", "Executes the saved code on every injection"):Right():Toggle({
+        Value = u19.AutoLoadEnabled,
+        ValueChanged = function(u30, u31)
+            if not u75 then
+                return
+            end
 
-                        u12.AutoLoadEnabled = ua9
+            u19.AutoLoadEnabled = u31
 
-                        if ua9 then
-                                u26(u12.SavedCode ~= "" and "Auto Load → Enabled (code ready)" or "Auto Load → Enabled (no code saved)")
-                        else
-                                u26("Auto Load → Disabled")
-                        end
+            if u31 then
+                u50(
+                    u19.SavedCode ~= "" and "Auto Load → Enabled (code ready)"
+                        or "Auto Load → Enabled (no code saved)"
+                )
+            else
+                u50("Auto Load → Disabled")
+            end
 
-                        u16()
-                end,
-        })
+            u38()
+        end,
+    })
 
-        local ua72 = u72(620, 460)
-        local ua73 = UDim2.fromScale(0.5, 0.5)
+    local u91 = u64(620, 460)
+    local u92 = UDim2.fromScale(0.5, 0.5)
 
+    pcall(function()
+        local u93 = u66.Structures.Body.__instance
+
+        if not (u93 and u93.Parent) then
+            return
+        end
+
+        local u94 = u93.Parent.AbsoluteSize
+        local u95 = u93.AbsoluteSize
+
+        if u95.X < 50 or u95.Y < 50 then
+            u95 = Vector2.new(u93.Size.X.Offset, u93.Size.Y.Offset)
+        end
+
+        if u95.X < 50 or u95.Y < 50 then
+            u95 = Vector2.new(math.min(850, u94.X - 24), math.min(530, u94.Y - 64))
+        end
+
+        local u96 = u93.Position
+        local u97 = u66.Minimized and Vector2.new(u94.X / 2, u94.Y / 2)
+            or Vector2.new(u96.X.Offset + u96.X.Scale * u94.X, u96.Y.Offset + u96.Y.Scale * u94.Y)
+        local u98 = Vector2.new(u91.X.Offset, u91.Y.Offset)
+        local u99 = {
+            Vector2.new(u97.X + u95.X / 2 + u98.X / 2 + 12, u97.Y),
+            Vector2.new(u97.X - u95.X / 2 - u98.X / 2 - 12, u97.Y),
+            Vector2.new(u97.X, u97.Y + u95.Y / 2 + u98.Y / 2 + 12),
+            Vector2.new(u97.X, u97.Y - u95.Y / 2 - u98.Y / 2 - 12),
+        }
+
+        for u100, u101 in ipairs(u99) do
+            if
+                u101.X - u98.X / 2 >= 6
+                and u101.X + u98.X / 2 <= u94.X - 6
+                and u101.Y - u98.Y / 2 >= 6
+                and u101.Y + u98.Y / 2 <= u94.Y - 6
+            then
+                u92 = UDim2.fromOffset(math.floor(u101.X), math.floor(u101.Y))
+
+                return
+            end
+        end
+
+        u92 = UDim2.fromOffset(
+            math.floor(math.clamp(u97.X + 40, u98.X / 2 + 6, math.max(u98.X / 2 + 7, u94.X - u98.X / 2 - 6))),
+            math.floor(math.clamp(u97.Y + 40, u98.Y / 2 + 6, math.max(u98.Y / 2 + 7, u94.Y - u98.Y / 2 - 6)))
+        )
+    end)
+
+    local u15 = u90:Window({
+        Title = "Code Editor",
+        Subtitle = u10,
+        Size = u91,
+        Position = u92,
+        Searching = false,
+        CanExit = false,
+        CanMinimize = true,
+        CanZoom = true,
+        Minimized = true,
+    })
+
+    task.delay(0.3, function()
         pcall(function()
-                local ua80 = u40.Structures.Body.__instance
+            if u15.Minimized then
+                u15.Position = u92
+                u15.Minimized = true
+            end
+        end)
+    end)
 
-                if not (ua80 and ua80.Parent) then
-                        return
+    local u27 = u15:Section({ Title = "Code" })
+    local u28 = u73(u27, "Editor", u63.Symbols.docPlaintext)
+
+    u28.Selected = true
+
+    local u29 = u28.Structures.Page.__instance or u28.Structures.Page
+    local u30 = game:GetService("TextService")
+    local u31 = Font.fromEnum(Enum.Font.Code)
+    local u32 = u30:GetTextSize("Ag", 14, Enum.Font.Code, Vector2.new(10000, 10000)).Y
+    local u33 = Instance.new("Frame")
+
+    u33.Name = "EditorPane"
+    u33.Size = UDim2.new(1, 0, 0, 240)
+    u33.BackgroundColor3 = Color3.fromRGB(26, 28, 37)
+    u33.BorderSizePixel = 0
+    u33.ClipsDescendants = true
+    u33.Parent = u29
+
+    local u102 = u29:FindFirstChild("Margins") or u29:FindFirstChildOfClass("UIPadding")
+
+    if u102 then
+        u102.PaddingTop = UDim.new()
+        u102.PaddingBottom = UDim.new()
+        u102.PaddingLeft = UDim.new()
+        u102.PaddingRight = UDim.new()
+    end
+
+    local u34 = Instance.new("ScrollingFrame")
+
+    u34.Name = "Scroller"
+    u34.Size = UDim2.new(1, 0, 1, -26)
+    u34.BackgroundTransparency = 1
+    u34.BorderSizePixel = 0
+    u34.ScrollBarThickness = 5
+    u34.ScrollBarImageColor3 = Color3.fromRGB(120, 128, 150)
+    u34.ScrollingDirection = Enum.ScrollingDirection.XY
+    u34.CanvasSize = UDim2.new()
+    u34.Parent = u33
+
+    local u103 = Instance.new("TextLabel")
+
+    u103.Name = "Numbers"
+    u103.Size = UDim2.new(0, 40, 0, 240)
+    u103.BackgroundColor3 = Color3.fromRGB(21, 23, 30)
+    u103.BorderSizePixel = 0
+    u103.FontFace = u31
+    u103.TextSize = 14
+    u103.TextColor3 = Color3.fromRGB(90, 97, 115)
+    u103.TextXAlignment = Enum.TextXAlignment.Right
+    u103.TextYAlignment = Enum.TextYAlignment.Top
+    u103.Text = "1"
+    u103.Parent = u34
+
+    Instance.new("UIPadding", u103).PaddingRight = UDim.new(0, 6)
+
+    local u104 = Instance.new("Frame")
+
+    u104.Name = "TextZone"
+    u104.Position = UDim2.new(0, 40, 0, 0)
+    u104.Size = UDim2.new(0, 480, 0, 240)
+    u104.BackgroundTransparency = 1
+    u104.Parent = u34
+
+    local u105 = Instance.new("TextLabel")
+
+    u105.Name = "Highlight"
+    u105.Size = UDim2.new(1, 0, 1, 0)
+    u105.BackgroundTransparency = 1
+    u105.FontFace = u31
+    u105.TextSize = 14
+    u105.TextColor3 = Color3.fromRGB(233, 234, 238)
+    u105.TextXAlignment = Enum.TextXAlignment.Left
+    u105.TextYAlignment = Enum.TextYAlignment.Top
+    u105.TextWrapped = false
+    u105.RichText = true
+    u105.Text = ""
+    u105.Parent = u104
+
+    local u106 = Instance.new("TextBox")
+
+    u106.Name = "Input"
+    u106.Size = UDim2.new(1, 0, 1, 0)
+    u106.BackgroundTransparency = 1
+    u106.BorderSizePixel = 0
+    u106.FontFace = u31
+    u106.TextSize = 14
+    u106.TextColor3 = Color3.new(0, 0, 0)
+    u106.TextTransparency = 1
+    u106.TextXAlignment = Enum.TextXAlignment.Left
+    u106.TextYAlignment = Enum.TextYAlignment.Top
+    u106.TextWrapped = false
+    u106.MultiLine = true
+    u106.ClearTextOnFocus = false
+    u106.Text = ""
+    u106.ZIndex = 2
+    u106.Parent = u104
+
+    local u107 = Instance.new("Frame")
+
+    u107.Name = "Footer"
+    u107.Position = UDim2.new(0, 0, 1, -26)
+    u107.Size = UDim2.new(1, 0, 0, 26)
+    u107.BackgroundColor3 = Color3.fromRGB(21, 23, 30)
+    u107.BorderSizePixel = 0
+    u107.Parent = u33
+
+    local u108 = Instance.new("TextLabel")
+
+    u108.Name = "Hint"
+    u108.Position = UDim2.new(0, 10, 0, 0)
+    u108.Size = UDim2.new(0.62, 0, 1, 0)
+    u108.BackgroundTransparency = 1
+    u108.FontFace = u31
+    u108.TextSize = 12
+    u108.TextColor3 = Color3.fromRGB(108, 116, 136)
+    u108.TextXAlignment = Enum.TextXAlignment.Left
+    u108.Text = "Lua · made for short loadstrings"
+    u108.Parent = u107
+
+    local u109 = Instance.new("TextLabel")
+
+    u109.Name = "Count"
+    u109.Position = UDim2.new(0.62, 0, 0, 0)
+    u109.Size = UDim2.new(0.38, -54, 1, 0)
+    u109.BackgroundTransparency = 1
+    u109.FontFace = u31
+    u109.TextSize = 12
+    u109.TextColor3 = Color3.fromRGB(139, 147, 163)
+    u109.TextXAlignment = Enum.TextXAlignment.Right
+    u109.Text = "1 / 50 lines"
+    u109.Parent = u107
+
+    local u110 = Instance.new("TextButton")
+
+    u110.Name = "Run"
+    u110.AnchorPoint = Vector2.new(1, 0.5)
+    u110.Position = UDim2.new(1, -8, 0.5, 0)
+    u110.Size = UDim2.fromOffset(40, 18)
+    u110.BackgroundColor3 = Color3.fromRGB(29, 42, 33)
+    u110.BorderSizePixel = 0
+    u110.FontFace = u31
+    u110.TextSize = 12
+    u110.TextColor3 = Color3.fromRGB(50, 215, 75)
+    u110.Text = "Run"
+
+    Instance.new("UICorner", u110).CornerRadius = UDim.new(0, 5)
+
+    u110.Parent = u107
+
+    local u111 = false
+    local u112 = false
+    local u113 = false
+    local u114 = u106.Text
+
+    local function u115(u116)
+        local u117 = select(2, u116:gsub("\n", "")) + 1
+
+        if u117 > 50 then
+            local u118, u119 = 0, 0
+
+            for u120 = 1, #u116 do
+                if u116:sub(u120, u120) == "\n" then
+                    u118 = u118 + 1
+
+                    if u118 == 50 then
+                        u119 = u120 - 1
+
+                        break
+                    end
+                end
+            end
+
+            u116 = u116:sub(1, u119)
+
+            if not u112 then
+                u112 = true
+
+                if u111 then
+                    u50("Editor → 50 line limit reached")
+                end
+            end
+
+            u106.Text = u116
+
+            return
+        end
+
+        if u117 < 50 then
+            u112 = false
+        end
+
+        local u121 = {}
+
+        for u122 = 1, u117 do
+            u121[#u121 + 1] = u122
+        end
+
+        u103.Text = table.concat(u121, "\n")
+
+        if u113 then
+            u105.Text = ""
+        else
+            local u123, u124 = pcall(u26, u116)
+
+            if u123 then
+                u105.Text = u124
+            else
+                u105.Text = u24 and u24(u116) or ""
+            end
+        end
+
+        u109.TextColor3 = u112 and Color3.fromRGB(255, 69, 58)
+            or u117 >= 45 and Color3.fromRGB(255, 159, 10)
+            or Color3.fromRGB(139, 147, 163)
+        u109.Text = u117 .. " / 50 lines"
+
+        local u125 = 0
+
+        for u126 in (u116 .. "\n"):gmatch("(.-)\n") do
+            if u126 ~= "" then
+                u125 = math.max(u125, u30:GetTextSize(u126, 14, Enum.Font.Code, Vector2.new(10000, 10000)).X)
+            end
+        end
+
+        local u127 = u34.AbsoluteWindowSize
+        local u128 = math.max(u117 * u32 + 12, 240, math.floor(u127.Y))
+        local u129 = math.max(u125 + 8, 480, math.floor(u127.X) - 40)
+
+        u103.Size = UDim2.new(0, 40, 0, u128)
+        u104.Size = UDim2.new(0, u129, 0, u128)
+        u34.CanvasSize = UDim2.fromOffset(u129 + 40, u128)
+
+        if u111 then
+            u19.SavedCode = u116
+
+            if u82 then
+                pcall(task.cancel, u82)
+            end
+
+            u82 = task.delay(0.75, u38)
+        end
+    end
+
+    u106:GetPropertyChangedSignal("Text"):Connect(function()
+        u114 = u106.Text
+
+        u115(u106.Text)
+    end)
+
+    u106.FocusLost:Connect(function()
+        if not u111 or u106.Text == u19.SavedCode then
+            return
+        end
+
+        u19.SavedCode = u106.Text
+        u38()
+    end)
+
+    local function u130()
+        local u131 = u29.AbsoluteWindowSize
+
+        u33.Size = UDim2.new(1, 0, 0, math.max(240, math.floor(u131.Y)))
+
+        task.defer(u115, u106.Text)
+    end
+
+    u29:GetPropertyChangedSignal("AbsoluteWindowSize"):Connect(u130)
+
+    task.defer(u130)
+
+    u110.MouseButton1Click:Connect(function()
+        local u132, u133 = u60(u19.SavedCode)
+
+        if u132 then
+            u13.Loader.PushOutput("Script executed successfully.", u20.Green)
+            u50("Script executed ✓")
+        else
+            if u133 then
+                u13.Loader.PushOutput(tostring(u133), u20.Red)
+            end
+
+            u50("Script error: " .. tostring(u133):sub(1, 80))
+            u51("Execution failed", tostring(u133):sub(1, 120))
+        end
+    end)
+
+    u114 = u19.SavedCode or ""
+    u106.Text = u114
+
+    pcall(u115, u106.Text)
+
+    u111 = true
+
+    local u124 = u71(u14, "Open Editor", "Popup window with Studio-style colors · 50 lines max")
+
+    u124:Right():Button({
+        Label = "Open",
+        State = "Primary",
+        Pushed = function()
+            u15.Minimized = false
+        end,
+    })
+
+    local u134 = u66.Minimized
+    local u135 = not u15.Minimized
+
+    u53("Editor", function()
+        while u18() and not _G.UU.Loaded do
+            task.wait(0.1)
+        end
+
+        while u18() and _G.UU.Loaded do
+            pcall(function()
+                local u136 = u66.Minimized
+
+                if u136 ~= u134 then
+                    u134 = u136
+
+                    if u136 then
+                        u135 = not u15.Minimized
+                        u15.Minimized = true
+                    elseif u135 then
+                        u15.Minimized = false
+                    end
                 end
 
-                local ua81 = ua80.Parent.AbsoluteSize
-                local ua83 = ua80.AbsoluteSize
+                if u106.Text ~= u114 then
+                    u114 = u106.Text
 
-                if ua83.X < 50 or ua83.Y < 50 then
-                        ua83 = Vector2.new(ua80.Size.X.Offset, ua80.Size.Y.Offset)
+                    u115(u114)
+                end
+            end)
+
+            task.wait(0.15)
+        end
+    end)
+
+    local u127 = u71(u14, "Execute", "Runs the current code immediately")
+
+    u127:Right():Button({
+        Label = "Execute",
+        State = "Primary",
+        Pushed = function()
+            local u137, u138 = u60(u19.SavedCode)
+
+            if u137 then
+                u13.Loader.PushOutput("Script executed successfully.", u20.Green)
+                u50("Script executed ✓")
+            else
+                if u138 then
+                    u13.Loader.PushOutput(tostring(u138), u20.Red)
                 end
 
-                if ua83.X < 50 or ua83.Y < 50 then
-                        ua83 = Vector2.new(math.min(850, ua81.X - 24), math.min(530, ua81.Y - 64))
+                u50("Script error: " .. tostring(u138):sub(1, 80))
+                u51("Execution failed", tostring(u138):sub(1, 120))
+            end
+        end,
+    })
+
+    local u139 = u71(u14, "Clear Editor", "Empties the code field and the saved config")
+
+    u139:Right():Button({
+        Label = "Clear",
+        State = "Destructive",
+        Pushed = function()
+            u106.Text = ""
+            u19.SavedCode = ""
+
+            u50("Script Loader → Editor cleared")
+            u38()
+        end,
+    })
+
+    local u140 = u87:Form()
+
+    u71(u140, "Output", "Shows the results of your last script run, newest first"):Right():Button({
+        Label = "Clear",
+        State = "Destructive",
+        Pushed = function()
+            u13.Loader.History = {}
+
+            for u141 = 1, 3 do
+                local u142 = u13.Loader.Output[u141]
+
+                if u142 then
+                    u142.Text = u21(u20.Grey, "—")
                 end
+            end
+        end,
+    })
 
-                local ua84 = ua80.Position
-                local ua85 = u40.Minimized and Vector2.new(ua81.X / 2, ua81.Y / 2) or Vector2.new(ua84.X.Offset + ua84.X.Scale * ua81.X, ua84.Y.Offset + ua84.Y.Scale * ua81.Y)
-                local ua86 = Vector2.new(ua72.X.Offset, ua72.Y.Offset)
-                local ua87 = {
-                        Vector2.new(ua85.X + ua83.X / 2 + ua86.X / 2 + 12, ua85.Y),
-                        Vector2.new(ua85.X - ua83.X / 2 - ua86.X / 2 - 12, ua85.Y),
-                        Vector2.new(ua85.X, ua85.Y + ua83.Y / 2 + ua86.Y / 2 + 12),
-                        Vector2.new(ua85.X, ua85.Y - ua83.Y / 2 - ua86.Y / 2 - 12),
-                }
+    for u143 = 1, 3 do
+        u13.Loader.Output[u143] = u140:Row():Left():Label({
+            Text = u21(u20.Grey, "—"),
+        })
+    end
 
-                for ua88, ua89 in ipairs(ua87) do
-                        if ua89.X - ua86.X / 2 >= 6 and ua89.X + ua86.X / 2 <= ua81.X - 6 and ua89.Y - ua86.Y / 2 >= 6 and ua89.Y + ua86.Y / 2 <= ua81.Y - 6 then
-                                ua73 = UDim2.fromOffset(math.floor(ua89.X), math.floor(ua89.Y))
+    u13.Loader.PushOutput = function(u141, u142)
+        local u144 = u13.Loader.History
 
-                                return
-                        end
-                end
+        table.insert(u144, 1, u21(u142 or u20.White, u24(u141)))
 
-                ua73 = UDim2.fromOffset(math.floor(math.clamp(ua85.X + 40, ua86.X / 2 + 6, math.max(ua86.X / 2 + 7, ua81.X - ua86.X / 2 - 6))), math.floor(math.clamp(ua85.Y + 40, ua86.Y / 2 + 6, math.max(ua86.Y / 2 + 7, ua81.Y - ua86.Y / 2 - 6))))
+        if #u144 > 3 then
+            table.remove(u144, 4)
+        end
+
+        for u145 = 1, 3 do
+            local u146 = u13.Loader.Output[u145]
+
+            if u146 then
+                u146.Text = u144[u145] or u21(u20.Grey, "—")
+            end
+        end
+    end
+
+    local u147 = Instance.new("Frame")
+
+    u147.Name = "Caret"
+    u147.Size = UDim2.fromOffset(2, math.max(u32 - 4, 10))
+    u147.BackgroundColor3 = Color3.fromRGB(240, 241, 245)
+    u147.BorderSizePixel = 0
+    u147.Visible = false
+    u147.ZIndex = 2
+    u147.Parent = u104
+
+    local u148 = nil
+
+    local function u149(u13)
+        if typeof(u13) == "Vector2" then
+            return u13
+        end
+
+        if type(u13) ~= "number" or u13 ~= u13 then
+            return nil
+        end
+
+        local u150 = string.split(u106.Text, "\n")
+        local u151, u152
+
+        if u13 < 0 then
+            u151 = #u150
+            u152 = #(u150[u151] or "") + 1
+        else
+            local u153 = u106.Text:sub(1, math.clamp(math.floor(u13), 0, #u106.Text))
+            local u154 = u153:match(".*\n")
+
+            u151 = select(2, u153:gsub("\n", "")) + 1
+            u152 = #u153 - (u154 and #u154 or 0) + 1
+        end
+
+        u151 = math.clamp(u151, 1, #u150)
+
+        return { X = math.clamp(u152, 1, #(u150[u151] or "") + 1), Y = u151 }
+    end
+
+    local function u155()
+        if u113 then
+            return
+        end
+
+        u113 = true
+        u105.Visible = false
+        u147.Visible = false
+        u106.TextTransparency = 0
+        u106.TextColor3 = Color3.fromRGB(233, 234, 238)
+    end
+
+    local function u156()
+        if u113 then
+            u147.Visible = false
+
+            return false
+        end
+
+        local u157 = string.split(u106.Text, "\n")
+        local u158 = u149(u106.CursorPosition)
+
+        if not u158 then
+            u147.Visible = false
+
+            if u106:IsFocused() then
+                u155()
+            end
+
+            return false
+        end
+
+        local u159 = math.clamp(u158.Y, 1, #u157)
+        local u160 = u157[u159] or ""
+        local u161 = u30:GetTextSize(
+            u160:sub(1, math.max(math.min(u158.X - 1, #u160), 0)),
+            14,
+            Enum.Font.Code,
+            Vector2.new(10000, 10000)
+        ).X
+
+        u147.Position = UDim2.fromOffset(u161, (u159 - 1) * u32 + 2)
+
+        local u162 = u34.AbsoluteWindowSize
+
+        if u106:IsFocused() and u162.X > 1 then
+            local u163 = u34.CanvasPosition
+
+            if u161 < u163.X or u161 > u163.X + u162.X - 60 then
+                u34.CanvasPosition = Vector2.new(math.max(u161 - u162.X + 120, 0), u163.Y)
+            end
+
+            local u164 = (u159 - 1) * u32
+
+            if u164 < u163.Y or u164 > u163.Y + u162.Y - u32 * 2 - 30 then
+                u34.CanvasPosition =
+                    Vector2.new(u34.CanvasPosition.X, math.max(u164 - u162.Y + u32 * 2 + 30, 0))
+            end
+        end
+
+        local u165 = u106:IsFocused()
+
+        u147.Visible = u165
+
+        return u165
+    end
+
+    local function u166()
+        for u157, u158 in pairs(u104:GetChildren()) do
+            if u158.Name == "SelRect" then
+                u158:Destroy()
+            end
+        end
+
+        if u113 then
+            return
+        end
+
+        local u157 = u106.SelectionStart
+
+        if typeof(u157) == "number" and u157 < 0 then
+            return
+        end
+
+        u157 = u149(u157)
+        local u158 = u149(u106.CursorPosition)
+
+        if not u106:IsFocused() or not u157 or not u158 then
+            return
+        end
+
+        local u159 = string.split(u106.Text, "\n")
+        local u160, u161 = math.min(u157.Y, u158.Y), math.max(u157.Y, u158.Y)
+
+        if u160 < 1 or u160 > #u159 + 1 or (u160 == u161 and u157.X == u158.X) then
+            return
+        end
+
+        for u162 = math.max(u160, 1), math.min(u161, #u159) do
+            local u163, u164 = 0, 0
+            local u165 = u159[u162] or ""
+
+            if u162 == u160 and u162 == u161 then
+                u163 = math.min(u157.X, u158.X) - 1
+                u164 = math.max(u157.X, u158.X) - 1
+            elseif u162 == u160 then
+                u163 = (u157.Y <= u158.Y and u157.X or u158.X) - 1
+                u164 = #u165
+            elseif u162 == u161 then
+                u164 = (u157.Y <= u158.Y and u158.X or u157.X) - 1
+            else
+                u164 = #u165
+            end
+
+            local u167 = u30:GetTextSize(
+                u165:sub(1, math.max(math.min(u163, #u165), 0)),
+                14,
+                Enum.Font.Code,
+                Vector2.new(10000, 10000)
+            ).X
+            local u168 = u30:GetTextSize(
+                u165:sub(1, math.max(math.min(u164, #u165), 0)),
+                14,
+                Enum.Font.Code,
+                Vector2.new(10000, 10000)
+            ).X
+            local u169 = Instance.new("Frame")
+
+            u169.Name = "SelRect"
+            u169.BackgroundColor3 = Color3.fromRGB(58, 110, 180)
+            u169.BackgroundTransparency = 0.5
+            u169.BorderSizePixel = 0
+            u169.Position = UDim2.fromOffset(u167, (u162 - 1) * u32)
+            u169.Size = UDim2.fromOffset(math.max(u168 - u167, 5), u32)
+            u169.ZIndex = 1
+            u169.Parent = u104
+        end
+    end
+
+    u106.Focused:Connect(function()
+        task.defer(function()
+            if not u149(u106.CursorPosition) then
+                u155()
+            end
         end)
 
-        local ua3 = u71:Window({
-                Title = "Code Editor",
-                Subtitle = u10,
-                Size = ua72,
-                Position = ua73,
-                Searching = false,
-                CanExit = false,
-                CanMinimize = true,
-                CanZoom = true,
-                Minimized = true,
-        })
+        if u148 then
+            pcall(task.cancel, u148)
 
-        task.delay(0.3, function()
+            u148 = nil
+        end
+
+        if u156() then
+            u148 = task.spawn(function()
+                while u147.Parent and u106:IsFocused() do
+                    task.wait(0.45)
+
+                    if not (u147.Parent and u106:IsFocused()) then
+                        break
+                    end
+
+                    u147.Visible = not u147.Visible
+                end
+            end)
+            _G.UU.Threads.Caret = u148
+        end
+
+        u166()
+    end)
+
+    u106.FocusLost:Connect(function()
+        if u148 then
+            pcall(task.cancel, u148)
+
+            u148 = nil
+        end
+
+        u147.Visible = false
+        u166()
+    end)
+
+    u106:GetPropertyChangedSignal("CursorPosition"):Connect(function()
+        u156()
+        u166()
+    end)
+
+    u106:GetPropertyChangedSignal("SelectionStart"):Connect(function()
+        u166()
+    end)
+
+    u106:GetPropertyChangedSignal("Text"):Connect(function()
+        u156()
+        u166()
+    end)
+
+    u34:GetPropertyChangedSignal("AbsoluteWindowSize"):Connect(function()
+        local u170 = u34.AbsoluteWindowSize
+
+        if u104.Size.Y.Offset < math.floor(u170.Y) or u104.Size.X.Offset < math.floor(u170.X) - 40 then
+            u115(u106.Text)
+        end
+    end)
+end
+
+do
+    local u13 = _G.UU.UI
+    local u14 = u88:PageSection({ Title = "FPS Unlock" }):Form()
+
+    u13.Perf = {}
+
+    u13.Perf.Target = u71(u14, "Selected Limit"):Right():Label({
+        Text = u21(u20.Cyan, u19.TargetFPS .. " FPS"),
+    })
+
+    local u15 = u71(u14, "Target FPS", "Custom framerate limit from 15 to 360")
+
+    u74(u15, {
+        Minimum = 15,
+        Maximum = 360,
+        Value = u19.TargetFPS,
+        ValueChanged = function(u30, u31)
+            u19.TargetFPS = math.floor(u31 + 0.5)
+
+            if u13.Perf.Target then
+                u13.Perf.Target.Text = u21(u20.Cyan, u19.TargetFPS .. " FPS")
+            end
+
+            if u19.FPSUnlockEnabled then
+                u62()
+            end
+
+            u38()
+        end,
+    })
+
+    local u16 = u71(u14, "FPS Unlock", "Removes the default 60 FPS cap")
+
+    u13.Perf.Toggle = u16:Right():Toggle({
+        Value = u19.FPSUnlockEnabled,
+        ValueChanged = function(u30, u31)
+            if u13.SyncFps or not u75 then
+                return
+            end
+
+            if not u61 then
+                u13.SyncFps = true
+                u30.Value = false
+                u13.SyncFps = false
+
+                u50("FPS Unlock → Not supported by executor")
+                u51("FPS Unlock", "Not supported by this executor")
+                return
+            end
+
+            u19.FPSUnlockEnabled = u31
+            u62()
+            u50("FPS Unlock → " .. (u31 and ("Enabled (" .. u19.TargetFPS .. " FPS)") or "Disabled"))
+            u38()
+        end,
+    })
+
+    local u27 = u88:PageSection({ Title = "Framerate" }):Form()
+
+    u13.Perf.FpsCurrent = u71(u27, "Current"):Right():Label({
+        Text = u21(u20.Green, "60"),
+    })
+
+    u13.Perf.FpsAvg = u71(u27, "Average"):Right():Label({
+        Text = u21(u20.Mint, "60"),
+    })
+
+    u13.Perf.FpsRange = u71(u27, "Range"):Right():Label({
+        Text = u21(u20.Grey, "Min: 60 | Max: 60"),
+    })
+
+    local u28 = u88:PageSection({ Title = "Network" }):Form()
+
+    u13.Perf.PingCurrent = u71(u28, "Current"):Right():Label({
+        Text = u21(u20.Green, "0 ms"),
+    })
+
+    u13.Perf.PingAvg = u71(u28, "Average"):Right():Label({
+        Text = u21(u20.Mint, "0 ms"),
+    })
+
+    u13.Perf.PingRange = u71(u28, "Range"):Right():Label({
+        Text = u21(u20.Grey, "Min: 0 ms | Max: 0 ms"),
+    })
+
+    u13.Perf.Quality = u71(u28, "Connection Quality"):Right():Label({
+        Text = u21(u20.Grey, "Measuring..."),
+    })
+
+    local u29 = u88:PageSection({ Title = "Memory" }):Form()
+
+    u13.Perf.MemCurrent = u71(u29, "Current"):Right():Label({
+        Text = u21(u20.Purple, "0 MB"),
+    })
+
+    u13.Perf.MemPeak = u71(u29, "Peak"):Right():Label({
+        Text = u21(u20.Pink, "0 MB"),
+    })
+end
+
+do
+    local u13 = _G.UU.UI
+    local u14 = u89:PageSection({
+        Title = "Appearance",
+        Subtitle = "Theme and accent apply instantly across the whole interface",
+    }):Form()
+
+    u13.Settings = { Activity = {} }
+
+    local u15 = u71(u14, "Theme", "Pick between the light and the dark appearance")
+
+    local function u16(u27)
+        local u28 = game:GetService("TweenService")
+        local u29 = Instance.new("Frame")
+        local u30 = Instance.new("TextButton")
+        local u31 = Instance.new("UICorner")
+        local u32 = Instance.new("UIStroke")
+        local u33 = Instance.new("TextLabel")
+        local u34 = Instance.new("ImageLabel")
+        local u103 = Instance.new("CanvasGroup")
+        local u104 = Instance.new("UICorner")
+        local u105 = Instance.new("UIStroke")
+        local u106 = Instance.new("UIPadding")
+        local u107 = Instance.new("UIListLayout")
+
+        u29.Name = "Select"
+        u29.Size = UDim2.fromOffset(150, 32)
+        u29.BackgroundTransparency = 1
+        u29.Parent = u27.Parent
+
+        u30.Size = UDim2.fromScale(1, 1)
+        u30.AutoButtonColor = false
+        u30.Text = ""
+        u30.Parent = u29
+
+        u31.CornerRadius = UDim.new(0, 8)
+        u31.Parent = u30
+
+        u32.Thickness = 1
+        u32.Parent = u30
+
+        u33.BackgroundTransparency = 1
+        u33.AnchorPoint = Vector2.new(0, 0.5)
+        u33.Position = UDim2.new(0, 12, 0.5, 0)
+        u33.Size = UDim2.new(1, -44, 1, 0)
+        u33.FontFace = Font.new("rbxassetid://12187365364")
+        u33.TextSize = 14
+        u33.RichText = true
+        u33.TextXAlignment = Enum.TextXAlignment.Left
+        u33.TextTruncate = Enum.TextTruncate.AtEnd
+        u33.Parent = u30
+
+        u34.BackgroundTransparency = 1
+        u34.AnchorPoint = Vector2.new(1, 0.5)
+        u34.Position = UDim2.new(1, -11, 0.5, 0)
+        u34.Size = UDim2.fromOffset(14, 14)
+        u34.Image = u63.Symbols.chevronDown
+        u34.ScaleType = Enum.ScaleType.Fit
+        u34.Parent = u30
+
+        u103.AnchorPoint = Vector2.new(1, 0)
+        u103.Size = UDim2.fromOffset(150, 14 + #u27.Options * 28 + (#u27.Options - 1) * 3)
+        u103.ClipsDescendants = true
+        u103.Visible = false
+        u103.ZIndex = 50
+
+        u104.CornerRadius = UDim.new(0, 8)
+        u104.Parent = u103
+
+        u105.Thickness = 1
+        u105.Parent = u103
+
+        u106.PaddingTop = UDim.new(0, 4)
+        u106.PaddingBottom = UDim.new(0, 4)
+        u106.PaddingLeft = UDim.new(0, 4)
+        u106.PaddingRight = UDim.new(0, 4)
+        u106.Parent = u103
+
+        u107.Padding = UDim.new(0, 3)
+        u107.SortOrder = Enum.SortOrder.LayoutOrder
+        u107.Parent = u103
+
+        local u108 = u27.Index
+        local u109 = false
+        local u110 = {}
+        local u111
+        local u112
+        local u115
+        local u129 = u27.Parent.Parent
+        local u123
+        local u124
+        local u140
+        local u143
+        local u139
+
+        u139 = function()
+            local u127 = u129
+
+            while u127 and not u127:IsA("ScrollingFrame") do
+                u127 = u127.Parent
+            end
+
+            if u127 and u127.Parent then
+                u127 = u127.Parent
+            else
+                u127 = u129
+
+                while u127.Parent and u127.Parent:IsA("GuiObject") do
+                    u127 = u127.Parent
+                end
+            end
+
+            if u127 ~= u124 then
+                u124 = u127
+
+                u103.Parent = u124
+
+                u140 = u124:FindFirstChildOfClass("UIPadding")
+                u143 = u140 and Vector2.new(u140.PaddingLeft.Offset, u140.PaddingTop.Offset) or Vector2.new()
+            end
+
+            local u141 = u30.AbsolutePosition
+            local u142 = u30.AbsoluteSize
+            local u144 = u141.X + u142.X - u124.AbsolutePosition.X - u143.X
+            local u145 = u141.Y + u142.Y - u124.AbsolutePosition.Y - u143.Y
+            local u146 = u124.AbsoluteSize.Y - u143.Y - u103.AbsoluteSize.Y
+
+            u103.Position = UDim2.fromOffset(u144, math.max(0, math.min(u145, u146)))
+        end
+
+        u30:GetPropertyChangedSignal("AbsolutePosition"):Connect(u139)
+
+        u139()
+
+        u111 = function(u116)
+            local u117 = u27.Options[u116]
+
+            u33.Text = u117.Dot and u21(u117.Dot, "●") .. "  " .. u117.Text or u117.Text
+        end
+
+        u112 = function(u116)
+            if u109 == u116 then
+                return
+            end
+
+            u109 = u116
+
+            if u123 then
+                u123:Cancel()
+
+                u123 = nil
+            end
+
+            local u117 = TweenInfo.new(0.2, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+
+            u139()
+
+            local u118 = UDim2.fromOffset(u103.Position.X.Offset, u103.Position.Y.Offset)
+
+            if u116 then
+                u103.GroupTransparency = 1
+                u103.Position = UDim2.fromOffset(u118.X.Offset, u118.Y.Offset - 6)
+                u103.Visible = true
+            end
+
+            u123 = u28:Create(u103, u117, {
+                GroupTransparency = u116 and 0 or 1,
+                Position = u116 and u118 or UDim2.fromOffset(u118.X.Offset, u118.Y.Offset - 6),
+            })
+
+            u123:Play()
+
+            if u116 then
+                u123.Completed:Connect(function(u127)
+                    if u127 ~= Enum.PlaybackState.Completed then
+                        return
+                    end
+
+                    u139()
+                end)
+            end
+
+            u28:Create(u34, u117, { Rotation = u116 and 180 or 0 }):Play()
+
+            if not u116 then
+                u123.Completed:Connect(function(u124)
+                    if u124 ~= Enum.PlaybackState.Completed or u109 then
+                        return
+                    end
+
+                    u103.Visible = false
+
+                    u123 = nil
+                end)
+            end
+        end
+
+        u115 = function(u116)
+            local u117 = u65.Theme
+
+            u30.BackgroundColor3 = u117.Controls.Background[1].Value
+            u30.BackgroundTransparency = u117.Controls.Background[2].Value
+            u32.Color = u117.Text.Quaternary[1].Value
+            u32.Transparency = u117.Text.Quaternary[2].Value
+            u33.TextColor3 = u117.Text.Primary[1].Value
+            u33.TextTransparency = u117.Text.Primary[2].Value
+            u34.ImageColor3 = u117.Text.Primary[1].Value
+            u34.ImageTransparency = math.min(1, u117.Text.Primary[2].Value + 0.15)
+            u103.BackgroundColor3 = u117.Controls.MenuButton.MenuBackground[1].Value
+            u103.BackgroundTransparency = u117.Controls.MenuButton.MenuBackground[2].Value
+            u105.Color = u117.Text.Quaternary[1].Value
+            u105.Transparency = u117.Text.Quaternary[2].Value
+
+            for u118, u119 in ipairs(u110) do
+                local u120 = u118 == u116
+                local u121 = u27.Colors and u27.Colors(u118) or u20[u19.AccentName] or u20.Grey
+
+                u119.Row.BackgroundColor3 = u117.Text.Primary[1].Value
+                u119.Row.BackgroundTransparency = 1
+                u119.Label.TextColor3 = u117.Text.Primary[1].Value
+                u119.Label.TextTransparency = u120 and 0 or 0.3
+                u119.Check.ImageColor3 = Color3.fromHex(u121)
+                u119.Check.Visible = u120
+            end
+        end
+
+        for u116, u117 in ipairs(u27.Options) do
+            local u122 = Instance.new("TextButton")
+            local u125 = Instance.new("UICorner")
+            local u126 = Instance.new("TextLabel")
+            local u128 = Instance.new("ImageLabel")
+
+            u122.Size = UDim2.new(1, 0, 0, 28)
+            u122.AutoButtonColor = false
+            u122.Text = ""
+            u122.LayoutOrder = u116
+            u122.ZIndex = 2
+            u122.Parent = u103
+
+            u125.CornerRadius = UDim.new(0, 6)
+            u125.Parent = u122
+
+            u126.BackgroundTransparency = 1
+            u126.AnchorPoint = Vector2.new(0, 0.5)
+            u126.Position = UDim2.new(0, 9, 0.5, 0)
+            u126.Size = UDim2.new(1, -38, 1, 0)
+            u126.FontFace = Font.new("rbxassetid://12187365364")
+            u126.TextSize = 14
+            u126.RichText = true
+            u126.TextXAlignment = Enum.TextXAlignment.Left
+            u126.TextTruncate = Enum.TextTruncate.AtEnd
+            u126.Text = u117.Dot and u21(u117.Dot, "●") .. "  " .. u117.Text or u117.Text
+            u126.ZIndex = 2
+            u126.Parent = u122
+
+            u128.BackgroundTransparency = 1
+            u128.AnchorPoint = Vector2.new(1, 0.5)
+            u128.Position = UDim2.new(1, -9, 0.5, 0)
+            u128.Size = UDim2.fromOffset(14, 14)
+            u128.Image = u63.Symbols.checkmark
+            u128.ScaleType = Enum.ScaleType.Fit
+            u128.ZIndex = 2
+            u128.Parent = u122
+
+            u122.MouseEnter:Connect(function()
+                if u108 ~= u116 then
+                    u122.BackgroundTransparency = 0.92
+                end
+            end)
+
+            u122.MouseLeave:Connect(function()
+                u122.BackgroundTransparency = 1
+            end)
+
+            u122.Activated:Connect(function()
+                if u108 == u116 then
+                    u112(false)
+
+                    return
+                end
+
+                u108 = u116
+                u111(u116)
+                u112(false)
+
+                task.spawn(u27.OnSelect, u116)
+                u115(u116)
+            end)
+
+            u110[u116] = { Row = u122, Label = u126, Check = u128 }
+        end
+
+        table.insert(
+            _G.UU.Connections,
+            u3.InputBegan:Connect(function(u116)
+                if not u109 then
+                    return
+                end
+
+                if
+                    u116.UserInputType ~= Enum.UserInputType.MouseButton1
+                    and u116.UserInputType ~= Enum.UserInputType.Touch
+                then
+                    return
+                end
+
+                local u117 = u116.Position
+                local u118 = u30.AbsolutePosition
+                local u119 = u30.AbsoluteSize
+                local u120 = u103.AbsolutePosition
+                local u121 = u103.AbsoluteSize
+                local u122 = u117.X >= u118.X
+                    and u117.X <= u118.X + u119.X
+                    and u117.Y >= u118.Y
+                    and u117.Y <= u118.Y + u119.Y
+                local u125 = u117.X >= u120.X
+                    and u117.X <= u120.X + u121.X
+                    and u117.Y >= u120.Y
+                    and u117.Y <= u120.Y + u121.Y
+
+                if not u122 and not u125 then
+                    u112(false)
+                end
+            end)
+        )
+
+        u30.Activated:Connect(function()
+            u112(not u109)
+        end)
+
+        u111(u108)
+        u115(u108)
+
+        return {
+            Refresh = function()
+                u115(u108)
+            end,
+        }
+    end
+
+    u13.Settings.Theme = u16({
+        Parent = u15.Structures.RightAccessories,
+        Options = { { Text = "Light" }, { Text = "Dark" } },
+        Index = u19.ThemeMode == "Dark" and 2 or 1,
+        OnSelect = function(u27)
+            if not u75 then
+                return
+            end
+
+            local u28 = u27 == 2 and "Dark" or "Light"
+
+            if u28 == u19.ThemeMode then
+                return
+            end
+
+            u19.ThemeMode = u28
+            u65.Theme = u28 == "Dark" and u63.Themes.Dark or u63.Themes.Light
+            u90.Theme = u65.Theme
+
+            u50("Theme → " .. u28)
+            u38()
+
+            if u13.Settings.Accent and u13.Settings.Accent.Refresh then
+                u13.Settings.Accent.Refresh()
+            end
+        end,
+    })
+
+    local u27 = u71(u14, "Accent Color", "Highlight color used by switches, buttons and selections")
+    local u28 = { "Blue", "Purple", "Pink", "Red", "Orange", "Yellow", "Green", "Graphite" }
+    local u29 = 0
+
+    for u30, u31 in ipairs(u28) do
+        if u31 == u19.AccentName then
+            u29 = u30
+        end
+    end
+
+    if u29 == 0 then
+        u29 = 1
+        u19.AccentName = "Blue"
+    end
+
+    local u32 = {}
+
+    for u30, u31 in ipairs(u28) do
+        u32[u30] = { Text = u31, Dot = u20[u31] or u20.Grey }
+    end
+
+    u13.Settings.Accent = u16({
+        Parent = u27.Structures.RightAccessories,
+        Options = u32,
+        Index = u29,
+        Colors = function(u33)
+            return u32[u33].Dot
+        end,
+        OnSelect = function(u33)
+            if not u75 then
+                return
+            end
+
+            local u34 = u28[u33]
+
+            if not u34 then
+                return
+            end
+
+            u19.AccentName = u34
+            u65.Accent = u63.Accents[u34]
+            u90.Accent = u65.Accent
+
+            u50("Accent → " .. u34)
+            u38()
+
+            if u13.Settings.Theme and u13.Settings.Theme.Refresh then
+                u13.Settings.Theme.Refresh()
+            end
+        end,
+    })
+
+    local u104 = u89:PageSection({ Title = "Interface" }):Form()
+
+    local u105 = u71(u104, "Toggle Keybind", "Show or hide the window")
+
+    u105:Right():KeybindField({
+        Value = u19.Keybind,
+        ValueChanged = function(u106, u107)
+            if not u75 then
+                return
+            end
+
+            u19.Keybind = u107
+            u50("Keybind → " .. u107.Name)
+            u38()
+        end,
+        BindPressed = function(u106, u107, u108, u109)
+            if not u108 or u109 then
+                return
+            end
+
+            u66.Minimized = not u66.Minimized
+        end,
+    })
+
+    local u110 = u71(u104, "Auto Hide UI", "Starts minimized on the next injection")
+
+    u110:Right():Toggle({
+        Value = u19.AutoHideEnabled,
+        ValueChanged = function(u106, u107)
+            if not u75 then
+                return
+            end
+
+            u19.AutoHideEnabled = u107
+            u50("Auto Hide UI → " .. (u107 and "Enabled" or "Disabled"))
+            u38()
+        end,
+    })
+
+    local u111 = u89:Form()
+
+    u71(u111, "Activity", "Tracks every action with a timestamp, newest first"):Right():Button({
+        Label = "Clear",
+        State = "Destructive",
+        Pushed = function()
+            _G.UU.LogBuffer = {}
+
+            for u115 = 1, 6 do
+                local u116 = u13.Settings.Activity[u115]
+
+                if u116 then
+                    u116.Text = u21(u20.Grey, "—")
+                end
+            end
+        end,
+    })
+
+    for u112 = 1, 6 do
+        u13.Settings.Activity[u112] = u111:Row():Left():Label({
+            Text = _G.UU.LogBuffer[u112] or u21(u20.Grey, "—"),
+        })
+    end
+
+    local u115 = u89:PageSection({
+        Title = "Danger Zone",
+        Subtitle = "Fully removes Universal Utility and stops everything it runs",
+    }):Form()
+
+    local u116 = u71(u115, "Uninject", "Press twice to confirm the removal"):Right():Button({
+        Label = "Uninject",
+        State = "Destructive",
+        Pushed = function(u117)
+            if not u81 then
+                u81 = true
+                u117.Label = "Click again to confirm"
+
+                task.delay(3, function()
+                    u81 = false
+
+                    if u117.Parent then
+                        u117.Label = "Uninject"
+                    end
+                end)
+
+                return
+            end
+
+            u81 = false
+            u117.Label = "Uninjecting..."
+            u37()
+
+            task.delay(0.15, function()
+                if not u18() then
+                    return
+                end
+                if u82 then
+                    pcall(task.cancel, u82)
+                end
+                u52("Click")
+                u52("Spam")
+                for u118, u119 in pairs(_G.UU.Threads) do
+                    if typeof(u119) == "thread" and coroutine.status(u119) ~= "dead" then
+                        pcall(task.cancel, u119)
+                    end
+
+                    _G.UU.Threads[u118] = nil
+                end
+
+                for u118, u119 in pairs(_G.UU.Connections) do
+                    pcall(function()
+                        u119:Disconnect()
+                    end)
+                end
+
+                _G.UU.Connections = {}
+
+                if u61 then
+                    pcall(setfpscap, 60)
+                end
+
                 pcall(function()
-                        if ua3.Minimized then
-                                ua3.Position = ua73
-                                ua3.Minimized = true
-                        end
-                end)
-        end)
-
-        local ua5 = ua3:Section({ Title = "Code" })
-        local ua6 = u46(ua5, "Editor", u38.Symbols.docPlaintext)
-
-        ua6.Selected = true
-
-        local ua7 = ua6.Structures.Page.__instance or ua6.Structures.Page
-        local ua8 = game:GetService("TextService")
-        local ua9 = Font.fromEnum(Enum.Font.Code)
-        local ua10 = ua8:GetTextSize("Ag", 14, Enum.Font.Code, Vector2.new(10000, 10000)).Y
-        local ua11 = Instance.new("Frame")
-
-        ua11.Name = "EditorPane"
-        ua11.Size = UDim2.new(1, 0, 0, 240)
-        ua11.BackgroundColor3 = Color3.fromRGB(26, 28, 37)
-        ua11.BorderSizePixel = 0
-        ua11.ClipsDescendants = true
-        ua11.Parent = ua7
-
-        local ua93 = ua7:FindFirstChild("Margins") or ua7:FindFirstChildOfClass("UIPadding")
-
-        if ua93 then
-                ua93.PaddingTop = UDim.new()
-                ua93.PaddingBottom = UDim.new()
-                ua93.PaddingLeft = UDim.new()
-                ua93.PaddingRight = UDim.new()
-        end
-
-        local ua12 = Instance.new("ScrollingFrame")
-
-        ua12.Name = "Scroller"
-        ua12.Size = UDim2.new(1, 0, 1, -26)
-        ua12.BackgroundTransparency = 1
-        ua12.BorderSizePixel = 0
-        ua12.ScrollBarThickness = 5
-        ua12.ScrollBarImageColor3 = Color3.fromRGB(120, 128, 150)
-        ua12.ScrollingDirection = Enum.ScrollingDirection.XY
-        ua12.CanvasSize = UDim2.new()
-        ua12.Parent = ua11
-
-        local ua13 = Instance.new("TextLabel")
-
-        ua13.Name = "Numbers"
-        ua13.Size = UDim2.new(0, 40, 0, 240)
-        ua13.BackgroundColor3 = Color3.fromRGB(21, 23, 30)
-        ua13.BorderSizePixel = 0
-        ua13.FontFace = ua9
-        ua13.TextSize = 14
-        ua13.TextColor3 = Color3.fromRGB(90, 97, 115)
-        ua13.TextXAlignment = Enum.TextXAlignment.Right
-        ua13.TextYAlignment = Enum.TextYAlignment.Top
-        ua13.Text = "1"
-        ua13.Parent = ua12
-
-        Instance.new("UIPadding", ua13).PaddingRight = UDim.new(0, 6)
-
-        local ua14 = Instance.new("Frame")
-
-        ua14.Name = "TextZone"
-        ua14.Position = UDim2.new(0, 40, 0, 0)
-        ua14.Size = UDim2.new(0, 480, 0, 240)
-        ua14.BackgroundTransparency = 1
-        ua14.Parent = ua12
-
-        local ua15 = Instance.new("TextLabel")
-
-        ua15.Name = "Highlight"
-        ua15.Size = UDim2.new(1, 0, 1, 0)
-        ua15.BackgroundTransparency = 1
-        ua15.FontFace = ua9
-        ua15.TextSize = 14
-        ua15.TextColor3 = Color3.fromRGB(233, 234, 238)
-        ua15.TextXAlignment = Enum.TextXAlignment.Left
-        ua15.TextYAlignment = Enum.TextYAlignment.Top
-        ua15.TextWrapped = false
-        ua15.RichText = true
-        ua15.Text = ""
-        ua15.Parent = ua14
-
-        local ua16 = Instance.new("TextBox")
-
-        ua16.Name = "Input"
-        ua16.Size = UDim2.new(1, 0, 1, 0)
-        ua16.BackgroundTransparency = 1
-        ua16.BorderSizePixel = 0
-        ua16.FontFace = ua9
-        ua16.TextSize = 14
-        ua16.TextColor3 = Color3.new(0, 0, 0)
-        ua16.TextTransparency = 1
-        ua16.TextXAlignment = Enum.TextXAlignment.Left
-        ua16.TextYAlignment = Enum.TextYAlignment.Top
-        ua16.TextWrapped = false
-        ua16.MultiLine = true
-        ua16.ClearTextOnFocus = false
-        ua16.Text = ""
-        ua16.ZIndex = 2
-        ua16.Parent = ua14
-
-        local ua17 = Instance.new("Frame")
-
-        ua17.Name = "Footer"
-        ua17.Position = UDim2.new(0, 0, 1, -26)
-        ua17.Size = UDim2.new(1, 0, 0, 26)
-        ua17.BackgroundColor3 = Color3.fromRGB(21, 23, 30)
-        ua17.BorderSizePixel = 0
-        ua17.Parent = ua11
-
-        local ua18 = Instance.new("TextLabel")
-
-        ua18.Name = "Hint"
-        ua18.Position = UDim2.new(0, 10, 0, 0)
-        ua18.Size = UDim2.new(0.62, 0, 1, 0)
-        ua18.BackgroundTransparency = 1
-        ua18.FontFace = ua9
-        ua18.TextSize = 12
-        ua18.TextColor3 = Color3.fromRGB(108, 116, 136)
-        ua18.TextXAlignment = Enum.TextXAlignment.Left
-        ua18.Text = "Lua · made for short loadstrings"
-        ua18.Parent = ua17
-
-        local ua19 = Instance.new("TextLabel")
-
-        ua19.Name = "Count"
-        ua19.Position = UDim2.new(0.62, 0, 0, 0)
-        ua19.Size = UDim2.new(0.38, -54, 1, 0)
-        ua19.BackgroundTransparency = 1
-        ua19.FontFace = ua9
-        ua19.TextSize = 12
-        ua19.TextColor3 = Color3.fromRGB(139, 147, 163)
-        ua19.TextXAlignment = Enum.TextXAlignment.Right
-        ua19.Text = "1 / 50 lines"
-        ua19.Parent = ua17
-
-        local ua20 = Instance.new("TextButton")
-
-        ua20.Name = "Run"
-        ua20.AnchorPoint = Vector2.new(1, 0.5)
-        ua20.Position = UDim2.new(1, -8, 0.5, 0)
-        ua20.Size = UDim2.fromOffset(40, 18)
-        ua20.BackgroundColor3 = Color3.fromRGB(29, 42, 33)
-        ua20.BorderSizePixel = 0
-        ua20.FontFace = ua9
-        ua20.TextSize = 12
-        ua20.TextColor3 = Color3.fromRGB(50, 215, 75)
-        ua20.Text = "Run"
-
-        Instance.new("UICorner", ua20).CornerRadius = UDim.new(0, 5)
-
-        ua20.Parent = ua17
-
-        local ua21 = false
-        local ua22 = false
-        local ua76 = false
-        local ua94 = ua16.Text
-
-        local function ua23(ua24)
-                local ua25 = select(2, ua24:gsub("\n", "")) + 1
-
-                if ua25 > 50 then
-                        local ua26, ua27 = 0, 0
-
-                        for ua28 = 1, #ua24 do
-                                if ua24:sub(ua28, ua28) == "\n" then
-                                        ua26 = ua26 + 1
-
-                                        if ua26 == 50 then
-                                                ua27 = ua28 - 1
-
-                                                break
-                                        end
-                                end
-                        end
-
-                        ua24 = ua24:sub(1, ua27)
-
-                        if not ua22 then
-                                ua22 = true
-
-                                if ua21 then
-                                        u26("Editor → 50 line limit reached")
-                                end
-                        end
-
-                        ua16.Text = ua24
-
-                        return
-                end
-
-                if ua25 < 50 then
-                        ua22 = false
-                end
-
-                local ua29 = {}
-
-                for ua30 = 1, ua25 do
-                        ua29[#ua29 + 1] = ua30
-                end
-
-                ua13.Text = table.concat(ua29, "\n")
-
-                if ua76 then
-                        ua15.Text = ""
-                else
-                        local ua35, ua36 = pcall(u69, ua24)
-
-                        if ua35 then
-                                ua15.Text = ua36
-                        else
-                                ua15.Text = u67 and u67(ua24) or ""
-                        end
-                end
-
-                ua19.TextColor3 = ua22 and Color3.fromRGB(255, 69, 58) or ua25 >= 45 and Color3.fromRGB(255, 159, 10) or Color3.fromRGB(139, 147, 163)
-                ua19.Text = ua25 .. " / 50 lines"
-
-                local ua31 = 0
-
-                for ua32 in (ua24 .. "\n"):gmatch("(.-)\n") do
-                        if ua32 ~= "" then
-                                ua31 = math.max(ua31, ua8:GetTextSize(ua32, 14, Enum.Font.Code, Vector2.new(10000, 10000)).X)
-                        end
-                end
-
-                local ua37 = ua12.AbsoluteWindowSize
-                local ua33 = math.max(ua25 * ua10 + 12, 240, math.floor(ua37.Y))
-                local ua34 = math.max(ua31 + 8, 480, math.floor(ua37.X) - 40)
-
-                ua13.Size = UDim2.new(0, 40, 0, ua33)
-                ua14.Size = UDim2.new(0, ua34, 0, ua33)
-                ua12.CanvasSize = UDim2.fromOffset(ua34 + 40, ua33)
-
-                if ua21 then
-                        u12.SavedCode = ua24
-
-                        if u55 then
-                                pcall(task.cancel, u55)
-                        end
-
-                        u55 = task.delay(0.75, u16)
-                end
-        end
-
-        ua16:GetPropertyChangedSignal("Text"):Connect(function()
-                ua94 = ua16.Text
-
-                ua23(ua16.Text)
-        end)
-
-        ua16.FocusLost:Connect(function()
-                if not ua21 or ua16.Text == u12.SavedCode then
-                        return
-                end
-
-                u12.SavedCode = ua16.Text
-                u16()
-        end)
-
-        local function ua78()
-                local ua79 = ua7.AbsoluteWindowSize
-
-                ua11.Size = UDim2.new(1, 0, 0, math.max(240, math.floor(ua79.Y)))
-
-                task.defer(ua23, ua16.Text)
-        end
-
-        ua7:GetPropertyChangedSignal("AbsoluteWindowSize"):Connect(ua78)
-
-        task.defer(ua78)
-
-        ua20.MouseButton1Click:Connect(function()
-                local ua48, ua49 = u35(u12.SavedCode)
-
-                if ua48 then
-                        ua1.Loader.PushOutput("Script executed successfully.", u63.Green)
-                        u26("Script executed ✓")
-                else
-                        if ua49 then
-                                ua1.Loader.PushOutput(tostring(ua49), u63.Red)
-                        end
-
-                        u26("Script error: " .. tostring(ua49):sub(1, 80))
-                        u27("Execution failed", tostring(ua49):sub(1, 120))
-                end
-        end)
-
-        ua94 = u12.SavedCode or ""
-        ua16.Text = ua94
-
-        pcall(ua23, ua16.Text)
-
-        ua21 = true
-
-        local ua36 = u45(ua2, "Open Editor", "Popup window with Studio-style colors · 50 lines max")
-
-        ua36:Right():Button({
-                Label = "Open",
-                State = "Primary",
-                Pushed = function()
-                        ua3.Minimized = false
-                end,
-        })
-
-        local ua90 = u40.Minimized
-        local ua91 = not ua3.Minimized
-
-        task.spawn(function()
-                while not _G.UU.Loaded do
-                        task.wait(0.1)
-                end
-
-                while _G.UU.Loaded do
-                        pcall(function()
-                                local ua92 = u40.Minimized
-
-                                if ua92 ~= ua90 then
-                                        ua90 = ua92
-
-                                        if ua92 then
-                                                ua91 = not ua3.Minimized
-                                                ua3.Minimized = true
-                                        elseif ua91 then
-                                                ua3.Minimized = false
-                                        end
-                                end
-
-                                if ua16.Text ~= ua94 then
-                                        ua94 = ua16.Text
-
-                                        ua23(ua94)
-                                end
-                        end)
-
-                        task.wait(0.15)
-                end
-        end)
-
-        local ua37 = u45(ua2, "Execute", "Runs the current code immediately")
-
-        ua37:Right():Button({
-                Label = "Execute",
-                State = "Primary",
-                Pushed = function()
-                        local ua50, ua51 = u35(u12.SavedCode)
-
-                        if ua50 then
-                                ua1.Loader.PushOutput("Script executed successfully.", u63.Green)
-                                u26("Script executed ✓")
-                        else
-                                if ua51 then
-                                        ua1.Loader.PushOutput(tostring(ua51), u63.Red)
-                                end
-
-                                u26("Script error: " .. tostring(ua51):sub(1, 80))
-                                u27("Execution failed", tostring(ua51):sub(1, 120))
-                        end
-                end,
-        })
-
-        local ua38 = u45(ua2, "Clear Editor", "Empties the code field and the saved config")
-
-        ua38:Right():Button({
-                Label = "Clear",
-                State = "Destructive",
-                Pushed = function()
-                        ua16.Text = ""
-                        u12.SavedCode = ""
-
-                        u26("Script Loader → Editor cleared")
-                        u16()
-                end,
-        })
-
-        local ua39 = u60:Form()
-
-        u45(ua39, "Output", "Shows the results of your last script run, newest first"):Right():Button({
-                Label = "Clear",
-                State = "Destructive",
-                Pushed = function()
-                        ua1.Loader.History = {}
-
-                        for ua41 = 1, 3 do
-                                local ua42 = ua1.Loader.Output[ua41]
-
-                                if ua42 then
-                                        ua42.Text = u64(u63.Grey, "—")
-                                end
-                        end
-                end,
-        })
-
-        for ua40 = 1, 3 do
-                ua1.Loader.Output[ua40] = ua39:Row():Left():Label({
-                        Text = u64(u63.Grey, "—"),
-                })
-        end
-
-        ua1.Loader.PushOutput = function(ua41, ua42)
-                local ua43 = ua1.Loader.History
-
-                table.insert(ua43, 1, u64(ua42 or u63.White, u67(ua41)))
-
-                if #ua43 > 3 then
-                        table.remove(ua43, 4)
-                end
-
-                for ua44 = 1, 3 do
-                        local ua45 = ua1.Loader.Output[ua44]
-
-                        if ua45 then
-                                ua45.Text = ua43[ua44] or u64(u63.Grey, "—")
-                        end
-                end
-        end
-
-        local ua52 = Instance.new("Frame")
-
-        ua52.Name = "Caret"
-        ua52.Size = UDim2.fromOffset(2, math.max(ua10 - 4, 10))
-        ua52.BackgroundColor3 = Color3.fromRGB(240, 241, 245)
-        ua52.BorderSizePixel = 0
-        ua52.Visible = false
-        ua52.ZIndex = 2
-        ua52.Parent = ua14
-
-        local ua53 = nil
-
-        local function ua68(ua1)
-                if typeof(ua1) == "Vector2" then
-                        return ua1
-                end
-
-                if type(ua1) ~= "number" or ua1 ~= ua1 then
-                        return nil
-                end
-
-                local ua95 = string.split(ua16.Text, "\n")
-                local ua96, ua97
-
-                if ua1 < 0 then
-                        ua96 = #ua95
-                        ua97 = #(ua95[ua96] or "") + 1
-                else
-                        local ua98 = ua16.Text:sub(1, math.clamp(math.floor(ua1), 0, #ua16.Text))
-                        local ua99 = ua98:match(".*\n")
-
-                        ua96 = select(2, ua98:gsub("\n", "")) + 1
-                        ua97 = #ua98 - (ua99 and #ua99 or 0) + 1
-                end
-
-                ua96 = math.clamp(ua96, 1, #ua95)
-
-                return {X = math.clamp(ua97, 1, #(ua95[ua96] or "") + 1), Y = ua96}
-        end
-
-        local function ua77()
-                if ua76 then
-                        return
-                end
-
-                ua76 = true
-                ua15.Visible = false
-                ua52.Visible = false
-                ua16.TextTransparency = 0
-                ua16.TextColor3 = Color3.fromRGB(233, 234, 238)
-        end
-
-        local function ua54()
-                if ua76 then
-                        ua52.Visible = false
-
-                        return false
-                end
-
-                local ua56 = string.split(ua16.Text, "\n")
-                local ua57 = ua68(ua16.CursorPosition)
-
-                if not ua57 then
-                        ua52.Visible = false
-
-                        if ua16:IsFocused() then
-                                ua77()
-                        end
-
-                        return false
-                end
-
-                local ua58 = math.clamp(ua57.Y, 1, #ua56)
-                local ua59 = ua56[ua58] or ""
-                local ua60 = ua8:GetTextSize(ua59:sub(1, math.max(math.min(ua57.X - 1, #ua59), 0)), 14, Enum.Font.Code, Vector2.new(10000, 10000)).X
-
-                ua52.Position = UDim2.fromOffset(ua60, (ua58 - 1) * ua10 + 2)
-
-                local ua61 = ua12.AbsoluteWindowSize
-
-                if ua16:IsFocused() and ua61.X > 1 then
-                        local ua62 = ua12.CanvasPosition
-
-                        if ua60 < ua62.X or ua60 > ua62.X + ua61.X - 60 then
-                                ua12.CanvasPosition = Vector2.new(math.max(ua60 - ua61.X + 120, 0), ua62.Y)
-                        end
-
-                        local ua63 = (ua58 - 1) * ua10
-
-                        if ua63 < ua62.Y or ua63 > ua62.Y + ua61.Y - ua10 * 2 - 30 then
-                                ua12.CanvasPosition = Vector2.new(ua12.CanvasPosition.X, math.max(ua63 - ua61.Y + ua10 * 2 + 30, 0))
-                        end
-                end
-
-                local ua64 = ua16:IsFocused()
-
-                ua52.Visible = ua64
-
-                return ua64
-        end
-
-        local function ua55()
-                for ua56, ua57 in pairs(ua14:GetChildren()) do
-                        if ua57.Name == "SelRect" then
-                                ua57:Destroy()
-                        end
-                end
-
-                if ua76 then
-                        return
-                end
-
-                local ua56 = ua16.SelectionStart
-
-                if typeof(ua56) == "number" and ua56 < 0 then
-                        return
-                end
-
-                ua56 = ua68(ua56)
-                local ua57 = ua68(ua16.CursorPosition)
-
-                if not ua16:IsFocused() or not ua56 or not ua57 then
-                        return
-                end
-
-                local ua58 = string.split(ua16.Text, "\n")
-                local ua59, ua60 = math.min(ua56.Y, ua57.Y), math.max(ua56.Y, ua57.Y)
-
-                if ua59 < 1 or ua59 > #ua58 + 1 or (ua59 == ua60 and ua56.X == ua57.X) then
-                        return
-                end
-
-                for ua61 = math.max(ua59, 1), math.min(ua60, #ua58) do
-                        local ua62, ua63 = 0, 0
-                        local ua64 = ua58[ua61] or ""
-
-                        if ua61 == ua59 and ua61 == ua60 then
-                                ua62 = math.min(ua56.X, ua57.X) - 1
-                                ua63 = math.max(ua56.X, ua57.X) - 1
-                        elseif ua61 == ua59 then
-                                ua62 = (ua56.Y <= ua57.Y and ua56.X or ua57.X) - 1
-                                ua63 = #ua64
-                        elseif ua61 == ua60 then
-                                ua63 = (ua56.Y <= ua57.Y and ua57.X or ua56.X) - 1
-                        else
-                                ua63 = #ua64
-                        end
-
-                        local ua65 = ua8:GetTextSize(ua64:sub(1, math.max(math.min(ua62, #ua64), 0)), 14, Enum.Font.Code, Vector2.new(10000, 10000)).X
-                        local ua66 = ua8:GetTextSize(ua64:sub(1, math.max(math.min(ua63, #ua64), 0)), 14, Enum.Font.Code, Vector2.new(10000, 10000)).X
-                        local ua67 = Instance.new("Frame")
-
-                        ua67.Name = "SelRect"
-                        ua67.BackgroundColor3 = Color3.fromRGB(58, 110, 180)
-                        ua67.BackgroundTransparency = 0.5
-                        ua67.BorderSizePixel = 0
-                        ua67.Position = UDim2.fromOffset(ua65, (ua61 - 1) * ua10)
-                        ua67.Size = UDim2.fromOffset(math.max(ua66 - ua65, 5), ua10)
-                        ua67.ZIndex = 1
-                        ua67.Parent = ua14
-                end
-        end
-
-        ua16.Focused:Connect(function()
-                task.defer(function()
-                        if not ua68(ua16.CursorPosition) then
-                                ua77()
-                        end
+                    if typeof(dequeue_on_teleport) == "function" then
+                        dequeue_on_teleport()
+                    end
                 end)
 
-                if ua53 then
-                        pcall(task.cancel, ua53)
+                pcall(u37)
 
-                        ua53 = nil
-                end
+                u90:Destroy()
+                u65:Destroy()
 
-                if ua54() then
-                        ua53 = task.spawn(function()
-                                while ua52.Parent and ua16:IsFocused() do
-                                        task.wait(0.45)
-
-                                        if not (ua52.Parent and ua16:IsFocused()) then
-                                                break
-                                        end
-
-                                        ua52.Visible = not ua52.Visible
-                                end
-                        end)
-                end
-
-                ua55()
-        end)
-
-        ua16.FocusLost:Connect(function()
-                if ua53 then
-                        pcall(task.cancel, ua53)
-
-                        ua53 = nil
-                end
-
-                ua52.Visible = false
-                ua55()
-        end)
-
-        ua16:GetPropertyChangedSignal("CursorPosition"):Connect(function()
-                ua54()
-                ua55()
-        end)
-
-        ua16:GetPropertyChangedSignal("SelectionStart"):Connect(function()
-                ua55()
-        end)
-
-        ua16:GetPropertyChangedSignal("Text"):Connect(function()
-                ua54()
-                ua55()
-        end)
-
-        ua12:GetPropertyChangedSignal("AbsoluteWindowSize"):Connect(function()
-                local ua70 = ua12.AbsoluteWindowSize
-
-                if ua14.Size.Y.Offset < math.floor(ua70.Y) or ua14.Size.X.Offset < math.floor(ua70.X) - 40 then
-                        ua23(ua16.Text)
-                end
-        end)
+                _G.UU.Threads = {}
+                _G.UU.Connections = {}
+                _G.UU.UI = {}
+                _G.UU.LogBuffer = {}
+                _G.UU.App = nil
+                _G.UU.EditorApp = nil
+                _G.UU.CFG = nil
+                _G.UU.SaveCFG = nil
+                _G.UU.DebouncedSave = nil
+                _G.UU.Loaded = false
+                _G.UU.LoadLock = false
+                _G.UU.TeleportQueued = false
+                _G.UU.RejoinConnection = nil
+            end)
+        end,
+    })
 end
 
-do
-        local ua1 = _G.UU.UI
-        local ua2 = u61:PageSection({ Title = "FPS Unlock" }):Form()
-
-        ua1.Perf = {}
-
-        ua1.Perf.Target = u45(ua2, "Selected Limit"):Right():Label({
-                Text = u64(u63.Cyan, u12.TargetFPS .. " FPS"),
-        })
-
-        local ua3 = u45(ua2, "Target FPS", "Custom framerate limit from 15 to 360")
-
-        u47(ua3, {
-                Minimum = 15,
-                Maximum = 360,
-                Value = u12.TargetFPS,
-                ValueChanged = function(ua8, ua9)
-                        u12.TargetFPS = math.floor(ua9 + 0.5)
-
-                        if ua1.Perf.Target then
-                                ua1.Perf.Target.Text = u64(u63.Cyan, u12.TargetFPS .. " FPS")
-                        end
-
-                        if u12.FPSUnlockEnabled then
-                                u37()
-                        end
-
-                        u16()
-                end,
-        })
-
-        local ua4 = u45(ua2, "FPS Unlock", "Removes the default 60 FPS cap")
-
-        ua1.Perf.Toggle = ua4:Right():Toggle({
-                Value = u12.FPSUnlockEnabled,
-                ValueChanged = function(ua8, ua9)
-                        if ua1.SyncFps or not u48 then
-                                return
-                        end
-
-                        if not u36 then
-                                ua1.SyncFps = true
-                                ua8.Value = false
-                                ua1.SyncFps = false
-
-                                u26("FPS Unlock → Not supported by executor")
-                                u27("FPS Unlock", "Not supported by this executor")
-                                return
-                        end
-
-                        u12.FPSUnlockEnabled = ua9
-                        u37()
-                        u26("FPS Unlock → " .. (ua9 and ("Enabled (" .. u12.TargetFPS .. " FPS)") or "Disabled"))
-                        u16()
-                end,
-        })
-
-        local ua5 = u61:PageSection({ Title = "Framerate" }):Form()
-
-        ua1.Perf.FpsCurrent = u45(ua5, "Current"):Right():Label({
-                Text = u64(u63.Green, "60"),
-        })
-
-        ua1.Perf.FpsAvg = u45(ua5, "Average"):Right():Label({
-                Text = u64(u63.Mint, "60"),
-        })
-
-        ua1.Perf.FpsRange = u45(ua5, "Range"):Right():Label({
-                Text = u64(u63.Grey, "Min: 60 | Max: 60"),
-        })
-
-        local ua6 = u61:PageSection({ Title = "Network" }):Form()
-
-        ua1.Perf.PingCurrent = u45(ua6, "Current"):Right():Label({
-                Text = u64(u63.Green, "0 ms"),
-        })
-
-        ua1.Perf.PingAvg = u45(ua6, "Average"):Right():Label({
-                Text = u64(u63.Mint, "0 ms"),
-        })
-
-        ua1.Perf.PingRange = u45(ua6, "Range"):Right():Label({
-                Text = u64(u63.Grey, "Min: 0 ms | Max: 0 ms"),
-        })
-
-        ua1.Perf.Quality = u45(ua6, "Connection Quality"):Right():Label({
-                Text = u64(u63.Grey, "Measuring..."),
-        })
-
-        local ua7 = u61:PageSection({ Title = "Memory" }):Form()
-
-        ua1.Perf.MemCurrent = u45(ua7, "Current"):Right():Label({
-                Text = u64(u63.Purple, "0 MB"),
-        })
-
-        ua1.Perf.MemPeak = u45(ua7, "Peak"):Right():Label({
-                Text = u64(u63.Pink, "0 MB"),
-        })
+for u13, u14 in pairs(_G.UU.UI.Tabs) do
+    u14.Activated:Connect(function()
+        u19.CurrentTab = u13
+        u38()
+    end)
 end
 
-do
-        local ua1 = _G.UU.UI
-        local ua2 = u62:PageSection({ Title = "Appearance", Subtitle = "Theme and accent apply instantly across the whole interface" }):Form()
-
-        ua1.Settings = { Activity = {} }
-
-        local ua3 = u45(ua2, "Theme", "Pick between the light and the dark appearance")
-
-        local function ua4(ua5)
-                local ua6 = game:GetService("TweenService")
-                local ua7 = Instance.new("Frame")
-                local ua8 = Instance.new("TextButton")
-                local ua9 = Instance.new("UICorner")
-                local ua10 = Instance.new("UIStroke")
-                local ua11 = Instance.new("TextLabel")
-                local ua12 = Instance.new("ImageLabel")
-                local ua13 = Instance.new("CanvasGroup")
-                local ua14 = Instance.new("UICorner")
-                local ua15 = Instance.new("UIStroke")
-                local ua16 = Instance.new("UIPadding")
-                local ua17 = Instance.new("UIListLayout")
-
-                ua7.Name = "Select"
-                ua7.Size = UDim2.fromOffset(150, 32)
-                ua7.BackgroundTransparency = 1
-                ua7.Parent = ua5.Parent
-
-                ua8.Size = UDim2.fromScale(1, 1)
-                ua8.AutoButtonColor = false
-                ua8.Text = ""
-                ua8.Parent = ua7
-
-                ua9.CornerRadius = UDim.new(0, 8)
-                ua9.Parent = ua8
-
-                ua10.Thickness = 1
-                ua10.Parent = ua8
-
-                ua11.BackgroundTransparency = 1
-                ua11.AnchorPoint = Vector2.new(0, 0.5)
-                ua11.Position = UDim2.new(0, 12, 0.5, 0)
-                ua11.Size = UDim2.new(1, -44, 1, 0)
-                ua11.FontFace = Font.new("rbxassetid://12187365364")
-                ua11.TextSize = 14
-                ua11.RichText = true
-                ua11.TextXAlignment = Enum.TextXAlignment.Left
-                ua11.TextTruncate = Enum.TextTruncate.AtEnd
-                ua11.Parent = ua8
-
-                ua12.BackgroundTransparency = 1
-                ua12.AnchorPoint = Vector2.new(1, 0.5)
-                ua12.Position = UDim2.new(1, -11, 0.5, 0)
-                ua12.Size = UDim2.fromOffset(14, 14)
-                ua12.Image = u38.Symbols.chevronDown
-                ua12.ScaleType = Enum.ScaleType.Fit
-                ua12.Parent = ua8
-
-                ua13.AnchorPoint = Vector2.new(1, 0)
-                ua13.Size = UDim2.fromOffset(150, 14 + #ua5.Options * 28 + (#ua5.Options - 1) * 3)
-                ua13.ClipsDescendants = true
-                ua13.Visible = false
-                ua13.ZIndex = 50
-
-                ua14.CornerRadius = UDim.new(0, 8)
-                ua14.Parent = ua13
-
-                ua15.Thickness = 1
-                ua15.Parent = ua13
-
-                ua16.PaddingTop = UDim.new(0, 4)
-                ua16.PaddingBottom = UDim.new(0, 4)
-                ua16.PaddingLeft = UDim.new(0, 4)
-                ua16.PaddingRight = UDim.new(0, 4)
-                ua16.Parent = ua13
-
-                ua17.Padding = UDim.new(0, 3)
-                ua17.SortOrder = Enum.SortOrder.LayoutOrder
-                ua17.Parent = ua13
-
-                local ua18 = ua5.Index
-                local ua19 = false
-                local ua20 = {}
-                local ua21
-                local ua22
-                local ua23
-                local ua34 = ua5.Parent.Parent
-                local ua35
-                local ua36
-                local ua39
-                local ua40
-                local ua38
-
-                ua38 = function()
-                        local ua37 = ua34
-
-                        while ua37 and not ua37:IsA("ScrollingFrame") do
-                                ua37 = ua37.Parent
-                        end
-
-                        if ua37 and ua37.Parent then
-                                ua37 = ua37.Parent
-                        else
-                                ua37 = ua34
-
-                                while ua37.Parent and ua37.Parent:IsA("GuiObject") do
-                                        ua37 = ua37.Parent
-                                end
-                        end
-
-                        if ua37 ~= ua36 then
-                                ua36 = ua37
-
-                                ua13.Parent = ua36
-
-                                ua39 = ua36:FindFirstChildOfClass("UIPadding")
-                                ua40 = ua39 and Vector2.new(ua39.PaddingLeft.Offset, ua39.PaddingTop.Offset) or Vector2.new()
-                        end
-
-                        local ua41 = ua8.AbsolutePosition
-                        local ua42 = ua8.AbsoluteSize
-                        local ua43 = ua41.X + ua42.X - ua36.AbsolutePosition.X - ua40.X
-                        local ua44 = ua41.Y + ua42.Y - ua36.AbsolutePosition.Y - ua40.Y
-                        local ua45 = ua36.AbsoluteSize.Y - ua40.Y - ua13.AbsoluteSize.Y
-
-                        ua13.Position = UDim2.fromOffset(ua43, math.max(0, math.min(ua44, ua45)))
-                end
-
-                ua8:GetPropertyChangedSignal("AbsolutePosition"):Connect(ua38)
-
-                ua38()
-
-                ua21 = function(ua24)
-                        local ua25 = ua5.Options[ua24]
-
-                        ua11.Text = ua25.Dot and u64(ua25.Dot, "●") .. "  " .. ua25.Text or ua25.Text
-                end
-
-                ua22 = function(ua24)
-                        if ua19 == ua24 then
-                                return
-                        end
-
-                        ua19 = ua24
-
-                        if ua35 then
-                                ua35:Cancel()
-
-                                ua35 = nil
-                        end
-
-                        local ua25 = TweenInfo.new(0.2, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
-
-                        ua38()
-
-                        local ua26 = UDim2.fromOffset(ua13.Position.X.Offset, ua13.Position.Y.Offset)
-
-                        if ua24 then
-                                ua13.GroupTransparency = 1
-                                ua13.Position = UDim2.fromOffset(ua26.X.Offset, ua26.Y.Offset - 6)
-                                ua13.Visible = true
-                        end
-
-                        ua35 = ua6:Create(ua13, ua25, {
-                                GroupTransparency = ua24 and 0 or 1,
-                                Position = ua24 and ua26 or UDim2.fromOffset(ua26.X.Offset, ua26.Y.Offset - 6)
-                        })
-
-                        ua35:Play()
-
-                        if ua24 then
-                                ua35.Completed:Connect(function(ua37)
-                                        if ua37 ~= Enum.PlaybackState.Completed then
-                                                return
-                                        end
-
-                                        ua38()
-                                end)
-                        end
-
-                        ua6:Create(ua12, ua25, { Rotation = ua24 and 180 or 0 }):Play()
-
-                        if not ua24 then
-                                ua35.Completed:Connect(function(ua36)
-                                        if ua36 ~= Enum.PlaybackState.Completed or ua19 then
-                                                return
-                                        end
-
-                                        ua13.Visible = false
-
-                                        ua35 = nil
-                                end)
-                        end
-                end
-
-                ua23 = function(ua24)
-                        local ua25 = u39.Theme
-
-                        ua8.BackgroundColor3 = ua25.Controls.Background[1].Value
-                        ua8.BackgroundTransparency = ua25.Controls.Background[2].Value
-                        ua10.Color = ua25.Text.Quaternary[1].Value
-                        ua10.Transparency = ua25.Text.Quaternary[2].Value
-                        ua11.TextColor3 = ua25.Text.Primary[1].Value
-                        ua11.TextTransparency = ua25.Text.Primary[2].Value
-                        ua12.ImageColor3 = ua25.Text.Primary[1].Value
-                        ua12.ImageTransparency = math.min(1, ua25.Text.Primary[2].Value + 0.15)
-                        ua13.BackgroundColor3 = ua25.Controls.MenuButton.MenuBackground[1].Value
-                        ua13.BackgroundTransparency = ua25.Controls.MenuButton.MenuBackground[2].Value
-                        ua15.Color = ua25.Text.Quaternary[1].Value
-                        ua15.Transparency = ua25.Text.Quaternary[2].Value
-
-                        for ua26, ua27 in ipairs(ua20) do
-                                local ua28 = ua26 == ua24
-                                local ua29 = ua5.Colors and ua5.Colors(ua26) or u63[u12.AccentName] or u63.Grey
-
-                                ua27.Row.BackgroundColor3 = ua25.Text.Primary[1].Value
-                                ua27.Row.BackgroundTransparency = 1
-                                ua27.Label.TextColor3 = ua25.Text.Primary[1].Value
-                                ua27.Label.TextTransparency = ua28 and 0 or 0.3
-                                ua27.Check.ImageColor3 = Color3.fromHex(ua29)
-                                ua27.Check.Visible = ua28
-                        end
-                end
-
-                for ua24, ua25 in ipairs(ua5.Options) do
-                        local ua30 = Instance.new("TextButton")
-                        local ua31 = Instance.new("UICorner")
-                        local ua32 = Instance.new("TextLabel")
-                        local ua33 = Instance.new("ImageLabel")
-
-                        ua30.Size = UDim2.new(1, 0, 0, 28)
-                        ua30.AutoButtonColor = false
-                        ua30.Text = ""
-                        ua30.LayoutOrder = ua24
-                        ua30.ZIndex = 2
-                        ua30.Parent = ua13
-
-                        ua31.CornerRadius = UDim.new(0, 6)
-                        ua31.Parent = ua30
-
-                        ua32.BackgroundTransparency = 1
-                        ua32.AnchorPoint = Vector2.new(0, 0.5)
-                        ua32.Position = UDim2.new(0, 9, 0.5, 0)
-                        ua32.Size = UDim2.new(1, -38, 1, 0)
-                        ua32.FontFace = Font.new("rbxassetid://12187365364")
-                        ua32.TextSize = 14
-                        ua32.RichText = true
-                        ua32.TextXAlignment = Enum.TextXAlignment.Left
-                        ua32.TextTruncate = Enum.TextTruncate.AtEnd
-                        ua32.Text = ua25.Dot and u64(ua25.Dot, "●") .. "  " .. ua25.Text or ua25.Text
-                        ua32.ZIndex = 2
-                        ua32.Parent = ua30
-
-                        ua33.BackgroundTransparency = 1
-                        ua33.AnchorPoint = Vector2.new(1, 0.5)
-                        ua33.Position = UDim2.new(1, -9, 0.5, 0)
-                        ua33.Size = UDim2.fromOffset(14, 14)
-                        ua33.Image = u38.Symbols.checkmark
-                        ua33.ScaleType = Enum.ScaleType.Fit
-                        ua33.ZIndex = 2
-                        ua33.Parent = ua30
-
-                        ua30.MouseEnter:Connect(function()
-                                if ua18 ~= ua24 then
-                                        ua30.BackgroundTransparency = 0.92
-                                end
-                        end)
-
-                        ua30.MouseLeave:Connect(function()
-                                ua30.BackgroundTransparency = 1
-                        end)
-
-                        ua30.Activated:Connect(function()
-                                if ua18 == ua24 then
-                                        ua22(false)
-
-                                        return
-                                end
-
-                                ua18 = ua24
-                                ua21(ua24)
-                                ua22(false)
-
-                                task.spawn(ua5.OnSelect, ua24)
-                                ua23(ua24)
-                        end)
-
-                        ua20[ua24] = { Row = ua30, Label = ua32, Check = ua33 }
-                end
-
-                table.insert(_G.UU.Connections, u3.InputBegan:Connect(function(ua24)
-                        if not ua19 then
-                                return
-                        end
-
-                        if ua24.UserInputType ~= Enum.UserInputType.MouseButton1 and ua24.UserInputType ~= Enum.UserInputType.Touch then
-                                return
-                        end
-
-                        local ua25 = ua24.Position
-                        local ua26 = ua8.AbsolutePosition
-                        local ua27 = ua8.AbsoluteSize
-                        local ua28 = ua13.AbsolutePosition
-                        local ua29 = ua13.AbsoluteSize
-                        local ua30 = ua25.X >= ua26.X and ua25.X <= ua26.X + ua27.X and ua25.Y >= ua26.Y and ua25.Y <= ua26.Y + ua27.Y
-                        local ua31 = ua25.X >= ua28.X and ua25.X <= ua28.X + ua29.X and ua25.Y >= ua28.Y and ua25.Y <= ua28.Y + ua29.Y
-
-                        if not ua30 and not ua31 then
-                                ua22(false)
-                        end
-                end))
-
-                ua8.Activated:Connect(function()
-                        ua22(not ua19)
-                end)
-
-                ua21(ua18)
-                ua23(ua18)
-
-                return {
-                        Refresh = function()
-                                ua23(ua18)
-                        end,
-                }
+local u13 = _G.UU.UI.Tabs[u19.CurrentTab] and u19.CurrentTab or "Home"
+_G.UU.UI.Tabs[u13].Selected = true
+
+u75 = true
+
+table.insert(
+    _G.UU.Connections,
+    u3.InputBegan:Connect(function(u14, u15)
+        if u15 then
+            return
         end
 
-        ua1.Settings.Theme = ua4({
-                Parent = ua3.Structures.RightAccessories,
-                Options = { { Text = "Light" }, { Text = "Dark" } },
-                Index = u12.ThemeMode == "Dark" and 2 or 1,
-                OnSelect = function(ua5)
-                        if not u48 then
-                                return
-                        end
-
-                        local ua6 = ua5 == 2 and "Dark" or "Light"
-
-                        if ua6 == u12.ThemeMode then
-                                return
-                        end
-
-                        u12.ThemeMode = ua6
-                        u39.Theme = ua6 == "Dark" and u38.Themes.Dark or u38.Themes.Light
-                        u71.Theme = u39.Theme
-
-                        u26("Theme → " .. ua6)
-                        u16()
-
-                        if ua1.Settings.Accent and ua1.Settings.Accent.Refresh then
-                                ua1.Settings.Accent.Refresh()
-                        end
-                end,
-        })
-
-        local ua5 = u45(ua2, "Accent Color", "Highlight color used by switches, buttons and selections")
-        local ua6 = { "Blue", "Purple", "Pink", "Red", "Orange", "Yellow", "Green", "Graphite" }
-        local ua7 = 0
-
-        for ua8, ua9 in ipairs(ua6) do
-                if ua9 == u12.AccentName then
-                        ua7 = ua8
-                end
+        if u14.KeyCode == Enum.KeyCode.F5 and u14.KeyCode ~= u19.Keybind then
+            u54(not u19.MousePosEnabled, false)
         end
 
-        if ua7 == 0 then
-                ua7 = 1
-                u12.AccentName = "Blue"
+        if u14.KeyCode == Enum.KeyCode.F4 and u14.KeyCode ~= u19.Keybind then
+            u57(not u19.ClickEnabled, false)
         end
+    end)
+)
 
-        local ua10 = {}
-
-        for ua8, ua9 in ipairs(ua6) do
-                ua10[ua8] = { Text = ua9, Dot = u63[ua9] or u63.Grey }
-        end
-
-        ua1.Settings.Accent = ua4({
-                Parent = ua5.Structures.RightAccessories,
-                Options = ua10,
-                Index = ua7,
-                Colors = function(ua11)
-                        return ua10[ua11].Dot
-                end,
-                OnSelect = function(ua11)
-                        if not u48 then
-                                return
-                        end
-
-                        local ua12 = ua6[ua11]
-
-                        if not ua12 then
-                                return
-                        end
-
-                        u12.AccentName = ua12
-                        u39.Accent = u38.Accents[ua12]
-                        u71.Accent = u39.Accent
-
-                        u26("Accent → " .. ua12)
-                        u16()
-
-                        if ua1.Settings.Theme and ua1.Settings.Theme.Refresh then
-                                ua1.Settings.Theme.Refresh()
-                        end
-                end,
-        })
-
-        local ua14 = u62:PageSection({ Title = "Interface" }):Form()
-
-        local ua15 = u45(ua14, "Toggle Keybind", "Show or hide the window")
-
-        ua15:Right():KeybindField({
-                Value = u12.Keybind,
-                ValueChanged = function(ua16, ua17)
-                        if not u48 then
-                                return
-                        end
-
-                        u12.Keybind = ua17
-                        u26("Keybind → " .. ua17.Name)
-                        u16()
-                end,
-                BindPressed = function(ua16, ua17, ua18, ua19)
-                        if not ua18 or ua19 then
-                                return
-                        end
-
-                        u40.Minimized = not u40.Minimized
-                end,
-        })
-
-        local ua20 = u45(ua14, "Auto Hide UI", "Starts minimized on the next injection")
-
-        ua20:Right():Toggle({
-                Value = u12.AutoHideEnabled,
-                ValueChanged = function(ua16, ua17)
-                        if not u48 then
-                                return
-                        end
-
-                        u12.AutoHideEnabled = ua17
-                        u26("Auto Hide UI → " .. (ua17 and "Enabled" or "Disabled"))
-                        u16()
-                end,
-        })
-
-        local ua21 = u62:Form()
-
-        u45(ua21, "Activity", "Tracks every action with a timestamp, newest first"):Right():Button({
-                Label = "Clear",
-                State = "Destructive",
-                Pushed = function()
-                        _G.UU.LogBuffer = {}
-
-                        for ua23 = 1, 6 do
-                                local ua24 = ua1.Settings.Activity[ua23]
-
-                                if ua24 then
-                                        ua24.Text = u64(u63.Grey, "—")
-                                end
-                        end
-                end,
-        })
-
-        for ua22 = 1, 6 do
-                ua1.Settings.Activity[ua22] = ua21:Row():Left():Label({
-                        Text = _G.UU.LogBuffer[ua22] or u64(u63.Grey, "—"),
-                })
-        end
-
-        local ua23 = u62:PageSection({ Title = "Danger Zone", Subtitle = "Fully removes Universal Utility and stops everything it runs" }):Form()
-
-        local ua24 = u45(ua23, "Uninject", "Press twice to confirm the removal"):Right():Button({
-                Label = "Uninject",
-                State = "Destructive",
-                Pushed = function(ua25)
-                        if not u54 then
-                                u54 = true
-                                ua25.Label = "Click again to confirm"
-
-                                task.delay(3, function()
-                                        u54 = false
-
-                                        if ua25.Parent then
-                                                ua25.Label = "Uninject"
-                                        end
-                                end)
-
-                                return
-                        end
-
-                        u54 = false
-                        ua25.Label = "Uninjecting..."
-                        u15()
-
-                        task.delay(0.15, function()
-                                for ua26, ua27 in pairs(_G.UU.Threads) do
-                                        if typeof(ua27) == "thread" and coroutine.status(ua27) ~= "dead" then
-                                                pcall(task.cancel, ua27)
-                                        end
-
-                                        _G.UU.Threads[ua26] = nil
-                                end
-
-                                for ua26, ua27 in pairs(_G.UU.Connections) do
-                                        pcall(function()
-                                                ua27:Disconnect()
-                                        end)
-                                end
-
-                                _G.UU.Connections = {}
-
-                                if u36 then
-                                        pcall(setfpscap, 60)
-                                end
-
-                                pcall(function()
-                                        if typeof(dequeue_on_teleport) == "function" then
-                                                dequeue_on_teleport()
-                                        end
-                                end)
-
-                                pcall(u15)
-
-                                u71:Destroy()
-                                u39:Destroy()
-
-                                _G.UU.Threads = {}
-                                _G.UU.Connections = {}
-                                _G.UU.UI = {}
-                                _G.UU.LogBuffer = {}
-                                _G.UU.App = nil
-                                _G.UU.EditorApp = nil
-                                _G.UU.CFG = nil
-                                _G.UU.SaveCFG = nil
-                                _G.UU.DebouncedSave = nil
-                                _G.UU.Loaded = false
-                                _G.UU.LoadLock = false
-                        end)
-                end,
-        })
-end
-
-for ua1, ua2 in pairs(_G.UU.UI.Tabs) do
-        ua2.Activated:Connect(function()
-                u12.CurrentTab = ua1
-                u16()
-        end)
-end
-
-local ua1 = _G.UU.UI.Tabs[u12.CurrentTab] and u12.CurrentTab or "Home"
-_G.UU.UI.Tabs[ua1].Selected = true
-
-u48 = true
-
-table.insert(_G.UU.Connections, u3.InputBegan:Connect(function(ua2, ua3)
-        if ua3 then
-                return
-        end
-
-        if ua2.KeyCode == Enum.KeyCode.F5 and ua2.KeyCode ~= u12.Keybind then
-                u30(not u12.MousePosEnabled, false)
-        end
-
-        if ua2.KeyCode == Enum.KeyCode.F4 and ua2.KeyCode ~= u12.Keybind then
-                u74(not u12.ClickEnabled, false)
-        end
-end))
-
-table.insert(_G.UU.Connections, u1.PlayerAdded:Connect(function()
+table.insert(
+    _G.UU.Connections,
+    u1.PlayerAdded:Connect(function()
         if _G.UU.UI.Home and _G.UU.UI.Home.Players then
-                _G.UU.UI.Home.Players.Text = u64(u63.Lime, #u1:GetPlayers() .. " / " .. u1.MaxPlayers)
+            _G.UU.UI.Home.Players.Text = u21(u20.Lime, #u1:GetPlayers() .. " / " .. u1.MaxPlayers)
         end
-end))
+    end)
+)
 
-table.insert(_G.UU.Connections, u1.PlayerRemoving:Connect(function()
+table.insert(
+    _G.UU.Connections,
+    u1.PlayerRemoving:Connect(function()
         if _G.UU.UI.Home and _G.UU.UI.Home.Players then
-                _G.UU.UI.Home.Players.Text = u64(u63.Lime, #u1:GetPlayers() .. " / " .. u1.MaxPlayers)
+            _G.UU.UI.Home.Players.Text = u21(u20.Lime, #u1:GetPlayers() .. " / " .. u1.MaxPlayers)
         end
-end))
+    end)
+)
 
-local function ua4()
-        local ua2 = workspace.CurrentCamera
+local function u16()
+    local u14 = workspace.CurrentCamera
 
-        if not ua2 then
-                return
-        end
+    if not u14 then
+        return
+    end
 
-        if _G.UU.UI.Home and _G.UU.UI.Home.Resolution then
-                _G.UU.UI.Home.Resolution.Text = u64(u63.Cyan, string.format("%dx%d", ua2.ViewportSize.X, ua2.ViewportSize.Y))
-        end
+    if _G.UU.UI.Home and _G.UU.UI.Home.Resolution then
+        _G.UU.UI.Home.Resolution.Text =
+            u21(u20.Cyan, string.format("%dx%d", u14.ViewportSize.X, u14.ViewportSize.Y))
+    end
 end
 
-ua4()
+u16()
 
-local function ua5()
-        local ua2 = workspace.CurrentCamera
+local function u27()
+    local u14 = workspace.CurrentCamera
 
-        if ua2 then
-                table.insert(_G.UU.Connections, ua2:GetPropertyChangedSignal("ViewportSize"):Connect(ua4))
-        end
+    if u14 then
+        table.insert(_G.UU.Connections, u14:GetPropertyChangedSignal("ViewportSize"):Connect(u16))
+    end
 end
 
-ua5()
+u27()
 
-table.insert(_G.UU.Connections, workspace:GetPropertyChangedSignal("CurrentCamera"):Connect(ua5))
+table.insert(_G.UU.Connections, workspace:GetPropertyChangedSignal("CurrentCamera"):Connect(u27))
 
-table.insert(_G.UU.Connections, u2.RenderStepped:Connect(function()
-        u51 = u51 + 1
-        local ua2 = tick()
+table.insert(
+    _G.UU.Connections,
+    u2.RenderStepped:Connect(function()
+        u78 = u78 + 1
+        local u14 = tick()
 
-        if ua2 - u52 >= 1 then
-                local ua3 = math.floor(u51 / (ua2 - u52))
-                u51 = 0
-                u52 = ua2
+        if u14 - u79 >= 1 then
+            local u15 = math.floor(u78 / (u14 - u79))
+            u78 = 0
+            u79 = u14
 
-                table.remove(u49, 1)
-                table.insert(u49, ua3)
+            if #u76 >= 60 then
+                table.remove(u76, 1)
+            end
+            table.insert(u76, u15)
 
-                local ua4, ua5, ua6 = math.huge, 0, 0
+            local u16, u27, u28 = math.huge, 0, 0
 
-                for ua7, ua8 in ipairs(u49) do
-                        ua4 = math.min(ua4, ua8)
-                        ua5 = math.max(ua5, ua8)
-                        ua6 = ua6 + ua8
+            for u29, u30 in ipairs(u76) do
+                u16 = math.min(u16, u30)
+                u27 = math.max(u27, u30)
+                u28 = u28 + u30
+            end
+
+            local u31 = math.floor(u28 / #u76)
+            local u32 = _G.UU.UI
+            local u33 = u8:GetTotalMemoryUsageMb()
+            u80 = math.max(u80, u33)
+
+            if u32.Home then
+                if u32.Home.FPS then
+                    u32.Home.FPS.Text = u21(u20.Green, u15)
                 end
 
-                local ua9 = math.floor(ua6 / #u49)
-                local ua10 = _G.UU.UI
-                local ua11 = u8:GetTotalMemoryUsageMb()
-                u53 = math.max(u53, ua11)
+                if u32.Home.Memory then
+                    u32.Home.Memory.Text = u21(u20.Purple, string.format("%.1f MB", u33))
+                end
+            end
 
-                if ua10.Home then
-                        if ua10.Home.FPS then
-                                ua10.Home.FPS.Text = u64(u63.Green, ua3)
-                        end
-
-                        if ua10.Home.Memory then
-                                ua10.Home.Memory.Text = u64(u63.Purple, string.format("%.1f MB", ua11))
-                        end
+            if u32.Perf then
+                if u32.Perf.FpsCurrent then
+                    u32.Perf.FpsCurrent.Text = u21(u20.Green, u15)
                 end
 
-                if ua10.Perf then
-                        if ua10.Perf.FpsCurrent then
-                                ua10.Perf.FpsCurrent.Text = u64(u63.Green, ua3)
-                        end
-
-                        if ua10.Perf.FpsAvg then
-                                ua10.Perf.FpsAvg.Text = u64(u63.Mint, ua9)
-                        end
-
-                        if ua10.Perf.FpsRange then
-                                ua10.Perf.FpsRange.Text = u64(u63.Grey, string.format("Min: %d | Max: %d", ua4, ua5))
-                        end
-
-                        if ua10.Perf.MemCurrent then
-                                ua10.Perf.MemCurrent.Text = u64(u63.Purple, string.format("%.1f MB", ua11))
-                        end
-
-                        if ua10.Perf.MemPeak then
-                                ua10.Perf.MemPeak.Text = u64(u63.Pink, string.format("%.1f MB", u53))
-                        end
+                if u32.Perf.FpsAvg then
+                    u32.Perf.FpsAvg.Text = u21(u20.Mint, u31)
                 end
+
+                if u32.Perf.FpsRange then
+                    u32.Perf.FpsRange.Text = u21(u20.Grey, string.format("Min: %d | Max: %d", u16, u27))
+                end
+
+                if u32.Perf.MemCurrent then
+                    u32.Perf.MemCurrent.Text = u21(u20.Purple, string.format("%.1f MB", u33))
+                end
+
+                if u32.Perf.MemPeak then
+                    u32.Perf.MemPeak.Text = u21(u20.Pink, string.format("%.1f MB", u80))
+                end
+            end
         end
 
         if tick() - (_G.UU.LastPingTime or 0) >= 2 then
-                _G.UU.LastPingTime = tick()
+            _G.UU.LastPingTime = tick()
 
-                local ua2 = math.floor(u9:GetNetworkPing() * 1000)
-                table.remove(u50, 1)
-                table.insert(u50, ua2)
+            local u14 = math.floor(u9:GetNetworkPing() * 1000)
+            if #u77 >= 60 then
+                table.remove(u77, 1)
+            end
+            table.insert(u77, u14)
 
-                local ua3, ua4, ua5 = math.huge, 0, 0
+            local u15, u16, u27 = math.huge, 0, 0
 
-                for ua6, ua7 in ipairs(u50) do
-                        ua3 = math.min(ua3, ua7)
-                        ua4 = math.max(ua4, ua7)
-                        ua5 = ua5 + ua7
+            for u28, u29 in ipairs(u77) do
+                u15 = math.min(u15, u29)
+                u16 = math.max(u16, u29)
+                u27 = u27 + u29
+            end
+
+            local u30 = math.floor(u27 / #u77)
+            local u31 = _G.UU.UI
+
+            if u31.Home and u31.Home.Ping then
+                u31.Home.Ping.Text = u21(u25(u14), u14 .. " ms")
+            end
+
+            if u31.Perf then
+                if u31.Perf.PingCurrent then
+                    u31.Perf.PingCurrent.Text = u21(u25(u14), u14 .. " ms")
                 end
 
-                local ua8 = math.floor(ua5 / #u50)
-                local ua9 = _G.UU.UI
-
-                if ua9.Home and ua9.Home.Ping then
-                        ua9.Home.Ping.Text = u64(u68(ua2), ua2 .. " ms")
+                if u31.Perf.PingAvg then
+                    u31.Perf.PingAvg.Text = u21(u20.Mint, u30 .. " ms")
                 end
 
-                if ua9.Perf then
-                        if ua9.Perf.PingCurrent then
-                                ua9.Perf.PingCurrent.Text = u64(u68(ua2), ua2 .. " ms")
-                        end
-
-                        if ua9.Perf.PingAvg then
-                                ua9.Perf.PingAvg.Text = u64(u63.Mint, ua8 .. " ms")
-                        end
-
-                        if ua9.Perf.PingRange then
-                                ua9.Perf.PingRange.Text = u64(u63.Grey, string.format("Min: %d ms | Max: %d ms", ua3, ua4))
-                        end
-
-                        if ua9.Perf.Quality then
-                                local ua10
-
-                                if ua2 < 50 then
-                                        ua10 = "Excellent"
-                                elseif ua2 < 100 then
-                                        ua10 = "Good"
-                                elseif ua2 < 200 then
-                                        ua10 = "Fair"
-                                elseif ua2 < 300 then
-                                        ua10 = "Poor"
-                                else
-                                        ua10 = "Very Poor"
-                                end
-
-                                ua9.Perf.Quality.Text = u64(u68(ua2), ua10)
-                        end
+                if u31.Perf.PingRange then
+                    u31.Perf.PingRange.Text =
+                        u21(u20.Grey, string.format("Min: %d ms | Max: %d ms", u15, u16))
                 end
+
+                if u31.Perf.Quality then
+                    local u32
+
+                    if u14 < 50 then
+                        u32 = "Excellent"
+                    elseif u14 < 100 then
+                        u32 = "Good"
+                    elseif u14 < 200 then
+                        u32 = "Fair"
+                    elseif u14 < 300 then
+                        u32 = "Poor"
+                    else
+                        u32 = "Very Poor"
+                    end
+
+                    u31.Perf.Quality.Text = u21(u25(u14), u32)
+                end
+            end
         end
-end))
+    end)
+)
 
-u29("MouseLabel", function()
-        while true do
-                task.wait(0.25)
+u53("MouseLabel", function()
+    while true do
+        task.wait(0.25)
 
-                local ua2 = _G.UU.UI
+        local u14 = _G.UU.UI
 
-                if ua2.AntiAFK and ua2.AntiAFK.MouseState and ua2.AntiAFK.MouseState.Parent then
-                        ua2.AntiAFK.MouseState.Text = u65(u12.MousePosEnabled, u12.MousePosSaved.X, u12.MousePosSaved.Y)
-                end
+        if u14.AntiAFK and u14.AntiAFK.MouseState and u14.AntiAFK.MouseState.Parent then
+            u14.AntiAFK.MouseState.Text = u22(u19.MousePosEnabled, u19.MousePosSaved.X, u19.MousePosSaved.Y)
         end
+    end
 end)
 
-if u12.JumpEnabled then
-        task.defer(u31)
+if u19.JumpEnabled then
+    task.defer(u55)
 end
 
-if u12.ClickEnabled then
-        task.defer(u32)
+if u19.ClickEnabled then
+    task.defer(u56)
 end
 
-if u12.AutoSpamEnabled then
-        local ua2 = Enum.KeyCode[u12.SpamKey]
-        local ua3 = ua2 and (ua2 == Enum.KeyCode.P or ua2.Name == "F4" or ua2.Name == "F5" or ua2 == u12.Keybind)
+if u19.AutoSpamEnabled then
+    local u14 = Enum.KeyCode[u19.SpamKey]
+    local u15 = u14 and (u14 == Enum.KeyCode.P or u14.Name == "F4" or u14.Name == "F5" or u14 == u19.Keybind)
 
-        if not ua2 or ua3 then
-                u12.AutoSpamEnabled = false
+    if not u14 or u15 then
+        u19.AutoSpamEnabled = false
 
-                _G.UU.UI.SyncSpam = true
-                _G.UU.UI.Spam.Toggle.Value = false
-                _G.UU.UI.SyncSpam = false
+        _G.UU.UI.SyncSpam = true
+        _G.UU.UI.Spam.Toggle.Value = false
+        _G.UU.UI.SyncSpam = false
 
-                u26("Key Spam → " .. (not ua2 and "Invalid key '" .. u12.SpamKey .. "' saved in config" or "Key '" .. ua2.Name .. "' is reserved"))
-        else
-                u33()
-        end
+        u50(
+            "Key Spam → "
+                .. (
+                    not u14 and "Invalid key '" .. u19.SpamKey .. "' saved in config"
+                    or "Key '" .. u14.Name .. "' is reserved"
+                )
+        )
+    else
+        u58()
+    end
 end
 
-if u12.AutoRejoinEnabled then
-        u34()
+if u19.AutoRejoinEnabled then
+    u59()
 end
 
-if u12.FPSUnlockEnabled and u36 then
-        u37()
+if u19.FPSUnlockEnabled and u61 then
+    u62()
 else
-        if u36 then
-                pcall(setfpscap, 60)
-        end
+    if u61 then
+        pcall(setfpscap, 60)
+    end
 
-        if u12.FPSUnlockEnabled and not u36 then
-                u12.FPSUnlockEnabled = false
+    if u19.FPSUnlockEnabled and not u61 then
+        u19.FPSUnlockEnabled = false
 
-                _G.UU.UI.SyncFps = true
-                _G.UU.UI.Perf.Toggle.Value = false
-                _G.UU.UI.SyncFps = false
+        _G.UU.UI.SyncFps = true
+        _G.UU.UI.Perf.Toggle.Value = false
+        _G.UU.UI.SyncFps = false
 
-                u26("FPS Unlock → Not supported by executor")
-        end
+        u50("FPS Unlock → Not supported by executor")
+    end
 end
 
-if u12.MousePosEnabled then
-        u30(true, false)
+if u19.MousePosEnabled then
+    u54(true, false)
 end
 
-u39.Destroying:Connect(function()
-        pcall(u15)
+u65.Destroying:Connect(function()
+    if not u18() then
+        return
+    end
+    pcall(u37)
+    _G.UU.Loaded = false
+    _G.UU.LoadLock = false
+    if u82 then
+        pcall(task.cancel, u82)
+    end
+    u52("Click")
+    u52("Spam")
 
-        for ua2, ua3 in pairs(_G.UU.Threads) do
-                if typeof(ua3) == "thread" and coroutine.status(ua3) ~= "dead" then
-                        pcall(task.cancel, ua3)
-                end
+    for u14, u15 in pairs(_G.UU.Threads) do
+        if typeof(u15) == "thread" and coroutine.status(u15) ~= "dead" then
+            pcall(task.cancel, u15)
         end
+    end
 
-        for ua2, ua3 in pairs(_G.UU.Connections) do
-                pcall(function()
-                        ua3:Disconnect()
-                end)
-        end
+    for u14, u15 in pairs(_G.UU.Connections) do
+        pcall(function()
+            u15:Disconnect()
+        end)
+    end
+    if u61 then
+        pcall(setfpscap, 60)
+    end
+    pcall(function()
+        u90:Destroy()
+    end)
+    _G.UU.Session = nil
 end)
 
 if queue_on_teleport and not _G.UU.TeleportQueued then
-        _G.UU.TeleportQueued = true
+    _G.UU.TeleportQueued = true
 
-        pcall(function()
-                queue_on_teleport('loadstring(game:HttpGet("https://raw.githubusercontent.com/6942x/UniversalUtility/main/Init.lua", true))()')
-        end)
+    pcall(function()
+        queue_on_teleport(
+            'loadstring(game:HttpGet("https://raw.githubusercontent.com/6942x/UniversalUtility/main/Init.lua", true))()'
+        )
+    end)
 end
 
 _G.UU.Loaded = true
 _G.UU.LoadLock = false
 
 task.defer(function()
-        if u18 then
-                u26("Config loaded for " .. u10 .. " (Id: " .. u11 .. ")")
-                u27("Welcome back", "Config loaded for " .. u10)
+    if u40 then
+        u50("Config loaded for " .. u10 .. " (Id: " .. u11 .. ")")
+        u51("Welcome back", "Config loaded for " .. u10)
+    else
+        u50("Fresh start — no saved config found")
+        u50("Defaults applied · Keybind: G")
+        u51("Welcome", "Universal Utility is ready")
+    end
+
+    local u14 = _G.UU.UI
+
+    if u14.Loader and u14.Loader.PushOutput and u19.AutoLoadEnabled and u19.SavedCode ~= "" then
+        u50("Auto Load → executing saved script")
+
+        local u15, u16 = u60(u19.SavedCode)
+
+        if u15 then
+            u14.Loader.PushOutput("Auto-load executed successfully.", u20.Green)
+            u50("Auto Load → script executed ✓")
         else
-                u26("Fresh start — no saved config found")
-                u26("Defaults applied · Keybind: G")
-                u27("Welcome", "Universal Utility is ready")
+            if u16 then
+                u14.Loader.PushOutput(tostring(u16), u20.Red)
+            end
+
+            u50("Auto Load error: " .. tostring(u16):sub(1, 80))
+            u51("Auto Load failed", tostring(u16):sub(1, 120))
         end
-
-        local ua2 = _G.UU.UI
-
-        if ua2.Loader and ua2.Loader.PushOutput and u12.AutoLoadEnabled and u12.SavedCode ~= "" then
-                u26("Auto Load → executing saved script")
-
-                local ua3, ua4 = u35(u12.SavedCode)
-
-                if ua3 then
-                        ua2.Loader.PushOutput("Auto-load executed successfully.", u63.Green)
-                        u26("Auto Load → script executed ✓")
-                else
-                        if ua4 then
-                                ua2.Loader.PushOutput(tostring(ua4), u63.Red)
-                        end
-
-                        u26("Auto Load error: " .. tostring(ua4):sub(1, 80))
-                        u27("Auto Load failed", tostring(ua4):sub(1, 120))
-                end
-        end
+    end
 end)
 
 return _G.UU
