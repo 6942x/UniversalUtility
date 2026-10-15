@@ -987,20 +987,30 @@ local function u59()
     end)
 end
 
-local function u60(u13)
+local u60 = false
+
+local function u61(u13)
+    if not u18() then
+        return false, "This utility session has ended"
+    end
+    if u60 then
+        return false, "A script is already running"
+    end
     if type(u13) ~= "string" or u13 == "" then
         return false, "No code to execute"
     end
 
-    local u14, u15 = pcall(function()
-        local u16, u27 = loadstring(u13)
+    u60 = true
+    local u14, u15 = xpcall(function()
+        local u16, u27 = loadstring(u13, "=UniversalUtility.ScriptLoader")
 
         if not u16 then
             error(u27, 0)
         end
 
         u16()
-    end)
+    end, debug.traceback)
+    u60 = false
 
     if u14 then
         return true, nil
@@ -1009,14 +1019,14 @@ local function u60(u13)
     return false, tostring(u15)
 end
 
-local u61 = typeof(setfpscap) == "function"
+local u62 = typeof(setfpscap) == "function"
 
-if u61 then
-    u61 = pcall(setfpscap, 60)
+if u62 then
+    u62 = pcall(setfpscap, 60)
 end
 
-local function u62()
-    if not u61 then
+local function u63()
+    if not u62 then
         return
     end
 
@@ -1029,13 +1039,13 @@ end
 
 _G.UU.UI = {}
 
-local u63 =
+local u64 =
     loadstring(game:HttpGet("https://github.com/cascadeui/Cascade/releases/latest/download/dist.luau"))()
 if not u18() then
     return
 end
 
-local function u64(u13, u14)
+local function u65(u13, u14)
     local u15 = Vector2.new(1280, 720)
 
     pcall(function()
@@ -1070,18 +1080,18 @@ pcall(function()
     end
 end)
 
-local u65 = u63.New({
+local u66 = u64.New({
     WindowPill = true,
-    Theme = u63.Themes[u19.ThemeMode] or u63.Themes.Dark,
-    Accent = u63.Accents[u19.AccentName] or u63.Accents.Blue,
+    Theme = u64.Themes[u19.ThemeMode] or u64.Themes.Dark,
+    Accent = u64.Accents[u19.AccentName] or u64.Accents.Blue,
 })
 
-_G.UU.App = u65
+_G.UU.App = u66
 
-local u66 = u65:Window({
+local u67 = u66:Window({
     Title = "Universal Utility",
     Subtitle = u10,
-    Size = u64(850, 530),
+    Size = u65(850, 530),
     Draggable = true,
     Resizable = true,
     Dropshadow = true,
@@ -1091,12 +1101,12 @@ local u66 = u65:Window({
     Minimized = u19.AutoHideEnabled,
 })
 
-local u67 = u66:Section({ Title = "General" })
-local u68 = u66:Section({ Title = "Automation" })
-local u69 = u66:Section({ Title = "Session" })
-local u70 = u66:Section({ Title = "System" })
+local u68 = u67:Section({ Title = "General" })
+local u69 = u67:Section({ Title = "Automation" })
+local u70 = u67:Section({ Title = "Session" })
+local u71 = u67:Section({ Title = "System" })
 
-local function u71(u13, u14, u15)
+local function u72(u13, u14, u15)
     local u16 = u13:Row()
 
     u16:Left():TitleStack({
@@ -1107,7 +1117,7 @@ local function u71(u13, u14, u15)
     return u16
 end
 
-local function u72(u13)
+local function u73(u13)
     local u14 = u13.Structures
 
     u14.Gradient.Enabled = false
@@ -1119,7 +1129,7 @@ local function u72(u13)
     return u13
 end
 
-local function u73(u13, u14, u15)
+local function u74(u13, u14, u15)
     local u16 = u13:Tab({
         Title = u14,
         Icon = u15,
@@ -1139,7 +1149,7 @@ local function u73(u13, u14, u15)
     return u16
 end
 
-local function u74(u13, u14)
+local function u75(u13, u14)
     local u15 = u13:Right():Slider(u14)
 
     if u15.Structures and u15.Structures.Thumb then
@@ -1149,40 +1159,40 @@ local function u74(u13, u14)
     return u15
 end
 
-local u75 = false
+local u76 = false
 
-local u76, u77 = {}, {}
+local u77, u78 = {}, {}
 
-local u78, u79 = 0, tick()
-local u80 = 0
-local u81 = false
-local u82 = nil
+local u79, u80 = 0, tick()
+local u81 = 0
+local u82 = false
+local u83 = nil
 
-local u83 = u73(u67, "Home", u63.Symbols.house)
-local u84 = u73(u68, "Anti-AFK", u63.Symbols.bolt)
-local u85 = u73(u68, "Key Spam", u63.Symbols.keyboard)
-local u86 = u73(u69, "Auto Rejoin", u63.Symbols.arrowClockwise)
-local u87 = u73(u69, "Script Loader", u63.Symbols.docPlaintext)
-local u88 = u73(u70, "Performance", u63.Symbols.waveform)
-local u89 = u73(u70, "Settings", u63.Symbols.gearshape)
+local u84 = u74(u68, "Home", u64.Symbols.house)
+local u85 = u74(u69, "Anti-AFK", u64.Symbols.bolt)
+local u86 = u74(u69, "Key Spam", u64.Symbols.keyboard)
+local u87 = u74(u70, "Auto Rejoin", u64.Symbols.arrowClockwise)
+local u88 = u74(u70, "Script Loader", u64.Symbols.docPlaintext)
+local u89 = u74(u71, "Performance", u64.Symbols.waveform)
+local u90 = u74(u71, "Settings", u64.Symbols.gearshape)
 
 _G.UU.UI.Tabs = {
-    Home = u83,
-    AntiAFK = u84,
-    KeySpam = u85,
-    Rejoin = u86,
-    Loader = u87,
-    Performance = u88,
-    Settings = u89,
+    Home = u84,
+    AntiAFK = u85,
+    KeySpam = u86,
+    Rejoin = u87,
+    Loader = u88,
+    Performance = u89,
+    Settings = u90,
 }
 
 do
     local u13 = _G.UU.UI
-    local u14 = u83:PageSection({ Title = "Player" }):Form()
+    local u14 = u84:PageSection({ Title = "Player" }):Form()
 
     local u15 = u14:Row()
 
-    u72(u15:Left():ImageSurface({
+    u73(u15:Left():ImageSurface({
         Image = "rbxthumb://type=AvatarHeadShot&id=" .. u11 .. "&w=150&h=150",
     }))
 
@@ -1202,61 +1212,61 @@ do
     end)
 
     u13.Home = {
-        Executor = u71(u14, "Executor"):Right():Label({
+        Executor = u72(u14, "Executor"):Right():Label({
             Text = u21(u20.Blue, u16 .. (u27 ~= "" and (" " .. u27) or "")),
         }),
-        Device = u71(u14, "Device"):Right():Label({
+        Device = u72(u14, "Device"):Right():Label({
             Text = u21(u20.Mint, u46()),
         }),
-        Resolution = u71(u14, "Resolution"):Right():Label({
+        Resolution = u72(u14, "Resolution"):Right():Label({
             Text = u21(u20.Cyan, "Detecting..."),
         }),
-        FPS = u71(u14, "FPS"):Right():Label({
+        FPS = u72(u14, "FPS"):Right():Label({
             Text = u21(u20.Grey, "—"),
         }),
-        Ping = u71(u14, "Ping"):Right():Label({
+        Ping = u72(u14, "Ping"):Right():Label({
             Text = u21(u20.Grey, "—"),
         }),
-        Memory = u71(u14, "Memory"):Right():Label({
+        Memory = u72(u14, "Memory"):Right():Label({
             Text = u21(u20.Grey, "—"),
         }),
     }
 
-    local u28 = u83:PageSection({ Title = "Game" }):Form()
+    local u28 = u84:PageSection({ Title = "Game" }):Form()
     local u29 = u28:Row()
 
     u13.GameIcon = u29:Left():ImageSurface({
-        Image = u63.Symbols.docPlaintext,
+        Image = u64.Symbols.docPlaintext,
     })
 
-    u72(u13.GameIcon)
+    u73(u13.GameIcon)
 
     u13.GameName = u29:Right():TitleStack({
         Title = "Loading game info...",
         Subtitle = u21(u20.Blue, "Universal Utility"),
     })
 
-    u13.Home.PlaceId = u71(u28, "Place Id"):Right():Label({
+    u13.Home.PlaceId = u72(u28, "Place Id"):Right():Label({
         Text = u21(u20.Indigo, tostring(game.PlaceId)),
     })
 
-    u13.Home.UniverseId = u71(u28, "Universe Id"):Right():Label({
+    u13.Home.UniverseId = u72(u28, "Universe Id"):Right():Label({
         Text = u21(u20.Teal, tostring(game.GameId)),
     })
 
-    u13.Home.Players = u71(u28, "Server Players"):Right():Label({
+    u13.Home.Players = u72(u28, "Server Players"):Right():Label({
         Text = u21(u20.Lime, #u1:GetPlayers() .. " / " .. u1.MaxPlayers),
     })
 
-    u13.Home.PlaceVersion = u71(u28, "Place Version"):Right():Label({
+    u13.Home.PlaceVersion = u72(u28, "Place Version"):Right():Label({
         Text = u21(u20.Orange, tostring(game.PlaceVersion)),
     })
 
-    u13.Home.Region = u71(u28, "Server Region"):Right():Label({
+    u13.Home.Region = u72(u28, "Server Region"):Right():Label({
         Text = u21(u20.Grey, "Server Region: ") .. u21(u20.Mint, "Detecting..."),
     })
 
-    u13.Home.JobId = u71(u28, "Job Id"):Right():Label({
+    u13.Home.JobId = u72(u28, "Job Id"):Right():Label({
         Text = u21(u20.Grey, game.JobId ~= "" and game.JobId or "N/A"),
         TextTruncate = Enum.TextTruncate.AtEnd,
     })
@@ -1280,16 +1290,16 @@ end
 
 do
     local u13 = _G.UU.UI
-    local u14 = u84:PageSection({ Title = "Automation" }):Form()
+    local u14 = u85:PageSection({ Title = "Automation" }):Form()
 
     u13.AntiAFK = {}
 
-    local u15 = u71(u14, "Auto Jump", "Simulates jumping to keep the session alive")
+    local u15 = u72(u14, "Auto Jump", "Simulates jumping to keep the session alive")
 
     u15:Right():Toggle({
         Value = u19.JumpEnabled,
         ValueChanged = function(u30, u31)
-            if not u75 then
+            if not u76 then
                 return
             end
 
@@ -1306,12 +1316,12 @@ do
         end,
     })
 
-    local u16 = u71(u14, "Auto Click", "Simulates mouse clicks at the chosen position · F4 toggles")
+    local u16 = u72(u14, "Auto Click", "Simulates mouse clicks at the chosen position · F4 toggles")
 
     u13.AntiAFK.ClickToggle = u16:Right():Toggle({
         Value = u19.ClickEnabled,
         ValueChanged = function(u30, u31)
-            if u13.SyncClick or not u75 then
+            if u13.SyncClick or not u76 then
                 return
             end
 
@@ -1319,12 +1329,12 @@ do
         end,
     })
 
-    local u27 = u71(u14, "Mouse Position", "Track the live cursor or lock a saved position")
+    local u27 = u72(u14, "Mouse Position", "Track the live cursor or lock a saved position")
 
     u13.AntiAFK.MouseToggle = u27:Right():Toggle({
         Value = u19.MousePosEnabled,
         ValueChanged = function(u30, u31)
-            if u13.SyncMouse or not u75 then
+            if u13.SyncMouse or not u76 then
                 return
             end
 
@@ -1332,22 +1342,22 @@ do
         end,
     })
 
-    u13.AntiAFK.MouseState = u71(u14, "Mouse State", "F5 toggles between tracking and locked"):Right():Label({
+    u13.AntiAFK.MouseState = u72(u14, "Mouse State", "F5 toggles between tracking and locked"):Right():Label({
         Text = u22(u19.MousePosEnabled, u19.MousePosSaved.X, u19.MousePosSaved.Y),
     })
 
-    local u28 = u84:PageSection({
+    local u28 = u85:PageSection({
         Title = "Cooldowns",
         Subtitle = "Exponential scale from 0.01 seconds to 10 minutes",
     }):Form()
 
-    u13.AntiAFK.JumpValue = u71(u28, "Jump Delay"):Right():Label({
+    u13.AntiAFK.JumpValue = u72(u28, "Jump Delay"):Right():Label({
         Text = u21(u20.Green, u41(u19.JumpDelay)),
     })
 
-    local u29 = u71(u28, "Jump Cooldown")
+    local u29 = u72(u28, "Jump Cooldown")
 
-    u74(u29, {
+    u75(u29, {
         Minimum = 0,
         Maximum = 1,
         Value = u43(u19.JumpDelay),
@@ -1362,13 +1372,13 @@ do
         end,
     })
 
-    u13.AntiAFK.ClickValue = u71(u28, "Click Delay"):Right():Label({
+    u13.AntiAFK.ClickValue = u72(u28, "Click Delay"):Right():Label({
         Text = u21(u20.Orange, u41(u19.ClickDelay)),
     })
 
-    local u30 = u71(u28, "Click Cooldown")
+    local u30 = u72(u28, "Click Cooldown")
 
-    u74(u30, {
+    u75(u30, {
         Minimum = 0,
         Maximum = 1,
         Value = u45(u19.ClickDelay),
@@ -1386,17 +1396,17 @@ end
 
 do
     local u13 = _G.UU.UI
-    local u14 = u85:PageSection({ Title = "Input" }):Form()
+    local u14 = u86:PageSection({ Title = "Input" }):Form()
 
     u13.Spam = {}
 
-    u13.Spam.Interval = u71(u14, "Selected Interval"):Right():Label({
+    u13.Spam.Interval = u72(u14, "Selected Interval"):Right():Label({
         Text = u21(u20.Yellow, string.format("%.2fs", u19.SpamDelay)),
     })
 
-    local u15 = u71(u14, "Spam Interval", "Delay between each simulated key press")
+    local u15 = u72(u14, "Spam Interval", "Delay between each simulated key press")
 
-    u74(u15, {
+    u75(u15, {
         Minimum = 0.05,
         Maximum = 5,
         Value = u19.SpamDelay,
@@ -1411,12 +1421,12 @@ do
         end,
     })
 
-    local u16 = u71(u14, "Target Key", "The key that gets pressed automatically")
+    local u16 = u72(u14, "Target Key", "The key that gets pressed automatically")
 
     u16:Right():KeybindField({
         Value = Enum.KeyCode[u19.SpamKey] or Enum.KeyCode.Q,
         ValueChanged = function(u30, u31)
-            if not u75 then
+            if not u76 then
                 return
             end
 
@@ -1454,13 +1464,13 @@ do
         end,
     })
 
-    local u27 = u85:PageSection({ Title = "Control" }):Form()
-    local u28 = u71(u27, "Auto Spam", "Repeatedly presses the target key")
+    local u27 = u86:PageSection({ Title = "Control" }):Form()
+    local u28 = u72(u27, "Auto Spam", "Repeatedly presses the target key")
 
     u13.Spam.Toggle = u28:Right():Toggle({
         Value = u19.AutoSpamEnabled,
         ValueChanged = function(u30, u31)
-            if u13.SyncSpam or not u75 then
+            if u13.SyncSpam or not u76 then
                 return
             end
 
@@ -1503,16 +1513,16 @@ end
 
 do
     local u13 = _G.UU.UI
-    local u14 = u86:PageSection({ Title = "Watcher" }):Form()
+    local u14 = u87:PageSection({ Title = "Watcher" }):Form()
 
     u13.Rejoin = {}
 
-    local u15 = u71(u14, "Auto Rejoin", "Reconnects automatically when disconnected")
+    local u15 = u72(u14, "Auto Rejoin", "Reconnects automatically when disconnected")
 
     u13.Rejoin.Toggle = u15:Right():Toggle({
         Value = u19.AutoRejoinEnabled,
         ValueChanged = function(u30, u31)
-            if not u75 then
+            if not u76 then
                 return
             end
 
@@ -1536,24 +1546,24 @@ do
     })
 end
 
-local u90 = u63.New({
+local u91 = u64.New({
     WindowPill = false,
-    Theme = u63.Themes[u19.ThemeMode] or u63.Themes.Dark,
-    Accent = u63.Accents[u19.AccentName] or u63.Accents.Blue,
+    Theme = u64.Themes[u19.ThemeMode] or u64.Themes.Dark,
+    Accent = u64.Accents[u19.AccentName] or u64.Accents.Blue,
 })
 
-_G.UU.EditorApp = u90
+_G.UU.EditorApp = u91
 
 do
     local u13 = _G.UU.UI
-    local u14 = u87:PageSection({ Title = "Editor" }):Form()
+    local u14 = u88:PageSection({ Title = "Editor" }):Form()
 
     u13.Loader = { Output = {}, History = {} }
 
-    u13.Loader.AutoLoad = u71(u14, "Auto Load", "Executes the saved code on every injection"):Right():Toggle({
+    u13.Loader.AutoLoad = u72(u14, "Auto Load", "Executes the saved code on every injection"):Right():Toggle({
         Value = u19.AutoLoadEnabled,
         ValueChanged = function(u30, u31)
-            if not u75 then
+            if not u76 then
                 return
             end
 
@@ -1572,62 +1582,62 @@ do
         end,
     })
 
-    local u91 = u64(620, 460)
-    local u92 = UDim2.fromScale(0.5, 0.5)
+    local u92 = u65(620, 460)
+    local u93 = UDim2.fromScale(0.5, 0.5)
 
     pcall(function()
-        local u93 = u66.Structures.Body.__instance
+        local u94 = u67.Structures.Body.__instance
 
-        if not (u93 and u93.Parent) then
+        if not (u94 and u94.Parent) then
             return
         end
 
-        local u94 = u93.Parent.AbsoluteSize
-        local u95 = u93.AbsoluteSize
+        local u95 = u94.Parent.AbsoluteSize
+        local u96 = u94.AbsoluteSize
 
-        if u95.X < 50 or u95.Y < 50 then
-            u95 = Vector2.new(u93.Size.X.Offset, u93.Size.Y.Offset)
+        if u96.X < 50 or u96.Y < 50 then
+            u96 = Vector2.new(u94.Size.X.Offset, u94.Size.Y.Offset)
         end
 
-        if u95.X < 50 or u95.Y < 50 then
-            u95 = Vector2.new(math.min(850, u94.X - 24), math.min(530, u94.Y - 64))
+        if u96.X < 50 or u96.Y < 50 then
+            u96 = Vector2.new(math.min(850, u95.X - 24), math.min(530, u95.Y - 64))
         end
 
-        local u96 = u93.Position
-        local u97 = u66.Minimized and Vector2.new(u94.X / 2, u94.Y / 2)
-            or Vector2.new(u96.X.Offset + u96.X.Scale * u94.X, u96.Y.Offset + u96.Y.Scale * u94.Y)
-        local u98 = Vector2.new(u91.X.Offset, u91.Y.Offset)
-        local u99 = {
-            Vector2.new(u97.X + u95.X / 2 + u98.X / 2 + 12, u97.Y),
-            Vector2.new(u97.X - u95.X / 2 - u98.X / 2 - 12, u97.Y),
-            Vector2.new(u97.X, u97.Y + u95.Y / 2 + u98.Y / 2 + 12),
-            Vector2.new(u97.X, u97.Y - u95.Y / 2 - u98.Y / 2 - 12),
+        local u97 = u94.Position
+        local u98 = u67.Minimized and Vector2.new(u95.X / 2, u95.Y / 2)
+            or Vector2.new(u97.X.Offset + u97.X.Scale * u95.X, u97.Y.Offset + u97.Y.Scale * u95.Y)
+        local u99 = Vector2.new(u92.X.Offset, u92.Y.Offset)
+        local u100 = {
+            Vector2.new(u98.X + u96.X / 2 + u99.X / 2 + 12, u98.Y),
+            Vector2.new(u98.X - u96.X / 2 - u99.X / 2 - 12, u98.Y),
+            Vector2.new(u98.X, u98.Y + u96.Y / 2 + u99.Y / 2 + 12),
+            Vector2.new(u98.X, u98.Y - u96.Y / 2 - u99.Y / 2 - 12),
         }
 
-        for u100, u101 in ipairs(u99) do
+        for u101, u102 in ipairs(u100) do
             if
-                u101.X - u98.X / 2 >= 6
-                and u101.X + u98.X / 2 <= u94.X - 6
-                and u101.Y - u98.Y / 2 >= 6
-                and u101.Y + u98.Y / 2 <= u94.Y - 6
+                u102.X - u99.X / 2 >= 6
+                and u102.X + u99.X / 2 <= u95.X - 6
+                and u102.Y - u99.Y / 2 >= 6
+                and u102.Y + u99.Y / 2 <= u95.Y - 6
             then
-                u92 = UDim2.fromOffset(math.floor(u101.X), math.floor(u101.Y))
+                u93 = UDim2.fromOffset(math.floor(u102.X), math.floor(u102.Y))
 
                 return
             end
         end
 
-        u92 = UDim2.fromOffset(
-            math.floor(math.clamp(u97.X + 40, u98.X / 2 + 6, math.max(u98.X / 2 + 7, u94.X - u98.X / 2 - 6))),
-            math.floor(math.clamp(u97.Y + 40, u98.Y / 2 + 6, math.max(u98.Y / 2 + 7, u94.Y - u98.Y / 2 - 6)))
+        u93 = UDim2.fromOffset(
+            math.floor(math.clamp(u98.X + 40, u99.X / 2 + 6, math.max(u99.X / 2 + 7, u95.X - u99.X / 2 - 6))),
+            math.floor(math.clamp(u98.Y + 40, u99.Y / 2 + 6, math.max(u99.Y / 2 + 7, u95.Y - u99.Y / 2 - 6)))
         )
     end)
 
-    local u15 = u90:Window({
+    local u15 = u91:Window({
         Title = "Code Editor",
         Subtitle = u10,
-        Size = u91,
-        Position = u92,
+        Size = u92,
+        Position = u93,
         Searching = false,
         CanExit = false,
         CanMinimize = true,
@@ -1638,14 +1648,14 @@ do
     task.delay(0.3, function()
         pcall(function()
             if u15.Minimized then
-                u15.Position = u92
+                u15.Position = u93
                 u15.Minimized = true
             end
         end)
     end)
 
     local u27 = u15:Section({ Title = "Code" })
-    local u28 = u73(u27, "Editor", u63.Symbols.docPlaintext)
+    local u28 = u74(u27, "Editor", u64.Symbols.docPlaintext)
 
     u28.Selected = true
 
@@ -1662,13 +1672,13 @@ do
     u33.ClipsDescendants = true
     u33.Parent = u29
 
-    local u102 = u29:FindFirstChild("Margins") or u29:FindFirstChildOfClass("UIPadding")
+    local u103 = u29:FindFirstChild("Margins") or u29:FindFirstChildOfClass("UIPadding")
 
-    if u102 then
-        u102.PaddingTop = UDim.new()
-        u102.PaddingBottom = UDim.new()
-        u102.PaddingLeft = UDim.new()
-        u102.PaddingRight = UDim.new()
+    if u103 then
+        u103.PaddingTop = UDim.new()
+        u103.PaddingBottom = UDim.new()
+        u103.PaddingLeft = UDim.new()
+        u103.PaddingRight = UDim.new()
     end
 
     local u34 = Instance.new("ScrollingFrame")
@@ -1683,263 +1693,263 @@ do
     u34.CanvasSize = UDim2.new()
     u34.Parent = u33
 
-    local u103 = Instance.new("TextLabel")
+    local u104 = Instance.new("TextLabel")
 
-    u103.Name = "Numbers"
-    u103.Size = UDim2.new(0, 40, 0, 240)
-    u103.BackgroundColor3 = Color3.fromRGB(21, 23, 30)
-    u103.BorderSizePixel = 0
-    u103.FontFace = u31
-    u103.TextSize = 14
-    u103.TextColor3 = Color3.fromRGB(90, 97, 115)
-    u103.TextXAlignment = Enum.TextXAlignment.Right
-    u103.TextYAlignment = Enum.TextYAlignment.Top
-    u103.Text = "1"
-    u103.Parent = u34
-
-    Instance.new("UIPadding", u103).PaddingRight = UDim.new(0, 6)
-
-    local u104 = Instance.new("Frame")
-
-    u104.Name = "TextZone"
-    u104.Position = UDim2.new(0, 40, 0, 0)
-    u104.Size = UDim2.new(0, 480, 0, 240)
-    u104.BackgroundTransparency = 1
+    u104.Name = "Numbers"
+    u104.Size = UDim2.new(0, 40, 0, 240)
+    u104.BackgroundColor3 = Color3.fromRGB(21, 23, 30)
+    u104.BorderSizePixel = 0
+    u104.FontFace = u31
+    u104.TextSize = 14
+    u104.TextColor3 = Color3.fromRGB(90, 97, 115)
+    u104.TextXAlignment = Enum.TextXAlignment.Right
+    u104.TextYAlignment = Enum.TextYAlignment.Top
+    u104.Text = "1"
     u104.Parent = u34
 
-    local u105 = Instance.new("TextLabel")
+    Instance.new("UIPadding", u104).PaddingRight = UDim.new(0, 6)
 
-    u105.Name = "Highlight"
-    u105.Size = UDim2.new(1, 0, 1, 0)
+    local u105 = Instance.new("Frame")
+
+    u105.Name = "TextZone"
+    u105.Position = UDim2.new(0, 40, 0, 0)
+    u105.Size = UDim2.new(0, 480, 0, 240)
     u105.BackgroundTransparency = 1
-    u105.FontFace = u31
-    u105.TextSize = 14
-    u105.TextColor3 = Color3.fromRGB(233, 234, 238)
-    u105.TextXAlignment = Enum.TextXAlignment.Left
-    u105.TextYAlignment = Enum.TextYAlignment.Top
-    u105.TextWrapped = false
-    u105.RichText = true
-    u105.Text = ""
-    u105.Parent = u104
+    u105.Parent = u34
 
-    local u106 = Instance.new("TextBox")
+    local u106 = Instance.new("TextLabel")
 
-    u106.Name = "Input"
+    u106.Name = "Highlight"
     u106.Size = UDim2.new(1, 0, 1, 0)
     u106.BackgroundTransparency = 1
-    u106.BorderSizePixel = 0
     u106.FontFace = u31
     u106.TextSize = 14
-    u106.TextColor3 = Color3.new(0, 0, 0)
-    u106.TextTransparency = 1
+    u106.TextColor3 = Color3.fromRGB(233, 234, 238)
     u106.TextXAlignment = Enum.TextXAlignment.Left
     u106.TextYAlignment = Enum.TextYAlignment.Top
     u106.TextWrapped = false
-    u106.MultiLine = true
-    u106.ClearTextOnFocus = false
+    u106.RichText = true
     u106.Text = ""
-    u106.ZIndex = 2
-    u106.Parent = u104
+    u106.Parent = u105
 
-    local u107 = Instance.new("Frame")
+    local u107 = Instance.new("TextBox")
 
-    u107.Name = "Footer"
-    u107.Position = UDim2.new(0, 0, 1, -26)
-    u107.Size = UDim2.new(1, 0, 0, 26)
-    u107.BackgroundColor3 = Color3.fromRGB(21, 23, 30)
+    u107.Name = "Input"
+    u107.Size = UDim2.new(1, 0, 1, 0)
+    u107.BackgroundTransparency = 1
     u107.BorderSizePixel = 0
-    u107.Parent = u33
+    u107.FontFace = u31
+    u107.TextSize = 14
+    u107.TextColor3 = Color3.new(0, 0, 0)
+    u107.TextTransparency = 1
+    u107.TextXAlignment = Enum.TextXAlignment.Left
+    u107.TextYAlignment = Enum.TextYAlignment.Top
+    u107.TextWrapped = false
+    u107.MultiLine = true
+    u107.ClearTextOnFocus = false
+    u107.Text = ""
+    u107.ZIndex = 2
+    u107.Parent = u105
 
-    local u108 = Instance.new("TextLabel")
+    local u108 = Instance.new("Frame")
 
-    u108.Name = "Hint"
-    u108.Position = UDim2.new(0, 10, 0, 0)
-    u108.Size = UDim2.new(0.62, 0, 1, 0)
-    u108.BackgroundTransparency = 1
-    u108.FontFace = u31
-    u108.TextSize = 12
-    u108.TextColor3 = Color3.fromRGB(108, 116, 136)
-    u108.TextXAlignment = Enum.TextXAlignment.Left
-    u108.Text = "Lua · made for short loadstrings"
-    u108.Parent = u107
+    u108.Name = "Footer"
+    u108.Position = UDim2.new(0, 0, 1, -26)
+    u108.Size = UDim2.new(1, 0, 0, 26)
+    u108.BackgroundColor3 = Color3.fromRGB(21, 23, 30)
+    u108.BorderSizePixel = 0
+    u108.Parent = u33
 
     local u109 = Instance.new("TextLabel")
 
-    u109.Name = "Count"
-    u109.Position = UDim2.new(0.62, 0, 0, 0)
-    u109.Size = UDim2.new(0.38, -54, 1, 0)
+    u109.Name = "Hint"
+    u109.Position = UDim2.new(0, 10, 0, 0)
+    u109.Size = UDim2.new(0.62, 0, 1, 0)
     u109.BackgroundTransparency = 1
     u109.FontFace = u31
     u109.TextSize = 12
-    u109.TextColor3 = Color3.fromRGB(139, 147, 163)
-    u109.TextXAlignment = Enum.TextXAlignment.Right
-    u109.Text = "1 / 50 lines"
-    u109.Parent = u107
+    u109.TextColor3 = Color3.fromRGB(108, 116, 136)
+    u109.TextXAlignment = Enum.TextXAlignment.Left
+    u109.Text = "Lua · made for short loadstrings"
+    u109.Parent = u108
 
-    local u110 = Instance.new("TextButton")
+    local u110 = Instance.new("TextLabel")
 
-    u110.Name = "Run"
-    u110.AnchorPoint = Vector2.new(1, 0.5)
-    u110.Position = UDim2.new(1, -8, 0.5, 0)
-    u110.Size = UDim2.fromOffset(40, 18)
-    u110.BackgroundColor3 = Color3.fromRGB(29, 42, 33)
-    u110.BorderSizePixel = 0
+    u110.Name = "Count"
+    u110.Position = UDim2.new(0.62, 0, 0, 0)
+    u110.Size = UDim2.new(0.38, -54, 1, 0)
+    u110.BackgroundTransparency = 1
     u110.FontFace = u31
     u110.TextSize = 12
-    u110.TextColor3 = Color3.fromRGB(50, 215, 75)
-    u110.Text = "Run"
+    u110.TextColor3 = Color3.fromRGB(139, 147, 163)
+    u110.TextXAlignment = Enum.TextXAlignment.Right
+    u110.Text = "1 / 50 lines"
+    u110.Parent = u108
 
-    Instance.new("UICorner", u110).CornerRadius = UDim.new(0, 5)
+    local u111 = Instance.new("TextButton")
 
-    u110.Parent = u107
+    u111.Name = "Run"
+    u111.AnchorPoint = Vector2.new(1, 0.5)
+    u111.Position = UDim2.new(1, -8, 0.5, 0)
+    u111.Size = UDim2.fromOffset(40, 18)
+    u111.BackgroundColor3 = Color3.fromRGB(29, 42, 33)
+    u111.BorderSizePixel = 0
+    u111.FontFace = u31
+    u111.TextSize = 12
+    u111.TextColor3 = Color3.fromRGB(50, 215, 75)
+    u111.Text = "Run"
 
-    local u111 = false
+    Instance.new("UICorner", u111).CornerRadius = UDim.new(0, 5)
+
+    u111.Parent = u108
+
     local u112 = false
     local u113 = false
-    local u114 = u106.Text
+    local u114 = false
+    local u115 = u107.Text
 
-    local function u115(u116)
-        local u117 = select(2, u116:gsub("\n", "")) + 1
+    local function u116(u117)
+        local u118 = select(2, u117:gsub("\n", "")) + 1
 
-        if u117 > 50 then
-            local u118, u119 = 0, 0
+        if u118 > 50 then
+            local u119, u120 = 0, 0
 
-            for u120 = 1, #u116 do
-                if u116:sub(u120, u120) == "\n" then
-                    u118 = u118 + 1
+            for u121 = 1, #u117 do
+                if u117:sub(u121, u121) == "\n" then
+                    u119 = u119 + 1
 
-                    if u118 == 50 then
-                        u119 = u120 - 1
+                    if u119 == 50 then
+                        u120 = u121 - 1
 
                         break
                     end
                 end
             end
 
-            u116 = u116:sub(1, u119)
+            u117 = u117:sub(1, u120)
 
-            if not u112 then
-                u112 = true
+            if not u113 then
+                u113 = true
 
-                if u111 then
+                if u112 then
                     u50("Editor → 50 line limit reached")
                 end
             end
 
-            u106.Text = u116
+            u107.Text = u117
 
             return
         end
 
-        if u117 < 50 then
-            u112 = false
+        if u118 < 50 then
+            u113 = false
         end
 
-        local u121 = {}
+        local u122 = {}
 
-        for u122 = 1, u117 do
-            u121[#u121 + 1] = u122
+        for u123 = 1, u118 do
+            u122[#u122 + 1] = u123
         end
 
-        u103.Text = table.concat(u121, "\n")
+        u104.Text = table.concat(u122, "\n")
 
-        if u113 then
-            u105.Text = ""
+        if u114 then
+            u106.Text = ""
         else
-            local u123, u124 = pcall(u26, u116)
+            local u124, u125 = pcall(u26, u117)
 
-            if u123 then
-                u105.Text = u124
+            if u124 then
+                u106.Text = u125
             else
-                u105.Text = u24 and u24(u116) or ""
+                u106.Text = u24 and u24(u117) or ""
             end
         end
 
-        u109.TextColor3 = u112 and Color3.fromRGB(255, 69, 58)
-            or u117 >= 45 and Color3.fromRGB(255, 159, 10)
+        u110.TextColor3 = u113 and Color3.fromRGB(255, 69, 58)
+            or u118 >= 45 and Color3.fromRGB(255, 159, 10)
             or Color3.fromRGB(139, 147, 163)
-        u109.Text = u117 .. " / 50 lines"
+        u110.Text = u118 .. " / 50 lines"
 
-        local u125 = 0
+        local u126 = 0
 
-        for u126 in (u116 .. "\n"):gmatch("(.-)\n") do
-            if u126 ~= "" then
-                u125 = math.max(u125, u30:GetTextSize(u126, 14, Enum.Font.Code, Vector2.new(10000, 10000)).X)
+        for u127 in (u117 .. "\n"):gmatch("(.-)\n") do
+            if u127 ~= "" then
+                u126 = math.max(u126, u30:GetTextSize(u127, 14, Enum.Font.Code, Vector2.new(10000, 10000)).X)
             end
         end
 
-        local u127 = u34.AbsoluteWindowSize
-        local u128 = math.max(u117 * u32 + 12, 240, math.floor(u127.Y))
-        local u129 = math.max(u125 + 8, 480, math.floor(u127.X) - 40)
+        local u128 = u34.AbsoluteWindowSize
+        local u129 = math.max(u118 * u32 + 12, 240, math.floor(u128.Y))
+        local u130 = math.max(u126 + 8, 480, math.floor(u128.X) - 40)
 
-        u103.Size = UDim2.new(0, 40, 0, u128)
-        u104.Size = UDim2.new(0, u129, 0, u128)
-        u34.CanvasSize = UDim2.fromOffset(u129 + 40, u128)
+        u104.Size = UDim2.new(0, 40, 0, u129)
+        u105.Size = UDim2.new(0, u130, 0, u129)
+        u34.CanvasSize = UDim2.fromOffset(u130 + 40, u129)
 
-        if u111 then
-            u19.SavedCode = u116
+        if u112 then
+            u19.SavedCode = u117
 
-            if u82 then
-                pcall(task.cancel, u82)
+            if u83 then
+                pcall(task.cancel, u83)
             end
 
-            u82 = task.delay(0.75, u38)
+            u83 = task.delay(0.75, u38)
         end
     end
 
-    u106:GetPropertyChangedSignal("Text"):Connect(function()
-        u114 = u106.Text
+    u107:GetPropertyChangedSignal("Text"):Connect(function()
+        u115 = u107.Text
 
-        u115(u106.Text)
+        u116(u107.Text)
     end)
 
-    u106.FocusLost:Connect(function()
-        if not u111 or u106.Text == u19.SavedCode then
+    u107.FocusLost:Connect(function()
+        if not u112 or u107.Text == u19.SavedCode then
             return
         end
 
-        u19.SavedCode = u106.Text
+        u19.SavedCode = u107.Text
         u38()
     end)
 
-    local function u130()
-        local u131 = u29.AbsoluteWindowSize
+    local function u131()
+        local u132 = u29.AbsoluteWindowSize
 
-        u33.Size = UDim2.new(1, 0, 0, math.max(240, math.floor(u131.Y)))
+        u33.Size = UDim2.new(1, 0, 0, math.max(240, math.floor(u132.Y)))
 
-        task.defer(u115, u106.Text)
+        task.defer(u116, u107.Text)
     end
 
-    u29:GetPropertyChangedSignal("AbsoluteWindowSize"):Connect(u130)
+    u29:GetPropertyChangedSignal("AbsoluteWindowSize"):Connect(u131)
 
-    task.defer(u130)
+    task.defer(u131)
 
-    u110.MouseButton1Click:Connect(function()
-        local u132, u133 = u60(u19.SavedCode)
+    u111.MouseButton1Click:Connect(function()
+        local u133, u134 = u61(u19.SavedCode)
 
-        if u132 then
+        if u133 then
             u13.Loader.PushOutput("Script executed successfully.", u20.Green)
             u50("Script executed ✓")
         else
-            if u133 then
-                u13.Loader.PushOutput(tostring(u133), u20.Red)
+            if u134 then
+                u13.Loader.PushOutput(tostring(u134), u20.Red)
             end
 
-            u50("Script error: " .. tostring(u133):sub(1, 80))
-            u51("Execution failed", tostring(u133):sub(1, 120))
+            u50("Script error: " .. tostring(u134):sub(1, 80))
+            u51("Execution failed", tostring(u134):sub(1, 120))
         end
     end)
 
-    u114 = u19.SavedCode or ""
-    u106.Text = u114
+    u115 = u19.SavedCode or ""
+    u107.Text = u115
 
-    pcall(u115, u106.Text)
+    pcall(u116, u107.Text)
 
-    u111 = true
+    u112 = true
 
-    local u124 = u71(u14, "Open Editor", "Popup window with Studio-style colors · 50 lines max")
+    local u125 = u72(u14, "Open Editor", "Popup window with Studio-style colors · 50 lines max")
 
-    u124:Right():Button({
+    u125:Right():Button({
         Label = "Open",
         State = "Primary",
         Pushed = function()
@@ -1947,8 +1957,8 @@ do
         end,
     })
 
-    local u134 = u66.Minimized
-    local u135 = not u15.Minimized
+    local u135 = u67.Minimized
+    local u136 = not u15.Minimized
 
     u53("Editor", function()
         while u18() and not _G.UU.Loaded do
@@ -1957,23 +1967,23 @@ do
 
         while u18() and _G.UU.Loaded do
             pcall(function()
-                local u136 = u66.Minimized
+                local u137 = u67.Minimized
 
-                if u136 ~= u134 then
-                    u134 = u136
+                if u137 ~= u135 then
+                    u135 = u137
 
-                    if u136 then
-                        u135 = not u15.Minimized
+                    if u137 then
+                        u136 = not u15.Minimized
                         u15.Minimized = true
-                    elseif u135 then
+                    elseif u136 then
                         u15.Minimized = false
                     end
                 end
 
-                if u106.Text ~= u114 then
-                    u114 = u106.Text
+                if u107.Text ~= u115 then
+                    u115 = u107.Text
 
-                    u115(u114)
+                    u116(u115)
                 end
             end)
 
@@ -1981,35 +1991,35 @@ do
         end
     end)
 
-    local u127 = u71(u14, "Execute", "Runs the current code immediately")
+    local u128 = u72(u14, "Execute", "Runs the current code immediately")
 
-    u127:Right():Button({
+    u128:Right():Button({
         Label = "Execute",
         State = "Primary",
         Pushed = function()
-            local u137, u138 = u60(u19.SavedCode)
+            local u138, u139 = u61(u19.SavedCode)
 
-            if u137 then
+            if u138 then
                 u13.Loader.PushOutput("Script executed successfully.", u20.Green)
                 u50("Script executed ✓")
             else
-                if u138 then
-                    u13.Loader.PushOutput(tostring(u138), u20.Red)
+                if u139 then
+                    u13.Loader.PushOutput(tostring(u139), u20.Red)
                 end
 
-                u50("Script error: " .. tostring(u138):sub(1, 80))
-                u51("Execution failed", tostring(u138):sub(1, 120))
+                u50("Script error: " .. tostring(u139):sub(1, 80))
+                u51("Execution failed", tostring(u139):sub(1, 120))
             end
         end,
     })
 
-    local u139 = u71(u14, "Clear Editor", "Empties the code field and the saved config")
+    local u140 = u72(u14, "Clear Editor", "Empties the code field and the saved config")
 
-    u139:Right():Button({
+    u140:Right():Button({
         Label = "Clear",
         State = "Destructive",
         Pushed = function()
-            u106.Text = ""
+            u107.Text = ""
             u19.SavedCode = ""
 
             u50("Script Loader → Editor cleared")
@@ -2017,61 +2027,61 @@ do
         end,
     })
 
-    local u140 = u87:Form()
+    local u141 = u88:Form()
 
-    u71(u140, "Output", "Shows the results of your last script run, newest first"):Right():Button({
+    u72(u141, "Output", "Shows the results of your last script run, newest first"):Right():Button({
         Label = "Clear",
         State = "Destructive",
         Pushed = function()
             u13.Loader.History = {}
 
-            for u141 = 1, 3 do
-                local u142 = u13.Loader.Output[u141]
+            for u142 = 1, 3 do
+                local u143 = u13.Loader.Output[u142]
 
-                if u142 then
-                    u142.Text = u21(u20.Grey, "—")
+                if u143 then
+                    u143.Text = u21(u20.Grey, "—")
                 end
             end
         end,
     })
 
-    for u143 = 1, 3 do
-        u13.Loader.Output[u143] = u140:Row():Left():Label({
+    for u144 = 1, 3 do
+        u13.Loader.Output[u144] = u141:Row():Left():Label({
             Text = u21(u20.Grey, "—"),
         })
     end
 
-    u13.Loader.PushOutput = function(u141, u142)
-        local u144 = u13.Loader.History
+    u13.Loader.PushOutput = function(u142, u143)
+        local u145 = u13.Loader.History
 
-        table.insert(u144, 1, u21(u142 or u20.White, u24(u141)))
+        table.insert(u145, 1, u21(u143 or u20.White, u24(u142)))
 
-        if #u144 > 3 then
-            table.remove(u144, 4)
+        if #u145 > 3 then
+            table.remove(u145, 4)
         end
 
-        for u145 = 1, 3 do
-            local u146 = u13.Loader.Output[u145]
+        for u146 = 1, 3 do
+            local u147 = u13.Loader.Output[u146]
 
-            if u146 then
-                u146.Text = u144[u145] or u21(u20.Grey, "—")
+            if u147 then
+                u147.Text = u145[u146] or u21(u20.Grey, "—")
             end
         end
     end
 
-    local u147 = Instance.new("Frame")
+    local u148 = Instance.new("Frame")
 
-    u147.Name = "Caret"
-    u147.Size = UDim2.fromOffset(2, math.max(u32 - 4, 10))
-    u147.BackgroundColor3 = Color3.fromRGB(240, 241, 245)
-    u147.BorderSizePixel = 0
-    u147.Visible = false
-    u147.ZIndex = 2
-    u147.Parent = u104
+    u148.Name = "Caret"
+    u148.Size = UDim2.fromOffset(2, math.max(u32 - 4, 10))
+    u148.BackgroundColor3 = Color3.fromRGB(240, 241, 245)
+    u148.BorderSizePixel = 0
+    u148.Visible = false
+    u148.ZIndex = 2
+    u148.Parent = u105
 
-    local u148 = nil
+    local u149 = nil
 
-    local function u149(u13)
+    local function u150(u13)
         if typeof(u13) == "Vector2" then
             return u13
         end
@@ -2080,242 +2090,242 @@ do
             return nil
         end
 
-        local u150 = string.split(u106.Text, "\n")
-        local u151, u152
+        local u151 = string.split(u107.Text, "\n")
+        local u152, u153
 
         if u13 < 0 then
-            u151 = #u150
-            u152 = #(u150[u151] or "") + 1
+            u152 = #u151
+            u153 = #(u151[u152] or "") + 1
         else
-            local u153 = u106.Text:sub(1, math.clamp(math.floor(u13), 0, #u106.Text))
-            local u154 = u153:match(".*\n")
+            local u154 = u107.Text:sub(1, math.clamp(math.floor(u13), 0, #u107.Text))
+            local u155 = u154:match(".*\n")
 
-            u151 = select(2, u153:gsub("\n", "")) + 1
-            u152 = #u153 - (u154 and #u154 or 0) + 1
+            u152 = select(2, u154:gsub("\n", "")) + 1
+            u153 = #u154 - (u155 and #u155 or 0) + 1
         end
 
-        u151 = math.clamp(u151, 1, #u150)
+        u152 = math.clamp(u152, 1, #u151)
 
-        return { X = math.clamp(u152, 1, #(u150[u151] or "") + 1), Y = u151 }
-    end
-
-    local function u155()
-        if u113 then
-            return
-        end
-
-        u113 = true
-        u105.Visible = false
-        u147.Visible = false
-        u106.TextTransparency = 0
-        u106.TextColor3 = Color3.fromRGB(233, 234, 238)
+        return { X = math.clamp(u153, 1, #(u151[u152] or "") + 1), Y = u152 }
     end
 
     local function u156()
-        if u113 then
-            u147.Visible = false
+        if u114 then
+            return
+        end
+
+        u114 = true
+        u106.Visible = false
+        u148.Visible = false
+        u107.TextTransparency = 0
+        u107.TextColor3 = Color3.fromRGB(233, 234, 238)
+    end
+
+    local function u157()
+        if u114 then
+            u148.Visible = false
 
             return false
         end
 
-        local u157 = string.split(u106.Text, "\n")
-        local u158 = u149(u106.CursorPosition)
+        local u158 = string.split(u107.Text, "\n")
+        local u159 = u150(u107.CursorPosition)
 
-        if not u158 then
-            u147.Visible = false
+        if not u159 then
+            u148.Visible = false
 
-            if u106:IsFocused() then
-                u155()
+            if u107:IsFocused() then
+                u156()
             end
 
             return false
         end
 
-        local u159 = math.clamp(u158.Y, 1, #u157)
-        local u160 = u157[u159] or ""
-        local u161 = u30:GetTextSize(
-            u160:sub(1, math.max(math.min(u158.X - 1, #u160), 0)),
+        local u160 = math.clamp(u159.Y, 1, #u158)
+        local u161 = u158[u160] or ""
+        local u162 = u30:GetTextSize(
+            u161:sub(1, math.max(math.min(u159.X - 1, #u161), 0)),
             14,
             Enum.Font.Code,
             Vector2.new(10000, 10000)
         ).X
 
-        u147.Position = UDim2.fromOffset(u161, (u159 - 1) * u32 + 2)
+        u148.Position = UDim2.fromOffset(u162, (u160 - 1) * u32 + 2)
 
-        local u162 = u34.AbsoluteWindowSize
+        local u163 = u34.AbsoluteWindowSize
 
-        if u106:IsFocused() and u162.X > 1 then
-            local u163 = u34.CanvasPosition
+        if u107:IsFocused() and u163.X > 1 then
+            local u164 = u34.CanvasPosition
 
-            if u161 < u163.X or u161 > u163.X + u162.X - 60 then
-                u34.CanvasPosition = Vector2.new(math.max(u161 - u162.X + 120, 0), u163.Y)
+            if u162 < u164.X or u162 > u164.X + u163.X - 60 then
+                u34.CanvasPosition = Vector2.new(math.max(u162 - u163.X + 120, 0), u164.Y)
             end
 
-            local u164 = (u159 - 1) * u32
+            local u165 = (u160 - 1) * u32
 
-            if u164 < u163.Y or u164 > u163.Y + u162.Y - u32 * 2 - 30 then
+            if u165 < u164.Y or u165 > u164.Y + u163.Y - u32 * 2 - 30 then
                 u34.CanvasPosition =
-                    Vector2.new(u34.CanvasPosition.X, math.max(u164 - u162.Y + u32 * 2 + 30, 0))
+                    Vector2.new(u34.CanvasPosition.X, math.max(u165 - u163.Y + u32 * 2 + 30, 0))
             end
         end
 
-        local u165 = u106:IsFocused()
+        local u166 = u107:IsFocused()
 
-        u147.Visible = u165
+        u148.Visible = u166
 
-        return u165
+        return u166
     end
 
-    local function u166()
-        for u157, u158 in pairs(u104:GetChildren()) do
-            if u158.Name == "SelRect" then
-                u158:Destroy()
+    local function u167()
+        for u158, u159 in pairs(u105:GetChildren()) do
+            if u159.Name == "SelRect" then
+                u159:Destroy()
             end
         end
 
-        if u113 then
+        if u114 then
             return
         end
 
-        local u157 = u106.SelectionStart
+        local u158 = u107.SelectionStart
 
-        if typeof(u157) == "number" and u157 < 0 then
+        if typeof(u158) == "number" and u158 < 0 then
             return
         end
 
-        u157 = u149(u157)
-        local u158 = u149(u106.CursorPosition)
+        u158 = u150(u158)
+        local u159 = u150(u107.CursorPosition)
 
-        if not u106:IsFocused() or not u157 or not u158 then
+        if not u107:IsFocused() or not u158 or not u159 then
             return
         end
 
-        local u159 = string.split(u106.Text, "\n")
-        local u160, u161 = math.min(u157.Y, u158.Y), math.max(u157.Y, u158.Y)
+        local u160 = string.split(u107.Text, "\n")
+        local u161, u162 = math.min(u158.Y, u159.Y), math.max(u158.Y, u159.Y)
 
-        if u160 < 1 or u160 > #u159 + 1 or (u160 == u161 and u157.X == u158.X) then
+        if u161 < 1 or u161 > #u160 + 1 or (u161 == u162 and u158.X == u159.X) then
             return
         end
 
-        for u162 = math.max(u160, 1), math.min(u161, #u159) do
-            local u163, u164 = 0, 0
-            local u165 = u159[u162] or ""
+        for u163 = math.max(u161, 1), math.min(u162, #u160) do
+            local u164, u165 = 0, 0
+            local u166 = u160[u163] or ""
 
-            if u162 == u160 and u162 == u161 then
-                u163 = math.min(u157.X, u158.X) - 1
-                u164 = math.max(u157.X, u158.X) - 1
-            elseif u162 == u160 then
-                u163 = (u157.Y <= u158.Y and u157.X or u158.X) - 1
-                u164 = #u165
-            elseif u162 == u161 then
-                u164 = (u157.Y <= u158.Y and u158.X or u157.X) - 1
+            if u163 == u161 and u163 == u162 then
+                u164 = math.min(u158.X, u159.X) - 1
+                u165 = math.max(u158.X, u159.X) - 1
+            elseif u163 == u161 then
+                u164 = (u158.Y <= u159.Y and u158.X or u159.X) - 1
+                u165 = #u166
+            elseif u163 == u162 then
+                u165 = (u158.Y <= u159.Y and u159.X or u158.X) - 1
             else
-                u164 = #u165
+                u165 = #u166
             end
 
-            local u167 = u30:GetTextSize(
-                u165:sub(1, math.max(math.min(u163, #u165), 0)),
-                14,
-                Enum.Font.Code,
-                Vector2.new(10000, 10000)
-            ).X
             local u168 = u30:GetTextSize(
-                u165:sub(1, math.max(math.min(u164, #u165), 0)),
+                u166:sub(1, math.max(math.min(u164, #u166), 0)),
                 14,
                 Enum.Font.Code,
                 Vector2.new(10000, 10000)
             ).X
-            local u169 = Instance.new("Frame")
+            local u169 = u30:GetTextSize(
+                u166:sub(1, math.max(math.min(u165, #u166), 0)),
+                14,
+                Enum.Font.Code,
+                Vector2.new(10000, 10000)
+            ).X
+            local u170 = Instance.new("Frame")
 
-            u169.Name = "SelRect"
-            u169.BackgroundColor3 = Color3.fromRGB(58, 110, 180)
-            u169.BackgroundTransparency = 0.5
-            u169.BorderSizePixel = 0
-            u169.Position = UDim2.fromOffset(u167, (u162 - 1) * u32)
-            u169.Size = UDim2.fromOffset(math.max(u168 - u167, 5), u32)
-            u169.ZIndex = 1
-            u169.Parent = u104
+            u170.Name = "SelRect"
+            u170.BackgroundColor3 = Color3.fromRGB(58, 110, 180)
+            u170.BackgroundTransparency = 0.5
+            u170.BorderSizePixel = 0
+            u170.Position = UDim2.fromOffset(u168, (u163 - 1) * u32)
+            u170.Size = UDim2.fromOffset(math.max(u169 - u168, 5), u32)
+            u170.ZIndex = 1
+            u170.Parent = u105
         end
     end
 
-    u106.Focused:Connect(function()
+    u107.Focused:Connect(function()
         task.defer(function()
-            if not u149(u106.CursorPosition) then
-                u155()
+            if not u150(u107.CursorPosition) then
+                u156()
             end
         end)
 
-        if u148 then
-            pcall(task.cancel, u148)
+        if u149 then
+            pcall(task.cancel, u149)
 
-            u148 = nil
+            u149 = nil
         end
 
-        if u156() then
-            u148 = task.spawn(function()
-                while u147.Parent and u106:IsFocused() do
+        if u157() then
+            u149 = task.spawn(function()
+                while u148.Parent and u107:IsFocused() do
                     task.wait(0.45)
 
-                    if not (u147.Parent and u106:IsFocused()) then
+                    if not (u148.Parent and u107:IsFocused()) then
                         break
                     end
 
-                    u147.Visible = not u147.Visible
+                    u148.Visible = not u148.Visible
                 end
             end)
-            _G.UU.Threads.Caret = u148
+            _G.UU.Threads.Caret = u149
         end
 
-        u166()
+        u167()
     end)
 
-    u106.FocusLost:Connect(function()
-        if u148 then
-            pcall(task.cancel, u148)
+    u107.FocusLost:Connect(function()
+        if u149 then
+            pcall(task.cancel, u149)
 
-            u148 = nil
+            u149 = nil
         end
 
-        u147.Visible = false
-        u166()
+        u148.Visible = false
+        u167()
     end)
 
-    u106:GetPropertyChangedSignal("CursorPosition"):Connect(function()
-        u156()
-        u166()
+    u107:GetPropertyChangedSignal("CursorPosition"):Connect(function()
+        u157()
+        u167()
     end)
 
-    u106:GetPropertyChangedSignal("SelectionStart"):Connect(function()
-        u166()
+    u107:GetPropertyChangedSignal("SelectionStart"):Connect(function()
+        u167()
     end)
 
-    u106:GetPropertyChangedSignal("Text"):Connect(function()
-        u156()
-        u166()
+    u107:GetPropertyChangedSignal("Text"):Connect(function()
+        u157()
+        u167()
     end)
 
     u34:GetPropertyChangedSignal("AbsoluteWindowSize"):Connect(function()
-        local u170 = u34.AbsoluteWindowSize
+        local u171 = u34.AbsoluteWindowSize
 
-        if u104.Size.Y.Offset < math.floor(u170.Y) or u104.Size.X.Offset < math.floor(u170.X) - 40 then
-            u115(u106.Text)
+        if u105.Size.Y.Offset < math.floor(u171.Y) or u105.Size.X.Offset < math.floor(u171.X) - 40 then
+            u116(u107.Text)
         end
     end)
 end
 
 do
     local u13 = _G.UU.UI
-    local u14 = u88:PageSection({ Title = "FPS Unlock" }):Form()
+    local u14 = u89:PageSection({ Title = "FPS Unlock" }):Form()
 
     u13.Perf = {}
 
-    u13.Perf.Target = u71(u14, "Selected Limit"):Right():Label({
+    u13.Perf.Target = u72(u14, "Selected Limit"):Right():Label({
         Text = u21(u20.Cyan, u19.TargetFPS .. " FPS"),
     })
 
-    local u15 = u71(u14, "Target FPS", "Custom framerate limit from 15 to 360")
+    local u15 = u72(u14, "Target FPS", "Custom framerate limit from 15 to 360")
 
-    u74(u15, {
+    u75(u15, {
         Minimum = 15,
         Maximum = 360,
         Value = u19.TargetFPS,
@@ -2327,23 +2337,23 @@ do
             end
 
             if u19.FPSUnlockEnabled then
-                u62()
+                u63()
             end
 
             u38()
         end,
     })
 
-    local u16 = u71(u14, "FPS Unlock", "Removes the default 60 FPS cap")
+    local u16 = u72(u14, "FPS Unlock", "Removes the default 60 FPS cap")
 
     u13.Perf.Toggle = u16:Right():Toggle({
         Value = u19.FPSUnlockEnabled,
         ValueChanged = function(u30, u31)
-            if u13.SyncFps or not u75 then
+            if u13.SyncFps or not u76 then
                 return
             end
 
-            if not u61 then
+            if not u62 then
                 u13.SyncFps = true
                 u30.Value = false
                 u13.SyncFps = false
@@ -2354,65 +2364,65 @@ do
             end
 
             u19.FPSUnlockEnabled = u31
-            u62()
+            u63()
             u50("FPS Unlock → " .. (u31 and ("Enabled (" .. u19.TargetFPS .. " FPS)") or "Disabled"))
             u38()
         end,
     })
 
-    local u27 = u88:PageSection({ Title = "Framerate" }):Form()
+    local u27 = u89:PageSection({ Title = "Framerate" }):Form()
 
-    u13.Perf.FpsCurrent = u71(u27, "Current"):Right():Label({
+    u13.Perf.FpsCurrent = u72(u27, "Current"):Right():Label({
         Text = u21(u20.Green, "60"),
     })
 
-    u13.Perf.FpsAvg = u71(u27, "Average"):Right():Label({
+    u13.Perf.FpsAvg = u72(u27, "Average"):Right():Label({
         Text = u21(u20.Mint, "60"),
     })
 
-    u13.Perf.FpsRange = u71(u27, "Range"):Right():Label({
+    u13.Perf.FpsRange = u72(u27, "Range"):Right():Label({
         Text = u21(u20.Grey, "Min: 60 | Max: 60"),
     })
 
-    local u28 = u88:PageSection({ Title = "Network" }):Form()
+    local u28 = u89:PageSection({ Title = "Network" }):Form()
 
-    u13.Perf.PingCurrent = u71(u28, "Current"):Right():Label({
+    u13.Perf.PingCurrent = u72(u28, "Current"):Right():Label({
         Text = u21(u20.Green, "0 ms"),
     })
 
-    u13.Perf.PingAvg = u71(u28, "Average"):Right():Label({
+    u13.Perf.PingAvg = u72(u28, "Average"):Right():Label({
         Text = u21(u20.Mint, "0 ms"),
     })
 
-    u13.Perf.PingRange = u71(u28, "Range"):Right():Label({
+    u13.Perf.PingRange = u72(u28, "Range"):Right():Label({
         Text = u21(u20.Grey, "Min: 0 ms | Max: 0 ms"),
     })
 
-    u13.Perf.Quality = u71(u28, "Connection Quality"):Right():Label({
+    u13.Perf.Quality = u72(u28, "Connection Quality"):Right():Label({
         Text = u21(u20.Grey, "Measuring..."),
     })
 
-    local u29 = u88:PageSection({ Title = "Memory" }):Form()
+    local u29 = u89:PageSection({ Title = "Memory" }):Form()
 
-    u13.Perf.MemCurrent = u71(u29, "Current"):Right():Label({
+    u13.Perf.MemCurrent = u72(u29, "Current"):Right():Label({
         Text = u21(u20.Purple, "0 MB"),
     })
 
-    u13.Perf.MemPeak = u71(u29, "Peak"):Right():Label({
+    u13.Perf.MemPeak = u72(u29, "Peak"):Right():Label({
         Text = u21(u20.Pink, "0 MB"),
     })
 end
 
 do
     local u13 = _G.UU.UI
-    local u14 = u89:PageSection({
+    local u14 = u90:PageSection({
         Title = "Appearance",
         Subtitle = "Theme and accent apply instantly across the whole interface",
     }):Form()
 
     u13.Settings = { Activity = {} }
 
-    local u15 = u71(u14, "Theme", "Pick between the light and the dark appearance")
+    local u15 = u72(u14, "Theme", "Pick between the light and the dark appearance")
 
     local function u16(u27)
         local u28 = game:GetService("TweenService")
@@ -2422,11 +2432,11 @@ do
         local u32 = Instance.new("UIStroke")
         local u33 = Instance.new("TextLabel")
         local u34 = Instance.new("ImageLabel")
-        local u103 = Instance.new("CanvasGroup")
-        local u104 = Instance.new("UICorner")
-        local u105 = Instance.new("UIStroke")
-        local u106 = Instance.new("UIPadding")
-        local u107 = Instance.new("UIListLayout")
+        local u104 = Instance.new("CanvasGroup")
+        local u105 = Instance.new("UICorner")
+        local u106 = Instance.new("UIStroke")
+        local u107 = Instance.new("UIPadding")
+        local u108 = Instance.new("UIListLayout")
 
         u29.Name = "Select"
         u29.Size = UDim2.fromOffset(150, 32)
@@ -2459,286 +2469,286 @@ do
         u34.AnchorPoint = Vector2.new(1, 0.5)
         u34.Position = UDim2.new(1, -11, 0.5, 0)
         u34.Size = UDim2.fromOffset(14, 14)
-        u34.Image = u63.Symbols.chevronDown
+        u34.Image = u64.Symbols.chevronDown
         u34.ScaleType = Enum.ScaleType.Fit
         u34.Parent = u30
 
-        u103.AnchorPoint = Vector2.new(1, 0)
-        u103.Size = UDim2.fromOffset(150, 14 + #u27.Options * 28 + (#u27.Options - 1) * 3)
-        u103.ClipsDescendants = true
-        u103.Visible = false
-        u103.ZIndex = 50
+        u104.AnchorPoint = Vector2.new(1, 0)
+        u104.Size = UDim2.fromOffset(150, 14 + #u27.Options * 28 + (#u27.Options - 1) * 3)
+        u104.ClipsDescendants = true
+        u104.Visible = false
+        u104.ZIndex = 50
 
-        u104.CornerRadius = UDim.new(0, 8)
-        u104.Parent = u103
+        u105.CornerRadius = UDim.new(0, 8)
+        u105.Parent = u104
 
-        u105.Thickness = 1
-        u105.Parent = u103
+        u106.Thickness = 1
+        u106.Parent = u104
 
-        u106.PaddingTop = UDim.new(0, 4)
-        u106.PaddingBottom = UDim.new(0, 4)
-        u106.PaddingLeft = UDim.new(0, 4)
-        u106.PaddingRight = UDim.new(0, 4)
-        u106.Parent = u103
+        u107.PaddingTop = UDim.new(0, 4)
+        u107.PaddingBottom = UDim.new(0, 4)
+        u107.PaddingLeft = UDim.new(0, 4)
+        u107.PaddingRight = UDim.new(0, 4)
+        u107.Parent = u104
 
-        u107.Padding = UDim.new(0, 3)
-        u107.SortOrder = Enum.SortOrder.LayoutOrder
-        u107.Parent = u103
+        u108.Padding = UDim.new(0, 3)
+        u108.SortOrder = Enum.SortOrder.LayoutOrder
+        u108.Parent = u104
 
-        local u108 = u27.Index
-        local u109 = false
-        local u110 = {}
-        local u111
+        local u109 = u27.Index
+        local u110 = false
+        local u111 = {}
         local u112
-        local u115
-        local u129 = u27.Parent.Parent
-        local u123
+        local u113
+        local u116
+        local u130 = u27.Parent.Parent
         local u124
+        local u125
+        local u141
+        local u144
         local u140
-        local u143
-        local u139
 
-        u139 = function()
-            local u127 = u129
+        u140 = function()
+            local u128 = u130
 
-            while u127 and not u127:IsA("ScrollingFrame") do
-                u127 = u127.Parent
+            while u128 and not u128:IsA("ScrollingFrame") do
+                u128 = u128.Parent
             end
 
-            if u127 and u127.Parent then
-                u127 = u127.Parent
+            if u128 and u128.Parent then
+                u128 = u128.Parent
             else
-                u127 = u129
+                u128 = u130
 
-                while u127.Parent and u127.Parent:IsA("GuiObject") do
-                    u127 = u127.Parent
+                while u128.Parent and u128.Parent:IsA("GuiObject") do
+                    u128 = u128.Parent
                 end
             end
 
-            if u127 ~= u124 then
-                u124 = u127
+            if u128 ~= u125 then
+                u125 = u128
 
-                u103.Parent = u124
+                u104.Parent = u125
 
-                u140 = u124:FindFirstChildOfClass("UIPadding")
-                u143 = u140 and Vector2.new(u140.PaddingLeft.Offset, u140.PaddingTop.Offset) or Vector2.new()
+                u141 = u125:FindFirstChildOfClass("UIPadding")
+                u144 = u141 and Vector2.new(u141.PaddingLeft.Offset, u141.PaddingTop.Offset) or Vector2.new()
             end
 
-            local u141 = u30.AbsolutePosition
-            local u142 = u30.AbsoluteSize
-            local u144 = u141.X + u142.X - u124.AbsolutePosition.X - u143.X
-            local u145 = u141.Y + u142.Y - u124.AbsolutePosition.Y - u143.Y
-            local u146 = u124.AbsoluteSize.Y - u143.Y - u103.AbsoluteSize.Y
+            local u142 = u30.AbsolutePosition
+            local u143 = u30.AbsoluteSize
+            local u145 = u142.X + u143.X - u125.AbsolutePosition.X - u144.X
+            local u146 = u142.Y + u143.Y - u125.AbsolutePosition.Y - u144.Y
+            local u147 = u125.AbsoluteSize.Y - u144.Y - u104.AbsoluteSize.Y
 
-            u103.Position = UDim2.fromOffset(u144, math.max(0, math.min(u145, u146)))
+            u104.Position = UDim2.fromOffset(u145, math.max(0, math.min(u146, u147)))
         end
 
-        u30:GetPropertyChangedSignal("AbsolutePosition"):Connect(u139)
+        u30:GetPropertyChangedSignal("AbsolutePosition"):Connect(u140)
 
-        u139()
+        u140()
 
-        u111 = function(u116)
-            local u117 = u27.Options[u116]
+        u112 = function(u117)
+            local u118 = u27.Options[u117]
 
-            u33.Text = u117.Dot and u21(u117.Dot, "●") .. "  " .. u117.Text or u117.Text
+            u33.Text = u118.Dot and u21(u118.Dot, "●") .. "  " .. u118.Text or u118.Text
         end
 
-        u112 = function(u116)
-            if u109 == u116 then
+        u113 = function(u117)
+            if u110 == u117 then
                 return
             end
 
-            u109 = u116
+            u110 = u117
 
-            if u123 then
-                u123:Cancel()
+            if u124 then
+                u124:Cancel()
 
-                u123 = nil
+                u124 = nil
             end
 
-            local u117 = TweenInfo.new(0.2, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+            local u118 = TweenInfo.new(0.2, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 
-            u139()
+            u140()
 
-            local u118 = UDim2.fromOffset(u103.Position.X.Offset, u103.Position.Y.Offset)
+            local u119 = UDim2.fromOffset(u104.Position.X.Offset, u104.Position.Y.Offset)
 
-            if u116 then
-                u103.GroupTransparency = 1
-                u103.Position = UDim2.fromOffset(u118.X.Offset, u118.Y.Offset - 6)
-                u103.Visible = true
+            if u117 then
+                u104.GroupTransparency = 1
+                u104.Position = UDim2.fromOffset(u119.X.Offset, u119.Y.Offset - 6)
+                u104.Visible = true
             end
 
-            u123 = u28:Create(u103, u117, {
-                GroupTransparency = u116 and 0 or 1,
-                Position = u116 and u118 or UDim2.fromOffset(u118.X.Offset, u118.Y.Offset - 6),
+            u124 = u28:Create(u104, u118, {
+                GroupTransparency = u117 and 0 or 1,
+                Position = u117 and u119 or UDim2.fromOffset(u119.X.Offset, u119.Y.Offset - 6),
             })
 
-            u123:Play()
+            u124:Play()
 
-            if u116 then
-                u123.Completed:Connect(function(u127)
-                    if u127 ~= Enum.PlaybackState.Completed then
+            if u117 then
+                u124.Completed:Connect(function(u128)
+                    if u128 ~= Enum.PlaybackState.Completed then
                         return
                     end
 
-                    u139()
+                    u140()
                 end)
             end
 
-            u28:Create(u34, u117, { Rotation = u116 and 180 or 0 }):Play()
+            u28:Create(u34, u118, { Rotation = u117 and 180 or 0 }):Play()
 
-            if not u116 then
-                u123.Completed:Connect(function(u124)
-                    if u124 ~= Enum.PlaybackState.Completed or u109 then
+            if not u117 then
+                u124.Completed:Connect(function(u125)
+                    if u125 ~= Enum.PlaybackState.Completed or u110 then
                         return
                     end
 
-                    u103.Visible = false
+                    u104.Visible = false
 
-                    u123 = nil
+                    u124 = nil
                 end)
             end
         end
 
-        u115 = function(u116)
-            local u117 = u65.Theme
+        u116 = function(u117)
+            local u118 = u66.Theme
 
-            u30.BackgroundColor3 = u117.Controls.Background[1].Value
-            u30.BackgroundTransparency = u117.Controls.Background[2].Value
-            u32.Color = u117.Text.Quaternary[1].Value
-            u32.Transparency = u117.Text.Quaternary[2].Value
-            u33.TextColor3 = u117.Text.Primary[1].Value
-            u33.TextTransparency = u117.Text.Primary[2].Value
-            u34.ImageColor3 = u117.Text.Primary[1].Value
-            u34.ImageTransparency = math.min(1, u117.Text.Primary[2].Value + 0.15)
-            u103.BackgroundColor3 = u117.Controls.MenuButton.MenuBackground[1].Value
-            u103.BackgroundTransparency = u117.Controls.MenuButton.MenuBackground[2].Value
-            u105.Color = u117.Text.Quaternary[1].Value
-            u105.Transparency = u117.Text.Quaternary[2].Value
+            u30.BackgroundColor3 = u118.Controls.Background[1].Value
+            u30.BackgroundTransparency = u118.Controls.Background[2].Value
+            u32.Color = u118.Text.Quaternary[1].Value
+            u32.Transparency = u118.Text.Quaternary[2].Value
+            u33.TextColor3 = u118.Text.Primary[1].Value
+            u33.TextTransparency = u118.Text.Primary[2].Value
+            u34.ImageColor3 = u118.Text.Primary[1].Value
+            u34.ImageTransparency = math.min(1, u118.Text.Primary[2].Value + 0.15)
+            u104.BackgroundColor3 = u118.Controls.MenuButton.MenuBackground[1].Value
+            u104.BackgroundTransparency = u118.Controls.MenuButton.MenuBackground[2].Value
+            u106.Color = u118.Text.Quaternary[1].Value
+            u106.Transparency = u118.Text.Quaternary[2].Value
 
-            for u118, u119 in ipairs(u110) do
-                local u120 = u118 == u116
-                local u121 = u27.Colors and u27.Colors(u118) or u20[u19.AccentName] or u20.Grey
+            for u119, u120 in ipairs(u111) do
+                local u121 = u119 == u117
+                local u122 = u27.Colors and u27.Colors(u119) or u20[u19.AccentName] or u20.Grey
 
-                u119.Row.BackgroundColor3 = u117.Text.Primary[1].Value
-                u119.Row.BackgroundTransparency = 1
-                u119.Label.TextColor3 = u117.Text.Primary[1].Value
-                u119.Label.TextTransparency = u120 and 0 or 0.3
-                u119.Check.ImageColor3 = Color3.fromHex(u121)
-                u119.Check.Visible = u120
+                u120.Row.BackgroundColor3 = u118.Text.Primary[1].Value
+                u120.Row.BackgroundTransparency = 1
+                u120.Label.TextColor3 = u118.Text.Primary[1].Value
+                u120.Label.TextTransparency = u121 and 0 or 0.3
+                u120.Check.ImageColor3 = Color3.fromHex(u122)
+                u120.Check.Visible = u121
             end
         end
 
-        for u116, u117 in ipairs(u27.Options) do
-            local u122 = Instance.new("TextButton")
-            local u125 = Instance.new("UICorner")
-            local u126 = Instance.new("TextLabel")
-            local u128 = Instance.new("ImageLabel")
+        for u117, u118 in ipairs(u27.Options) do
+            local u123 = Instance.new("TextButton")
+            local u126 = Instance.new("UICorner")
+            local u127 = Instance.new("TextLabel")
+            local u129 = Instance.new("ImageLabel")
 
-            u122.Size = UDim2.new(1, 0, 0, 28)
-            u122.AutoButtonColor = false
-            u122.Text = ""
-            u122.LayoutOrder = u116
-            u122.ZIndex = 2
-            u122.Parent = u103
+            u123.Size = UDim2.new(1, 0, 0, 28)
+            u123.AutoButtonColor = false
+            u123.Text = ""
+            u123.LayoutOrder = u117
+            u123.ZIndex = 2
+            u123.Parent = u104
 
-            u125.CornerRadius = UDim.new(0, 6)
-            u125.Parent = u122
+            u126.CornerRadius = UDim.new(0, 6)
+            u126.Parent = u123
 
-            u126.BackgroundTransparency = 1
-            u126.AnchorPoint = Vector2.new(0, 0.5)
-            u126.Position = UDim2.new(0, 9, 0.5, 0)
-            u126.Size = UDim2.new(1, -38, 1, 0)
-            u126.FontFace = Font.new("rbxassetid://12187365364")
-            u126.TextSize = 14
-            u126.RichText = true
-            u126.TextXAlignment = Enum.TextXAlignment.Left
-            u126.TextTruncate = Enum.TextTruncate.AtEnd
-            u126.Text = u117.Dot and u21(u117.Dot, "●") .. "  " .. u117.Text or u117.Text
-            u126.ZIndex = 2
-            u126.Parent = u122
+            u127.BackgroundTransparency = 1
+            u127.AnchorPoint = Vector2.new(0, 0.5)
+            u127.Position = UDim2.new(0, 9, 0.5, 0)
+            u127.Size = UDim2.new(1, -38, 1, 0)
+            u127.FontFace = Font.new("rbxassetid://12187365364")
+            u127.TextSize = 14
+            u127.RichText = true
+            u127.TextXAlignment = Enum.TextXAlignment.Left
+            u127.TextTruncate = Enum.TextTruncate.AtEnd
+            u127.Text = u118.Dot and u21(u118.Dot, "●") .. "  " .. u118.Text or u118.Text
+            u127.ZIndex = 2
+            u127.Parent = u123
 
-            u128.BackgroundTransparency = 1
-            u128.AnchorPoint = Vector2.new(1, 0.5)
-            u128.Position = UDim2.new(1, -9, 0.5, 0)
-            u128.Size = UDim2.fromOffset(14, 14)
-            u128.Image = u63.Symbols.checkmark
-            u128.ScaleType = Enum.ScaleType.Fit
-            u128.ZIndex = 2
-            u128.Parent = u122
+            u129.BackgroundTransparency = 1
+            u129.AnchorPoint = Vector2.new(1, 0.5)
+            u129.Position = UDim2.new(1, -9, 0.5, 0)
+            u129.Size = UDim2.fromOffset(14, 14)
+            u129.Image = u64.Symbols.checkmark
+            u129.ScaleType = Enum.ScaleType.Fit
+            u129.ZIndex = 2
+            u129.Parent = u123
 
-            u122.MouseEnter:Connect(function()
-                if u108 ~= u116 then
-                    u122.BackgroundTransparency = 0.92
+            u123.MouseEnter:Connect(function()
+                if u109 ~= u117 then
+                    u123.BackgroundTransparency = 0.92
                 end
             end)
 
-            u122.MouseLeave:Connect(function()
-                u122.BackgroundTransparency = 1
+            u123.MouseLeave:Connect(function()
+                u123.BackgroundTransparency = 1
             end)
 
-            u122.Activated:Connect(function()
-                if u108 == u116 then
-                    u112(false)
+            u123.Activated:Connect(function()
+                if u109 == u117 then
+                    u113(false)
 
                     return
                 end
 
-                u108 = u116
-                u111(u116)
-                u112(false)
+                u109 = u117
+                u112(u117)
+                u113(false)
 
-                task.spawn(u27.OnSelect, u116)
-                u115(u116)
+                task.spawn(u27.OnSelect, u117)
+                u116(u117)
             end)
 
-            u110[u116] = { Row = u122, Label = u126, Check = u128 }
+            u111[u117] = { Row = u123, Label = u127, Check = u129 }
         end
 
         table.insert(
             _G.UU.Connections,
-            u3.InputBegan:Connect(function(u116)
-                if not u109 then
+            u3.InputBegan:Connect(function(u117)
+                if not u110 then
                     return
                 end
 
                 if
-                    u116.UserInputType ~= Enum.UserInputType.MouseButton1
-                    and u116.UserInputType ~= Enum.UserInputType.Touch
+                    u117.UserInputType ~= Enum.UserInputType.MouseButton1
+                    and u117.UserInputType ~= Enum.UserInputType.Touch
                 then
                     return
                 end
 
-                local u117 = u116.Position
-                local u118 = u30.AbsolutePosition
-                local u119 = u30.AbsoluteSize
-                local u120 = u103.AbsolutePosition
-                local u121 = u103.AbsoluteSize
-                local u122 = u117.X >= u118.X
-                    and u117.X <= u118.X + u119.X
-                    and u117.Y >= u118.Y
-                    and u117.Y <= u118.Y + u119.Y
-                local u125 = u117.X >= u120.X
-                    and u117.X <= u120.X + u121.X
-                    and u117.Y >= u120.Y
-                    and u117.Y <= u120.Y + u121.Y
+                local u118 = u117.Position
+                local u119 = u30.AbsolutePosition
+                local u120 = u30.AbsoluteSize
+                local u121 = u104.AbsolutePosition
+                local u122 = u104.AbsoluteSize
+                local u123 = u118.X >= u119.X
+                    and u118.X <= u119.X + u120.X
+                    and u118.Y >= u119.Y
+                    and u118.Y <= u119.Y + u120.Y
+                local u126 = u118.X >= u121.X
+                    and u118.X <= u121.X + u122.X
+                    and u118.Y >= u121.Y
+                    and u118.Y <= u121.Y + u122.Y
 
-                if not u122 and not u125 then
-                    u112(false)
+                if not u123 and not u126 then
+                    u113(false)
                 end
             end)
         )
 
         u30.Activated:Connect(function()
-            u112(not u109)
+            u113(not u110)
         end)
 
-        u111(u108)
-        u115(u108)
+        u112(u109)
+        u116(u109)
 
         return {
             Refresh = function()
-                u115(u108)
+                u116(u109)
             end,
         }
     end
@@ -2748,7 +2758,7 @@ do
         Options = { { Text = "Light" }, { Text = "Dark" } },
         Index = u19.ThemeMode == "Dark" and 2 or 1,
         OnSelect = function(u27)
-            if not u75 then
+            if not u76 then
                 return
             end
 
@@ -2759,8 +2769,8 @@ do
             end
 
             u19.ThemeMode = u28
-            u65.Theme = u28 == "Dark" and u63.Themes.Dark or u63.Themes.Light
-            u90.Theme = u65.Theme
+            u66.Theme = u28 == "Dark" and u64.Themes.Dark or u64.Themes.Light
+            u91.Theme = u66.Theme
 
             u50("Theme → " .. u28)
             u38()
@@ -2771,7 +2781,7 @@ do
         end,
     })
 
-    local u27 = u71(u14, "Accent Color", "Highlight color used by switches, buttons and selections")
+    local u27 = u72(u14, "Accent Color", "Highlight color used by switches, buttons and selections")
     local u28 = { "Blue", "Purple", "Pink", "Red", "Orange", "Yellow", "Green", "Graphite" }
     local u29 = 0
 
@@ -2800,7 +2810,7 @@ do
             return u32[u33].Dot
         end,
         OnSelect = function(u33)
-            if not u75 then
+            if not u76 then
                 return
             end
 
@@ -2811,8 +2821,8 @@ do
             end
 
             u19.AccentName = u34
-            u65.Accent = u63.Accents[u34]
-            u90.Accent = u65.Accent
+            u66.Accent = u64.Accents[u34]
+            u91.Accent = u66.Accent
 
             u50("Accent → " .. u34)
             u38()
@@ -2823,123 +2833,123 @@ do
         end,
     })
 
-    local u104 = u89:PageSection({ Title = "Interface" }):Form()
+    local u105 = u90:PageSection({ Title = "Interface" }):Form()
 
-    local u105 = u71(u104, "Toggle Keybind", "Show or hide the window")
+    local u106 = u72(u105, "Toggle Keybind", "Show or hide the window")
 
-    u105:Right():KeybindField({
+    u106:Right():KeybindField({
         Value = u19.Keybind,
-        ValueChanged = function(u106, u107)
-            if not u75 then
+        ValueChanged = function(u107, u108)
+            if not u76 then
                 return
             end
 
-            u19.Keybind = u107
-            u50("Keybind → " .. u107.Name)
+            u19.Keybind = u108
+            u50("Keybind → " .. u108.Name)
             u38()
         end,
-        BindPressed = function(u106, u107, u108, u109)
-            if not u108 or u109 then
+        BindPressed = function(u107, u108, u109, u110)
+            if not u109 or u110 then
                 return
             end
 
-            u66.Minimized = not u66.Minimized
+            u67.Minimized = not u67.Minimized
         end,
     })
 
-    local u110 = u71(u104, "Auto Hide UI", "Starts minimized on the next injection")
+    local u111 = u72(u105, "Auto Hide UI", "Starts minimized on the next injection")
 
-    u110:Right():Toggle({
+    u111:Right():Toggle({
         Value = u19.AutoHideEnabled,
-        ValueChanged = function(u106, u107)
-            if not u75 then
+        ValueChanged = function(u107, u108)
+            if not u76 then
                 return
             end
 
-            u19.AutoHideEnabled = u107
-            u50("Auto Hide UI → " .. (u107 and "Enabled" or "Disabled"))
+            u19.AutoHideEnabled = u108
+            u50("Auto Hide UI → " .. (u108 and "Enabled" or "Disabled"))
             u38()
         end,
     })
 
-    local u111 = u89:Form()
+    local u112 = u90:Form()
 
-    u71(u111, "Activity", "Tracks every action with a timestamp, newest first"):Right():Button({
+    u72(u112, "Activity", "Tracks every action with a timestamp, newest first"):Right():Button({
         Label = "Clear",
         State = "Destructive",
         Pushed = function()
             _G.UU.LogBuffer = {}
 
-            for u115 = 1, 6 do
-                local u116 = u13.Settings.Activity[u115]
+            for u116 = 1, 6 do
+                local u117 = u13.Settings.Activity[u116]
 
-                if u116 then
-                    u116.Text = u21(u20.Grey, "—")
+                if u117 then
+                    u117.Text = u21(u20.Grey, "—")
                 end
             end
         end,
     })
 
-    for u112 = 1, 6 do
-        u13.Settings.Activity[u112] = u111:Row():Left():Label({
-            Text = _G.UU.LogBuffer[u112] or u21(u20.Grey, "—"),
+    for u113 = 1, 6 do
+        u13.Settings.Activity[u113] = u112:Row():Left():Label({
+            Text = _G.UU.LogBuffer[u113] or u21(u20.Grey, "—"),
         })
     end
 
-    local u115 = u89:PageSection({
+    local u116 = u90:PageSection({
         Title = "Danger Zone",
         Subtitle = "Fully removes Universal Utility and stops everything it runs",
     }):Form()
 
-    local u116 = u71(u115, "Uninject", "Press twice to confirm the removal"):Right():Button({
+    local u117 = u72(u116, "Uninject", "Press twice to confirm the removal"):Right():Button({
         Label = "Uninject",
         State = "Destructive",
-        Pushed = function(u117)
-            if not u81 then
-                u81 = true
-                u117.Label = "Click again to confirm"
+        Pushed = function(u118)
+            if not u82 then
+                u82 = true
+                u118.Label = "Click again to confirm"
 
                 task.delay(3, function()
-                    u81 = false
+                    u82 = false
 
-                    if u117.Parent then
-                        u117.Label = "Uninject"
+                    if u118.Parent then
+                        u118.Label = "Uninject"
                     end
                 end)
 
                 return
             end
 
-            u81 = false
-            u117.Label = "Uninjecting..."
+            u82 = false
+            u118.Label = "Uninjecting..."
             u37()
 
             task.delay(0.15, function()
                 if not u18() then
                     return
                 end
-                if u82 then
-                    pcall(task.cancel, u82)
+                if u83 then
+                    pcall(task.cancel, u83)
                 end
                 u52("Click")
                 u52("Spam")
-                for u118, u119 in pairs(_G.UU.Threads) do
-                    if typeof(u119) == "thread" and coroutine.status(u119) ~= "dead" then
-                        pcall(task.cancel, u119)
+                for u119, u120 in pairs(_G.UU.Threads) do
+                    if typeof(u120) == "thread" and coroutine.status(u120) ~= "dead" then
+                        pcall(task.cancel, u120)
                     end
 
-                    _G.UU.Threads[u118] = nil
+                    _G.UU.Threads[u119] = nil
                 end
 
-                for u118, u119 in pairs(_G.UU.Connections) do
+                for u119, u120 in pairs(_G.UU.Connections) do
                     pcall(function()
-                        u119:Disconnect()
+                        u120:Disconnect()
                     end)
                 end
 
                 _G.UU.Connections = {}
 
-                if u61 then
+                if u62 then
                     pcall(setfpscap, 60)
                 end
 
@@ -2951,8 +2961,8 @@ do
 
                 pcall(u37)
 
-                u90:Destroy()
-                u65:Destroy()
+                u91:Destroy()
+                u66:Destroy()
 
                 _G.UU.Threads = {}
                 _G.UU.Connections = {}
@@ -2982,7 +2992,7 @@ end
 local u13 = _G.UU.UI.Tabs[u19.CurrentTab] and u19.CurrentTab or "Home"
 _G.UU.UI.Tabs[u13].Selected = true
 
-u75 = true
+u76 = true
 
 table.insert(
     _G.UU.Connections,
@@ -3049,31 +3059,31 @@ table.insert(_G.UU.Connections, workspace:GetPropertyChangedSignal("CurrentCamer
 table.insert(
     _G.UU.Connections,
     u2.RenderStepped:Connect(function()
-        u78 = u78 + 1
+        u79 = u79 + 1
         local u14 = tick()
 
-        if u14 - u79 >= 1 then
-            local u15 = math.floor(u78 / (u14 - u79))
-            u78 = 0
-            u79 = u14
+        if u14 - u80 >= 1 then
+            local u15 = math.floor(u79 / (u14 - u80))
+            u79 = 0
+            u80 = u14
 
-            if #u76 >= 60 then
-                table.remove(u76, 1)
+            if #u77 >= 60 then
+                table.remove(u77, 1)
             end
-            table.insert(u76, u15)
+            table.insert(u77, u15)
 
             local u16, u27, u28 = math.huge, 0, 0
 
-            for u29, u30 in ipairs(u76) do
+            for u29, u30 in ipairs(u77) do
                 u16 = math.min(u16, u30)
                 u27 = math.max(u27, u30)
                 u28 = u28 + u30
             end
 
-            local u31 = math.floor(u28 / #u76)
+            local u31 = math.floor(u28 / #u77)
             local u32 = _G.UU.UI
             local u33 = u8:GetTotalMemoryUsageMb()
-            u80 = math.max(u80, u33)
+            u81 = math.max(u81, u33)
 
             if u32.Home then
                 if u32.Home.FPS then
@@ -3103,7 +3113,7 @@ table.insert(
                 end
 
                 if u32.Perf.MemPeak then
-                    u32.Perf.MemPeak.Text = u21(u20.Pink, string.format("%.1f MB", u80))
+                    u32.Perf.MemPeak.Text = u21(u20.Pink, string.format("%.1f MB", u81))
                 end
             end
         end
@@ -3112,20 +3122,20 @@ table.insert(
             _G.UU.LastPingTime = tick()
 
             local u14 = math.floor(u9:GetNetworkPing() * 1000)
-            if #u77 >= 60 then
-                table.remove(u77, 1)
+            if #u78 >= 60 then
+                table.remove(u78, 1)
             end
-            table.insert(u77, u14)
+            table.insert(u78, u14)
 
             local u15, u16, u27 = math.huge, 0, 0
 
-            for u28, u29 in ipairs(u77) do
+            for u28, u29 in ipairs(u78) do
                 u15 = math.min(u15, u29)
                 u16 = math.max(u16, u29)
                 u27 = u27 + u29
             end
 
-            local u30 = math.floor(u27 / #u77)
+            local u30 = math.floor(u27 / #u78)
             local u31 = _G.UU.UI
 
             if u31.Home and u31.Home.Ping then
@@ -3215,14 +3225,14 @@ if u19.AutoRejoinEnabled then
     u59()
 end
 
-if u19.FPSUnlockEnabled and u61 then
-    u62()
+if u19.FPSUnlockEnabled and u62 then
+    u63()
 else
-    if u61 then
+    if u62 then
         pcall(setfpscap, 60)
     end
 
-    if u19.FPSUnlockEnabled and not u61 then
+    if u19.FPSUnlockEnabled and not u62 then
         u19.FPSUnlockEnabled = false
 
         _G.UU.UI.SyncFps = true
@@ -3237,15 +3247,15 @@ if u19.MousePosEnabled then
     u54(true, false)
 end
 
-u65.Destroying:Connect(function()
+u66.Destroying:Connect(function()
     if not u18() then
         return
     end
     pcall(u37)
     _G.UU.Loaded = false
     _G.UU.LoadLock = false
-    if u82 then
-        pcall(task.cancel, u82)
+    if u83 then
+        pcall(task.cancel, u83)
     end
     u52("Click")
     u52("Spam")
@@ -3261,11 +3271,11 @@ u65.Destroying:Connect(function()
             u15:Disconnect()
         end)
     end
-    if u61 then
+    if u62 then
         pcall(setfpscap, 60)
     end
     pcall(function()
-        u90:Destroy()
+        u91:Destroy()
     end)
     _G.UU.Session = nil
 end)
@@ -3298,7 +3308,7 @@ task.defer(function()
     if u14.Loader and u14.Loader.PushOutput and u19.AutoLoadEnabled and u19.SavedCode ~= "" then
         u50("Auto Load → executing saved script")
 
-        local u15, u16 = u60(u19.SavedCode)
+        local u15, u16 = u61(u19.SavedCode)
 
         if u15 then
             u14.Loader.PushOutput("Auto-load executed successfully.", u20.Green)
