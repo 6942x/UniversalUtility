@@ -1,18 +1,21 @@
 local t = game:GetService("Players")
 local t1 = game:GetService("RunService")
-local t2 = t.LocalPlayer
-assert(t2, "Position Lock requires the game client")
+local t2 = game:GetService("HttpService")
+local t3 = t.LocalPlayer
+assert(t3, "Position Lock requires the game client")
 
-local t3 = type(getgenv) == "function" and getgenv() or _G
-local t4 = "PositionLock_" .. t2.UserId
-local t5 = t3[t4]
-if type(t5) == "table" and type(t5.Stop) == "function" then
-    pcall(t5.Stop)
+local t4 = type(getgenv) == "function" and getgenv() or _G
+local t5 = "PositionLock_" .. t3.UserId
+local t6 = t4[t5]
+if type(t6) == "table" and type(t6.Stop) == "function" then
+    pcall(t6.Stop)
 end
 
-local t6 = {
+local t7 = {
     Alive = true,
     Connections = {},
+    AutoHide = false,
+    MenuKey = "RightControl",
     Locked = true,
     Rotation = true,
     Velocity = true,
@@ -24,7 +27,7 @@ local t6 = {
     Corrections = 0,
     Anchored = {},
 }
-local t7 = CFrame.new(
+local t8 = CFrame.new(
     37853.582,
     -60.4120293,
     1252.32764,
@@ -38,152 +41,266 @@ local t7 = CFrame.new(
     7.78790563e-05,
     -0.999987721
 )
-local t8
 local t9
 local t10
 local t11
-local t12 = "PositionLock_" .. t2.UserId
+local t12
+local t13 = "PositionLock_" .. t3.UserId
 
-local function t13(t14, t15)
-    local t16 = t14:Connect(t15)
-    t6.Connections[#t6.Connections + 1] = t16
-    return t16
+local t14 = "PositionLock_" .. game.PlaceId .. "_" .. t3.UserId .. ".json"
+local t15 = t14 .. "_Settings"
+local t16
+local t17
+local t18 = 0
+local t19 = 0
+local t20 = type(writefile) == "function" and type(readfile) == "function"
+
+local function t21(t22)
+    return type(t22) == "number" and t22 == t22 and math.abs(t22) < math.huge
 end
 
-local function t17()
-    for t18, t19 in pairs(t6.Anchored) do
-        pcall(function()
-            t18.Anchored = t19
-        end)
-        t6.Anchored[t18] = nil
+local function t23(t24)
+    if type(t24) ~= "table" then
+        return false
     end
-end
-
-local function t20()
-    if not t6.Alive then
-        return
-    end
-    t6.Alive = false
-    t6.Locked = false
-    for t21, t16 in ipairs(t6.Connections) do
-        pcall(t16.Disconnect, t16)
-    end
-    t17()
-    if t8 and not t8.Unloaded then
-        pcall(t8.Unload, t8)
-    end
-    if t3[t4] == t6 then
-        t3[t4] = nil
-    end
-end
-
-t6.Stop = t20
-t3[t4] = t6
-
-local function t18()
-    local t22 = t2.Character
-    local t23 = t22 and t22:FindFirstChildOfClass("Humanoid")
-    local t24 = t22 and t22:FindFirstChild("HumanoidRootPart")
-    if not t24 or not t23 or t23.Health <= 0 then
-        return nil
-    end
-    if not t11 then
-        t11 = t24.CFrame
-    end
-    return t24
-end
-
-local function t25(t26)
-    local t24 = t18()
-    if not t24 then
-        return nil
-    end
-    local t27 = (t24.Position - t7.Position).Magnitude
-    local t28 = 0
-    if t6.Rotation then
-        local t29
-        t29, t28 = t24.CFrame.Rotation:ToObjectSpace(t7.Rotation):ToAxisAngle()
-    end
-    if t26 or t27 > t6.Tolerance or math.abs(t28) > math.rad(2) then
-        t24.CFrame = t6.Rotation and t7 or CFrame.new(t7.Position) * t24.CFrame.Rotation
-        t6.Corrections = t6.Corrections + 1
-    end
-    if t6.Velocity then
-        t24.AssemblyLinearVelocity = Vector3.zero
-        t24.AssemblyAngularVelocity = Vector3.zero
-    end
-    if t6.Freeze then
-        if t6.Anchored[t24] == nil then
-            t6.Anchored[t24] = t24.Anchored
+    for t25, t26 in ipairs({ "Locked", "Rotation", "Velocity", "Freeze", "AutoHide" }) do
+        if type(t24[t26]) == "boolean" then
+            t7[t26] = t24[t26]
         end
-        t24.Anchored = true
     end
-    return (t24.Position - t7.Position).Magnitude
+    if t21(t24.Tolerance) then
+        t7.Tolerance = math.clamp(t24.Tolerance, 0.1, 10)
+    end
+    if t21(t24.Interval) then
+        t7.Interval = math.clamp(t24.Interval, 0.03, 2)
+    end
+    if type(t24.MenuKey) == "string" then
+        local t27, t28 = pcall(function()
+            return Enum.KeyCode[t24.MenuKey]
+        end)
+        if t27 and t28 and t24.MenuKey ~= "Unknown" then
+            t7.MenuKey = t24.MenuKey
+        end
+    end
+    if type(t24.Target) == "table" and #t24.Target == 12 then
+        local t27 = true
+        for t25 = 1, 12 do
+            if not t21(t24.Target[t25]) then
+                t27 = false
+            end
+        end
+        if t27 then
+            local t29, t30 = pcall(CFrame.new, table.unpack(t24.Target))
+            if t29 then
+                t8 = t30
+            end
+        end
+    end
+    return true
 end
 
-local t30, t31 = xpcall(function()
+local t31 = false
+if type(readfile) == "function" then
+    for t25, t32 in ipairs({ t14, t14 .. ".bak" }) do
+        local t33, t24 = pcall(function()
+            return t2:JSONDecode(readfile(t32))
+        end)
+        if t33 and t23(t24) then
+            t31 = true
+            break
+        end
+    end
+end
+if not t31 then
+    t23(t4[t15])
+end
+
+local function t34(t35)
+    if t9 and t9.Options and t9.Options.MenuKey then
+        local t22 = t9.Options.MenuKey.Value
+        local t27, t28 = pcall(function()
+            return Enum.KeyCode[t22]
+        end)
+        if t27 and t28 and t22 ~= "Unknown" then
+            t7.MenuKey = t22
+        end
+    end
+    local t24 = { Version = 1, Target = { t8:GetComponents() } }
+    for t25, t26 in ipairs({
+        "Locked",
+        "Rotation",
+        "Velocity",
+        "Freeze",
+        "AutoHide",
+        "Tolerance",
+        "Interval",
+        "MenuKey",
+    }) do
+        t24[t26] = t7[t26]
+    end
+    t4[t15] = t24
+    local t36 = t2:JSONEncode(t24)
+    if t36 ~= t17 then
+        t17 = t36
+        t18 = os.clock()
+    end
+    if t36 == t16 or not t20 or not t35 and os.clock() - t18 < 0.4 then
+        return
+    end
+    local t37, t38 = pcall(function()
+        if t16 then
+            writefile(t14 .. ".bak", t16)
+        end
+        writefile(t14, t36)
+    end)
+    if t37 then
+        t16 = t36
+    else
+        warn("[Position Lock] Settings could not be saved: " .. tostring(t38))
+    end
+end
+
+local function t39(t40, t41)
+    local t42 = t40:Connect(t41)
+    t7.Connections[#t7.Connections + 1] = t42
+    return t42
+end
+
+local function t43()
+    for t44, t22 in pairs(t7.Anchored) do
+        pcall(function()
+            t44.Anchored = t22
+        end)
+        t7.Anchored[t44] = nil
+    end
+end
+
+local function t45()
+    if not t7.Alive then
+        return
+    end
+    pcall(t34, true)
+    t7.Alive = false
+    t7.Locked = false
+    for t25, t42 in ipairs(t7.Connections) do
+        pcall(t42.Disconnect, t42)
+    end
+    t43()
+    if t9 and not t9.Unloaded then
+        pcall(t9.Unload, t9)
+    end
+    if t4[t5] == t7 then
+        t4[t5] = nil
+    end
+end
+
+t7.Stop = t45
+t4[t5] = t7
+
+local function t44()
+    local t46 = t3.Character
+    local t47 = t46 and t46:FindFirstChildOfClass("Humanoid")
+    local t48 = t46 and t46:FindFirstChild("HumanoidRootPart")
+    if not t48 or not t47 or t47.Health <= 0 then
+        return nil
+    end
+    if not t12 then
+        t12 = t48.CFrame
+    end
+    return t48
+end
+
+local function t49(t35)
+    local t48 = t44()
+    if not t48 then
+        return nil
+    end
+    local t50 = (t48.Position - t8.Position).Magnitude
+    local t51 = 0
+    if t7.Rotation then
+        local t52
+        t52, t51 = t48.CFrame.Rotation:ToObjectSpace(t8.Rotation):ToAxisAngle()
+    end
+    if t35 or t50 > t7.Tolerance or math.abs(t51) > math.rad(2) then
+        t48.CFrame = t7.Rotation and t8 or CFrame.new(t8.Position) * t48.CFrame.Rotation
+        t7.Corrections = t7.Corrections + 1
+    end
+    if t7.Velocity then
+        t48.AssemblyLinearVelocity = Vector3.zero
+        t48.AssemblyAngularVelocity = Vector3.zero
+    end
+    if t7.Freeze then
+        if t7.Anchored[t48] == nil then
+            t7.Anchored[t48] = t48.Anchored
+        end
+        t48.Anchored = true
+    end
+    return (t48.Position - t8.Position).Magnitude
+end
+
+local t53, t38 = xpcall(function()
     assert(type(loadstring) == "function", "This environment cannot load Obsidian")
-    local t32 = game:HttpGet("https://raw.githubusercontent.com/deividcomsono/Obsidian/main/Library.lua")
-    if not t6.Alive then
+    local t54 = game:HttpGet("https://raw.githubusercontent.com/deividcomsono/Obsidian/main/Library.lua")
+    if not t7.Alive then
         return
     end
-    local t33, t34 = loadstring(t32, "=PositionLock.Obsidian")
-    assert(t33, t34)
-    t8 = t33()
-    if not t6.Alive then
-        pcall(t8.Unload, t8)
+    local t55, t56 = loadstring(t54, "=PositionLock.Obsidian")
+    assert(t55, t56)
+    t9 = t55()
+    if not t7.Alive then
+        pcall(t9.Unload, t9)
         return
     end
-    local t35 = t8:CreateWindow({
+    local t57 = t9:CreateWindow({
         Title = "Position Lock",
         Footer = "Automatic position correction",
         Icon = "map-pin",
         Center = true,
-        AutoShow = true,
+        AutoShow = not t7.AutoHide,
         ShowCustomCursor = false,
-        ToggleKeybind = Enum.KeyCode.RightControl,
+        ToggleKeybind = Enum.KeyCode[t7.MenuKey],
     })
-    if not t6.Alive then
-        pcall(t8.Unload, t8)
+    if not t7.Alive then
+        pcall(t9.Unload, t9)
         return
     end
-    if t8.ScreenGui then
-        t8.ScreenGui.Name = t12
-        t13(t8.ScreenGui.Destroying, t20)
+    if t9.ScreenGui then
+        t9.ScreenGui.Name = t13
+        t39(t9.ScreenGui.Destroying, t45)
     end
-    t8:OnUnload(t20)
-    local t36 = t35:AddTab("Position", "crosshair")
-    local t37 = t35:AddTab("Settings", "settings")
-    local t38 = t36:AddLeftGroupbox("Position Lock")
-    local t39 = t36:AddRightGroupbox("Live Status")
-    local t40 = t37:AddLeftGroupbox("Behavior")
-    local t41 = t37:AddRightGroupbox("Interface")
-    t9 = t39:AddLabel({ Text = "Waiting for character", DoesWrap = true })
-    t39:AddLabel({ Text = "Target: 37853.582, -60.412, 1252.328", DoesWrap = true })
-    t10 = t38:AddToggle("PositionLocked", {
+    t9:OnUnload(t45)
+    local t58 = t57:AddTab("Position", "crosshair")
+    local t59 = t57:AddTab("Settings", "settings")
+    local t60 = t58:AddLeftGroupbox("Position Lock")
+    local t61 = t58:AddRightGroupbox("Live Status")
+    local t62 = t59:AddLeftGroupbox("Behavior")
+    local t63 = t59:AddRightGroupbox("Interface")
+    t10 = t61:AddLabel({ Text = "Waiting for character", DoesWrap = true })
+    t61:AddLabel({ Text = "Target: 37853.582, -60.412, 1252.328", DoesWrap = true })
+    t11 = t60:AddToggle("PositionLocked", {
         Text = "Lock Position",
-        Default = true,
-        Callback = function(t19)
-            t6.Locked = t19
-            t6.Elapsed = t6.Interval
-            if not t19 then
-                t17()
+        Default = t7.Locked,
+        Callback = function(t22)
+            t7.Locked = t22
+            t7.Elapsed = t7.Interval
+            if not t22 then
+                t43()
             end
         end,
     })
-    t38:AddButton({
+    t60:AddButton({
         Text = "Teleport Now",
         Func = function()
-            t25(true)
+            t49(true)
         end,
     })
-    t38:AddButton({
+    t60:AddButton({
         Text = "Use Current Position",
         Func = function()
-            local t24 = t18()
-            if t24 then
-                t7 = t24.CFrame
-                t8:Notify({
+            local t48 = t44()
+            if t48 then
+                t8 = t48.CFrame
+                t9:Notify({
                     Title = "Position Lock",
                     Description = "Target updated to your current position",
                     Time = 3,
@@ -191,10 +308,10 @@ local t30, t31 = xpcall(function()
             end
         end,
     })
-    t38:AddButton({
+    t60:AddButton({
         Text = "Restore Original Target",
         Func = function()
-            t7 = CFrame.new(
+            t8 = CFrame.new(
                 37853.582,
                 -60.4120293,
                 1252.32764,
@@ -208,118 +325,144 @@ local t30, t31 = xpcall(function()
                 7.78790563e-05,
                 -0.999987721
             )
-            t6.Elapsed = t6.Interval
+            t7.Elapsed = t7.Interval
         end,
     })
-    t38:AddButton({
+    t60:AddButton({
         Text = "Return to Starting Position",
         Func = function()
-            local t24 = t18()
-            if t24 and t11 then
-                t10:SetValue(false)
-                t24.CFrame = t11
-                t24.AssemblyLinearVelocity = Vector3.zero
-                t24.AssemblyAngularVelocity = Vector3.zero
+            local t48 = t44()
+            if t48 and t12 then
+                t11:SetValue(false)
+                t48.CFrame = t12
+                t48.AssemblyLinearVelocity = Vector3.zero
+                t48.AssemblyAngularVelocity = Vector3.zero
             end
         end,
     })
-    t40:AddSlider("DistanceTolerance", {
+    t62:AddSlider("DistanceTolerance", {
         Text = "Distance Tolerance (studs)",
-        Default = 1,
+        Default = t7.Tolerance,
         Min = 0.1,
         Max = 10,
         Rounding = 1,
-        Callback = function(t19)
-            t6.Tolerance = t19
+        Callback = function(t22)
+            t7.Tolerance = t22
         end,
     })
-    t40:AddSlider("CheckInterval", {
+    t62:AddSlider("CheckInterval", {
         Text = "Check Interval (seconds)",
-        Default = 0.1,
+        Default = t7.Interval,
         Min = 0.03,
         Max = 2,
         Rounding = 2,
-        Callback = function(t19)
-            t6.Interval = t19
+        Callback = function(t22)
+            t7.Interval = t22
         end,
     })
-    t40:AddToggle("MatchRotation", {
+    t62:AddToggle("MatchRotation", {
         Text = "Lock Rotation",
-        Default = true,
-        Callback = function(t19)
-            t6.Rotation = t19
+        Default = t7.Rotation,
+        Callback = function(t22)
+            t7.Rotation = t22
         end,
     })
-    t40:AddToggle("ResetVelocity", {
+    t62:AddToggle("ResetVelocity", {
         Text = "Stop Drift and Falling",
-        Default = true,
-        Callback = function(t19)
-            t6.Velocity = t19
+        Default = t7.Velocity,
+        Callback = function(t22)
+            t7.Velocity = t22
         end,
     })
-    t40:AddToggle("FreezeRoot", {
+    t62:AddToggle("FreezeRoot", {
         Text = "Freeze While Locked",
-        Default = false,
-        Callback = function(t19)
-            t6.Freeze = t19
-            if not t19 then
-                t17()
+        Default = t7.Freeze,
+        Callback = function(t22)
+            t7.Freeze = t22
+            if not t22 then
+                t43()
             end
         end,
     })
-    t41:AddLabel("Menu Key")
-        :AddKeyPicker("MenuKey", { Default = "RightControl", NoUI = true, Text = "Menu Key" })
-    t8.ToggleKeybind = t8.Options.MenuKey
-    t41:AddButton({ Text = "Uninject", Func = t20 })
-    t13(t2.CharacterRemoving, function()
-        t17()
+    t63:AddLabel("Menu Key"):AddKeyPicker("MenuKey", { Default = t7.MenuKey, NoUI = true, Text = "Menu Key" })
+    t9.ToggleKeybind = t9.Options.MenuKey
+    t63:AddToggle("AutoHideUI", {
+        Text = "Auto Hide UI on Startup",
+        Default = t7.AutoHide,
+        Callback = function(t22)
+            t7.AutoHide = t22
+        end,
+    })
+    t63:AddLabel({
+        Text = t20 and "Settings save automatically for this player and game."
+            or "File access unavailable: settings persist only in this session.",
+        DoesWrap = true,
+    })
+    t63:AddButton({ Text = "Uninject", Func = t45 })
+    t39(t3.CharacterRemoving, function()
+        t43()
     end)
-    t13(t2.CharacterAdded, function()
-        t6.Elapsed = t6.Interval
+    t39(t3.CharacterAdded, function()
+        t7.Elapsed = t7.Interval
     end)
-    t13(t1.Heartbeat, function(t42)
-        if not t6.Alive then
+    t39(t1.Heartbeat, function(t64)
+        if not t7.Alive then
             return
         end
-        t6.Elapsed = t6.Elapsed + t42
-        t6.Display = t6.Display + t42
-        if t6.Elapsed < t6.Interval then
+        t19 = t19 + t64
+        if t19 >= 0.2 then
+            t19 = 0
+            pcall(t34, false)
+        end
+        t7.Elapsed = t7.Elapsed + t64
+        t7.Display = t7.Display + t64
+        if t7.Elapsed < t7.Interval then
             return
         end
-        t6.Elapsed = 0
-        local t43, t44 = pcall(function()
-            if t6.Locked then
-                return t25(false)
+        t7.Elapsed = 0
+        local t65, t66 = pcall(function()
+            if t7.Locked then
+                return t49(false)
             end
-            local t24 = t18()
-            return t24 and (t24.Position - t7.Position).Magnitude
+            local t48 = t44()
+            return t48 and (t48.Position - t8.Position).Magnitude
         end)
-        if t6.Display >= 0.5 then
-            t6.Display = 0
-            local t45 = not t43 and ("Correction failed: " .. tostring(t44))
-                or t44 == nil and "Waiting for a living character"
+        if t7.Display >= 0.5 then
+            t7.Display = 0
+            local t67 = not t65 and ("Correction failed: " .. tostring(t66))
+                or t66 == nil and "Waiting for a living character"
                 or string.format(
                     "%s\nDistance: %.2f studs\nCorrections: %d\nTarget: %.3f, %.3f, %.3f",
-                    t6.Locked and "Position locked" or "Lock paused",
-                    t44,
-                    t6.Corrections,
-                    t7.X,
-                    t7.Y,
-                    t7.Z
+                    t7.Locked and "Position locked" or "Lock paused",
+                    t66,
+                    t7.Corrections,
+                    t8.X,
+                    t8.Y,
+                    t8.Z
                 )
-            t9:SetText(t45)
+            t10:SetText(t67)
         end
     end)
-    t25(false)
+    t34(true)
+    if t7.AutoHide then
+        t9:Notify({
+            Title = "Position Lock",
+            Description = "Interface hidden. Press " .. t7.MenuKey .. " to open it.",
+            Time = 7,
+        })
+    end
+    if t7.Locked then
+        t49(false)
+    end
 end, debug.traceback)
 
-if not t30 then
-    t20()
-    warn("[Position Lock] " .. tostring(t31))
+if not t53 then
+    t45()
+    warn("[Position Lock] " .. tostring(t38))
     pcall(function()
         game:GetService("StarterGui"):SetCore(
             "SendNotification",
-            { Title = "Position Lock failed", Text = tostring(t31):sub(1, 180), Duration = 10 }
+            { Title = "Position Lock failed", Text = tostring(t38):sub(1, 180), Duration = 10 }
         )
     end)
 end
