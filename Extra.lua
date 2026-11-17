@@ -17,6 +17,7 @@ local t7 = {
 	AutoHide = false,
 	MenuKey = "RightControl",
 	Locked = true,
+	TPOnly = false,
 	Rotation = true,
 	Velocity = true,
 	Freeze = false,
@@ -92,6 +93,7 @@ local function t23(t24)
 	end
 	for t25, t26 in ipairs({
 		"Locked",
+		"TPOnly",
 		"Rotation",
 		"Velocity",
 		"Freeze",
@@ -173,6 +175,7 @@ local function t34(t35)
 	local t24 = { Version = 1, Target = { t8:GetComponents() } }
 	for t25, t26 in ipairs({
 		"Locked",
+		"TPOnly",
 		"Rotation",
 		"Velocity",
 		"Freeze",
@@ -261,7 +264,7 @@ local function t44()
 	return t48
 end
 
-local function t49(t35)
+local function t49(t35, t122)
 	local t48 = t44()
 	if not t48 then
 		return nil
@@ -280,7 +283,7 @@ local function t49(t35)
 		t48.AssemblyLinearVelocity = Vector3.zero
 		t48.AssemblyAngularVelocity = Vector3.zero
 	end
-	if t7.Freeze then
+	if t7.Freeze and not t122 then
 		if t7.Anchored[t48] == nil then
 			t7.Anchored[t48] = t48.Anchored
 		end
@@ -329,11 +332,21 @@ local t53, t38 = xpcall(function()
 	local t63 = t59:AddRightGroupbox("Interface")
 	t10 = t61:AddLabel({ Text = "Waiting for character", DoesWrap = true })
 	t61:AddLabel({ Text = "Target: 37853.582, -60.412, 1252.328", DoesWrap = true })
+	local t123, t124
+	if t7.TPOnly then
+		t7.Locked = false
+	end
 	t11 = t60:AddToggle("PositionLocked", {
 		Text = "Lock Position",
 		Default = t7.Locked,
 		Callback = function(t22)
 			t7.Locked = t22
+			if t22 then
+				t7.TPOnly = false
+				if t123 and t123.Value then
+					t123:SetValue(false)
+				end
+			end
 			t7.Elapsed = t7.Interval
 			if not t22 then
 				t43()
@@ -344,6 +357,20 @@ local t53, t38 = xpcall(function()
 		Text = "Teleport Now",
 		Func = function()
 			t49(true)
+		end,
+	})
+
+	t123 = t60:AddToggle("TPOnly", {
+		Text = "TP Only",
+		Default = t7.TPOnly,
+		Callback = function(t22)
+			t7.TPOnly = t22
+			if t22 then
+				t11:SetValue(false)
+				t43()
+				t124 = nil
+				t7.Elapsed = t7.Interval
+			end
 		end,
 	})
 	t60:AddButton({
@@ -386,6 +413,7 @@ local t53, t38 = xpcall(function()
 			local t48 = t44()
 			if t48 and t12 then
 				t11:SetValue(false)
+				t123:SetValue(false)
 				t48.CFrame = t12
 				t48.AssemblyLinearVelocity = Vector3.zero
 				t48.AssemblyAngularVelocity = Vector3.zero
@@ -708,14 +736,19 @@ local t53, t38 = xpcall(function()
 			end
 		end
 		local t65, t66 = pcall(function()
-			if t7.Locked then
+			if t7.Locked or t7.TPOnly and t124 ~= t3.Character then
 				if t98 == t3.Character and t99 then
 					local t101 = t7.RespawnDelay - (os.clock() - t99)
 					if t101 > 0 then
 						return string.format("Respawn: waiting %.1fs", t101)
 					end
 				end
-				return t49(false)
+				local t125 = t3.Character
+				local t126 = t49(false, t7.TPOnly)
+				if t7.TPOnly and t126 ~= nil then
+					t124 = t125
+				end
+				return t126
 			end
 			local t48 = t44()
 			return t48 and (t48.Position - t8.Position).Magnitude
@@ -727,7 +760,7 @@ local t53, t38 = xpcall(function()
 				or t66 == nil and "Waiting for a living character"
 				or string.format(
 					"%s\nDistance: %.2f studs\nCorrections: %d\nTarget: %.3f, %.3f, %.3f",
-					t7.Locked and "Position locked" or "Lock paused",
+					t7.Locked and "Position locked" or t7.TPOnly and "TP Only" or "Lock paused",
 					t66,
 					t7.Corrections,
 					t8.X,
