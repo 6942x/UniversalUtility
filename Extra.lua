@@ -26,6 +26,8 @@ local t7 = {
 	Tolerance = 1,
 	Interval = 0.1,
 	RespawnDelay = 0,
+	PeriodicReset = false,
+	ResetMinutes = 5,
 	Elapsed = 0,
 	Display = 0,
 	Corrections = 0,
@@ -88,7 +90,16 @@ local function t23(t24)
 	if type(t24) ~= "table" then
 		return false
 	end
-	for t25, t26 in ipairs({ "Locked", "Rotation", "Velocity", "Freeze", "AutoHide", "AutoEquip", "EquipAfterDeath" }) do
+	for t25, t26 in ipairs({
+		"Locked",
+		"Rotation",
+		"Velocity",
+		"Freeze",
+		"AutoHide",
+		"AutoEquip",
+		"EquipAfterDeath",
+		"PeriodicReset",
+	}) do
 		if type(t24[t26]) == "boolean" then
 			t7[t26] = t24[t26]
 		end
@@ -98,6 +109,9 @@ local function t23(t24)
 	end
 	if t21(t24.Tolerance) then
 		t7.Tolerance = math.clamp(t24.Tolerance, 0.1, 10)
+	end
+	if t21(t24.ResetMinutes) then
+		t7.ResetMinutes = math.clamp(t24.ResetMinutes, 1, 180)
 	end
 	if t21(t24.RespawnDelay) then
 		t7.RespawnDelay = math.clamp(t24.RespawnDelay, 0, 30)
@@ -166,6 +180,8 @@ local function t34(t35)
 		"Tolerance",
 		"Interval",
 		"RespawnDelay",
+		"PeriodicReset",
+		"ResetMinutes",
 		"MenuKey",
 		"AutoEquip",
 		"EquipAfterDeath",
@@ -597,12 +613,74 @@ local t53, t38 = xpcall(function()
 	t92()
 
 	local t98, t99
+	local t102 = os.clock()
+	local t103
+	t62:AddToggle("PeriodicReset", {
+		Text = "Periodic Reset",
+		Default = t7.PeriodicReset,
+		Callback = function(t22)
+			t7.PeriodicReset = t22
+			t102 = os.clock()
+		end,
+	})
+	local function t106(t107)
+		local t108 = t107:lower():gsub(",", "."):gsub("%s+", "")
+		local t109 = "^%d*%.?%d+$"
+		local t110
+		if t108:match(t109) then
+			t110 = tonumber(t108)
+		else
+			t110 = 0
+			local t111 = 0
+			while t108 ~= "" do
+				local t112, t113, t114 = t108:match("^(%d*%.?%d+)([hm])()")
+				local t115 = t113 == "h" and 1 or 2
+				if not t112 or t115 <= t111 then
+					return nil
+				end
+				t111 = t115
+				t110 = t110 + tonumber(t112) * (t113 == "h" and 60 or 1)
+				t108 = t108:sub(t114)
+			end
+			if t111 == 0 then
+				return nil
+			end
+		end
+		if t110 and t110 >= 1 and t110 <= 180 then
+			return t110
+		end
+	end
+
+	local t116 = t62:AddInput("ResetMinutes", {
+		Text = "Reset Interval",
+		Default = tostring(t7.ResetMinutes) .. "m",
+		Placeholder = "90m / 1.5h / 2h 30m",
+		Finished = true,
+		ClearTextOnFocus = false,
+		ClearTextOnBlur = false,
+	})
+	local function t117()
+		local t118 = t106(t116.Container.Text)
+		if not t118 then
+			t116:SetValue(tostring(t7.ResetMinutes) .. "m")
+			t9:Notify({ Title = "Position Lock", Description = "Enter an interval from 1m to 3h.", Time = 4 })
+			return
+		end
+		if t7.ResetMinutes ~= t118 then
+			t7.ResetMinutes = t118
+			t102 = os.clock()
+		end
+	end
+	t39(t116.Container.FocusLost, t117)
+
 	t39(t3.CharacterRemoving, function()
 		t98, t99 = nil, nil
 		t43()
 	end)
 	t39(t3.CharacterAdded, function(t100)
 		t98, t99 = t100, os.clock()
+		t102 = t99
+		t103 = nil
 		t7.Elapsed = t7.Interval
 	end)
 	t39(t1.Heartbeat, function(t64)
@@ -620,6 +698,15 @@ local t53, t38 = xpcall(function()
 			return
 		end
 		t7.Elapsed = 0
+		local t104 = t3.Character
+		if t7.PeriodicReset and t104 and t104 ~= t103 and os.clock() - t102 >= t7.ResetMinutes * 60 then
+			local t105 = t104:FindFirstChildOfClass("Humanoid")
+			if t105 and t105.Health > 0 then
+				t103 = t104
+				t105.Health = 0
+				return
+			end
+		end
 		local t65, t66 = pcall(function()
 			if t7.Locked then
 				if t98 == t3.Character and t99 then
