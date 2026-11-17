@@ -25,6 +25,7 @@ local t7 = {
 	ToolName = "",
 	Tolerance = 1,
 	Interval = 0.1,
+	RespawnDelay = 0,
 	Elapsed = 0,
 	Display = 0,
 	Corrections = 0,
@@ -98,6 +99,9 @@ local function t23(t24)
 	if t21(t24.Tolerance) then
 		t7.Tolerance = math.clamp(t24.Tolerance, 0.1, 10)
 	end
+	if t21(t24.RespawnDelay) then
+		t7.RespawnDelay = math.clamp(t24.RespawnDelay, 0, 30)
+	end
 	if t21(t24.Interval) then
 		t7.Interval = math.clamp(t24.Interval, 0.03, 2)
 	end
@@ -161,6 +165,7 @@ local function t34(t35)
 		"AutoHide",
 		"Tolerance",
 		"Interval",
+		"RespawnDelay",
 		"MenuKey",
 		"AutoEquip",
 		"EquipAfterDeath",
@@ -381,6 +386,16 @@ local t53, t38 = xpcall(function()
 			t7.Tolerance = t22
 		end,
 	})
+	t62:AddSlider("RespawnDelay", {
+		Text = "Respawn Delay (seconds)",
+		Default = t7.RespawnDelay,
+		Min = 0,
+		Max = 30,
+		Rounding = 0,
+		Callback = function(t22)
+			t7.RespawnDelay = t22
+		end,
+	})
 	t62:AddSlider("CheckInterval", {
 		Text = "Check Interval (seconds)",
 		Default = t7.Interval,
@@ -581,10 +596,13 @@ local t53, t38 = xpcall(function()
 	end)
 	t92()
 
+	local t98, t99
 	t39(t3.CharacterRemoving, function()
+		t98, t99 = nil, nil
 		t43()
 	end)
-	t39(t3.CharacterAdded, function()
+	t39(t3.CharacterAdded, function(t100)
+		t98, t99 = t100, os.clock()
 		t7.Elapsed = t7.Interval
 	end)
 	t39(t1.Heartbeat, function(t64)
@@ -604,6 +622,12 @@ local t53, t38 = xpcall(function()
 		t7.Elapsed = 0
 		local t65, t66 = pcall(function()
 			if t7.Locked then
+				if t98 == t3.Character and t99 then
+					local t101 = t7.RespawnDelay - (os.clock() - t99)
+					if t101 > 0 then
+						return string.format("Respawn: waiting %.1fs", t101)
+					end
+				end
 				return t49(false)
 			end
 			local t48 = t44()
@@ -612,6 +636,7 @@ local t53, t38 = xpcall(function()
 		if t7.Display >= 0.5 then
 			t7.Display = 0
 			local t67 = not t65 and ("Correction failed: " .. tostring(t66))
+				or type(t66) == "string" and t66
 				or t66 == nil and "Waiting for a living character"
 				or string.format(
 					"%s\nDistance: %.2f studs\nCorrections: %d\nTarget: %.3f, %.3f, %.3f",
