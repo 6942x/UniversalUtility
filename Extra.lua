@@ -34,20 +34,7 @@ local t7 = {
 	Corrections = 0,
 	Anchored = {},
 }
-local t8 = CFrame.new(
-	37853.582,
-	-60.4120293,
-	1252.32764,
-	-0.999987721,
-	1.65771926e-05,
-	0.00495962985,
-	1.69502164e-05,
-	1,
-	7.7791512e-05,
-	-0.00495963171,
-	7.78790563e-05,
-	-0.999987721
-)
+local t8
 local t9
 local t10
 local t11
@@ -172,7 +159,7 @@ local function t34(t35)
 			t7.MenuKey = t22
 		end
 	end
-	local t24 = { Version = 1, Target = { t8:GetComponents() } }
+	local t24 = { Version = 1, Target = t8 and { t8:GetComponents() } or nil }
 	for t25, t26 in ipairs({
 		"Locked",
 		"TPOnly",
@@ -258,6 +245,9 @@ local function t44()
 	if not t48 or not t47 or t47.Health <= 0 then
 		return nil
 	end
+	if not t8 then
+		t8 = t48.CFrame
+	end
 	if not t12 then
 		t12 = t48.CFrame
 	end
@@ -331,7 +321,6 @@ local t53, t38 = xpcall(function()
 	local t62 = t59:AddLeftGroupbox("Behavior")
 	local t63 = t59:AddRightGroupbox("Interface")
 	t10 = t61:AddLabel({ Text = "Waiting for character", DoesWrap = true })
-	t61:AddLabel({ Text = "Target: 37853.582, -60.412, 1252.328", DoesWrap = true })
 	local t123, t124
 	if t7.TPOnly then
 		t7.Locked = false
@@ -385,26 +374,6 @@ local t53, t38 = xpcall(function()
 					Time = 3,
 				})
 			end
-		end,
-	})
-	t60:AddButton({
-		Text = "Restore Original Target",
-		Func = function()
-			t8 = CFrame.new(
-				37853.582,
-				-60.4120293,
-				1252.32764,
-				-0.999987721,
-				1.65771926e-05,
-				0.00495962985,
-				1.69502164e-05,
-				1,
-				7.7791512e-05,
-				-0.00495963171,
-				7.78790563e-05,
-				-0.999987721
-			)
-			t7.Elapsed = t7.Interval
 		end,
 	})
 	t60:AddButton({
