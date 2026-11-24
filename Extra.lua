@@ -1,4 +1,4 @@
-local t = game:GetService("Players")
+local t143 = [====[local t = game:GetService("Players")
 local t1 = game:GetService("RunService")
 local t2 = game:GetService("HttpService")
 local t3 = t.LocalPlayer
@@ -28,6 +28,8 @@ local t7 = {
 	Interval = 0.1,
 	RespawnDelay = 0,
 	PeriodicReset = false,
+	PeriodicRejoin = false,
+	RejoinMinutes = 15,
 	ResetMinutes = 5,
 	Elapsed = 0,
 	Display = 0,
@@ -88,6 +90,7 @@ local function t23(t24)
 		"AutoEquip",
 		"EquipAfterDeath",
 		"PeriodicReset",
+		"PeriodicRejoin",
 	}) do
 		if type(t24[t26]) == "boolean" then
 			t7[t26] = t24[t26]
@@ -98,6 +101,9 @@ local function t23(t24)
 	end
 	if t21(t24.Tolerance) then
 		t7.Tolerance = math.clamp(t24.Tolerance, 0.1, 10)
+	end
+	if t21(t24.RejoinMinutes) then
+		t7.RejoinMinutes = math.clamp(t24.RejoinMinutes, 1, 180)
 	end
 	if t21(t24.ResetMinutes) then
 		t7.ResetMinutes = math.clamp(t24.ResetMinutes, 1, 180)
@@ -171,7 +177,9 @@ local function t34(t35)
 		"Interval",
 		"RespawnDelay",
 		"PeriodicReset",
+		"PeriodicRejoin",
 		"ResetMinutes",
+		"RejoinMinutes",
 		"MenuKey",
 		"AutoEquip",
 		"EquipAfterDeath",
@@ -670,6 +678,95 @@ local t53, t38 = xpcall(function()
 	end
 	t39(t116.Container.FocusLost, t117)
 
+	local t128 = game:GetService("TeleportService")
+	local t129 = os.clock()
+	local t130 = 0
+	local t131 = 0
+	local t132 = false
+	local t133 = false
+	local t134 = type(queue_on_teleport) == "function" and queue_on_teleport
+		or type(syn) == "table" and syn.queue_on_teleport
+	local t135 = "PositionLock_Source_" .. game.PlaceId .. "_" .. t3.UserId .. ".lua"
+
+	local function t136(t137)
+		if not t7.Alive or not t132 then
+			return
+		end
+		t132 = false
+		if t130 >= 3 then
+			t130 = 0
+			t129 = os.clock()
+			t131 = 0
+		else
+			t131 = os.clock() + math.min(60, 5 * 2 ^ (t130 - 1))
+		end
+		t9:Notify({ Title = "Position Lock", Description = "Rejoin failed: " .. tostring(t137):sub(1, 100), Time = 5 })
+	end
+
+	local function t138()
+		if t132 or not t7.Alive then
+			return
+		end
+		t132 = true
+		t10:SetText("Rejoining game...")
+		t130 = t130 + 1
+		t131 = os.clock() + 45
+		pcall(t34, true)
+		if not t133 and type(t134) == "function" and type(readfile) == "function" then
+			local t137 = pcall(function()
+				local t139 = readfile(t135)
+				assert(type(t139) == "string" and #t139 > 100)
+				t134("loadstring(readfile(" .. string.format("%q", t135) .. "), '=PositionLock.Resume')()")
+			end)
+			t133 = t137
+		end
+		task.spawn(function()
+			if not t7.Alive then
+				return
+			end
+			local t137, t139 = pcall(function()
+				t128:Teleport(game.PlaceId, t3)
+			end)
+			if not t137 then
+				t136(t139)
+			end
+		end)
+	end
+
+	t62:AddToggle("PeriodicRejoin", {
+		Text = "Periodic Rejoin",
+		Default = t7.PeriodicRejoin,
+		Callback = function(t22)
+			t7.PeriodicRejoin = t22
+			t129, t130, t131 = os.clock(), 0, 0
+		end,
+	})
+	local t140 = t62:AddInput("RejoinMinutes", {
+		Text = "Rejoin Interval",
+		Default = tostring(t7.RejoinMinutes) .. "m",
+		Placeholder = "15m / 1h / 2h 30m",
+		Finished = true,
+		ClearTextOnFocus = false,
+		ClearTextOnBlur = false,
+	})
+	t39(t140.Container.FocusLost, function()
+		local t137 = t106(t140.Container.Text)
+		if not t137 then
+			t140:SetValue(tostring(t7.RejoinMinutes) .. "m")
+			t9:Notify({ Title = "Position Lock", Description = "Enter a rejoin interval from 1m to 3h.", Time = 4 })
+			return
+		end
+		if t7.RejoinMinutes ~= t137 then
+			t7.RejoinMinutes = t137
+			t129, t130, t131 = os.clock(), 0, 0
+		end
+	end)
+	t39(t128.TeleportInitFailed, function(t137, t139, t141, t142)
+		if t137 == t3 and t142 == game.PlaceId then
+			t136(t141)
+		end
+	end)
+
 	t39(t3.CharacterRemoving, function()
 		t98, t99 = nil, nil
 		t43()
@@ -695,6 +792,19 @@ local t53, t38 = xpcall(function()
 			return
 		end
 		t7.Elapsed = 0
+		if t132 then
+			if os.clock() >= t131 then
+				t136("Timed out")
+			end
+			return
+		end
+		if
+			t7.PeriodicRejoin
+			and (t131 > 0 and os.clock() >= t131 or t131 == 0 and os.clock() - t129 >= t7.RejoinMinutes * 60)
+		then
+			t138()
+			return
+		end
 		local t104 = t3.Character
 		if t7.PeriodicReset and t104 and t104 ~= t103 and os.clock() - t102 >= t7.ResetMinutes * 60 then
 			local t105 = t104:FindFirstChildOfClass("Humanoid")
@@ -761,4 +871,15 @@ if not t53 then
 			{ Title = "Position Lock failed", Text = tostring(t38):sub(1, 180), Duration = 10 }
 		)
 	end)
+end]====]
+
+if type(writefile) == "function" then
+    pcall(function()
+        local t144 = game:GetService("Players").LocalPlayer
+        if t144 then writefile("PositionLock_Source_" .. game.PlaceId .. "_" .. t144.UserId .. ".lua", t143) end
+    end)
 end
+
+local t144, t145 = loadstring(t143, "=PositionLock")
+assert(t144, t145)
+t144()
